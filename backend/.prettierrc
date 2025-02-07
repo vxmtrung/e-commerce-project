@@ -1,0 +1,11 @@
+{
+  "allowConstantExport": true,
+  "allowParens": "always",
+  "semi": true,
+  "trailingComma": "none",
+  "tabWidth": 2,
+  "endOfLine": "auto",
+  "singleQuote": true,
+  "printWidth": 120,
+  "jsxSingleQuote": true
+}
