@@ -1,30 +1,32 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Role } from "../../../../constants/user-role.constant";
 
-@Entity('users')
-export class UserEntity {
+@Entity('product_instances')
+export class ProductInstanceEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ nullable: false })
   name: string;
 
-  @Column({ nullable: false })
-  email: string;
+  @Column({ nullable: true })
+  description: string;
 
   @Column({ nullable: false })
-  phoneNumber: string;
-
-  @Column({ nullable: false, unique: true })
-  username: string;
+  price: number;
 
   @Column({ nullable: false })
-  password: string;
+  quantity: number;
 
-  @Column({ type: 'enum', enum: Role, default: Role.USER, nullable: false })
-  role: Role;
+  // @ManyToOne(() => ProductEntity, (product) => product.productInstances, { cascade: true })
+  // product: ProductEntity;
+  @Column({ nullable: false })
+  productId: string;
 
-  @Column({ nullable: false, default: false })
+  // @OneToMany(() => ProductImgEntity, (productImg) => productImg.productInstance)
+  // img: ProductImgEntity[];
+  // imgIds: string[];
+
+  @Column({ nullable: false, default: true })
   status: boolean;
 
   @CreateDateColumn({

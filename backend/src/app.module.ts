@@ -11,11 +11,21 @@ import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './modules/auth/guards/auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
+import { CategoryModule } from './modules/categories/category.module';
+import { OrderModule } from './modules/orders/order.module';
+import { PaymentModule } from './modules/payments/payment.module';
+import { ProductModule } from './modules/products/product.module';
+import { ReviewModule } from './modules/reviews/review.module';
 
 @Module({
   imports: [
     AuthModule,
     UserModule,
+    CategoryModule,
+    OrderModule,
+    PaymentModule,
+    ProductModule,
+    ReviewModule,
     ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '../.env',
