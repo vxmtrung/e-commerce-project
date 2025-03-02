@@ -8,7 +8,7 @@ import { AccessToken } from '../domains/dtos/responses/token.dto';
 export class AuthController {
   constructor(
     @Inject('IAuthService')
-    private readonly authService: IAuthService,
+    private readonly authService: IAuthService
   ) {}
 
   @PublicRoute()
