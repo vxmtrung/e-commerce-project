@@ -1,5 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Role } from "../../../../constants/user-role.constant";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Role } from '../../../../constants/user-role.constant';
 
 @Entity('users')
 export class UserEntity {
@@ -29,17 +29,17 @@ export class UserEntity {
 
   @CreateDateColumn({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
+    default: () => 'CURRENT_TIMESTAMP(6)'
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    type: 'timestamp',
+    type: 'timestamp'
   })
   updatedAt: Date;
 
   @DeleteDateColumn({
-    type: 'timestamp',
+    type: 'timestamp'
   })
   deletedAt: Date;
 }

@@ -21,6 +21,11 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    '@stylistic/js/eol-last': 'never',
+    'prettier/prettier': [
+    'error',
+      {
+        'endOfLine': 'auto',
+      }
+    ]
   },
 };
