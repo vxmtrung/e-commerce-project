@@ -21,3 +21,5 @@ export const loginSystemState = (data) => async dispatch => {
 
     }
 };
+
+export default { redux };
