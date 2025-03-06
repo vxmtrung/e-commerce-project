@@ -29,6 +29,7 @@ Object.keys(reducerContainer).forEach((key) => {
     reducers[key] = combineReducers(reducerContainer[key]);
 });
 // Combine all reducers
+console.log(reducers);
 const rootReducer = combineReducers(reducers);
 
 //persist config
