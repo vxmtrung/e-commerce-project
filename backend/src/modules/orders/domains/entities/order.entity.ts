@@ -1,12 +1,12 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { OrderStatus } from "../../../../constants/order-status.constant";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { OrderStatus } from '../../../../constants/order-status.constant';
 
 @Entity('orders')
 export class OrderEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.IN_PROGRESS, nullable: false })
   status: OrderStatus;
 
   @Column({ nullable: false })
@@ -16,18 +16,18 @@ export class OrderEntity {
   userId: string;
 
   @CreateDateColumn({
-      type: 'timestamp',
-      default: () => 'CURRENT_TIMESTAMP(6)',
-    })
-    createdAt: Date;
-  
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)'
+  })
+  createdAt: Date;
+
   @UpdateDateColumn({
-      type: 'timestamp',
-    })
-    updatedAt: Date;
-  
+    type: 'timestamp'
+  })
+  updatedAt: Date;
+
   @DeleteDateColumn({
-      type: 'timestamp',
-    })
-    deletedAt: Date;
+    type: 'timestamp'
+  })
+  deletedAt: Date;
 }

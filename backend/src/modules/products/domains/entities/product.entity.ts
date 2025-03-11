@@ -1,5 +1,13 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ProductInstanceEntity } from "./product-instance.entity";
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm';
+import { ProductInstanceEntity } from './product-instance.entity';
 
 @Entity('products')
 export class ProductEntity {
@@ -20,21 +28,24 @@ export class ProductEntity {
   // productInstanceIds: string[];
 
   @Column({ nullable: false })
-  categoryName: string;
+  categoryId: string;
+
+  @Column({ nullable: false })
+  brandId: string;
 
   @CreateDateColumn({
-      type: 'timestamp',
-      default: () => 'CURRENT_TIMESTAMP(6)',
-    })
-    createdAt: Date;
-  
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)'
+  })
+  createdAt: Date;
+
   @UpdateDateColumn({
-      type: 'timestamp',
-    })
-    updatedAt: Date;
-  
+    type: 'timestamp'
+  })
+  updatedAt: Date;
+
   @DeleteDateColumn({
-      type: 'timestamp',
-    })
-    deletedAt: Date;
+    type: 'timestamp'
+  })
+  deletedAt: Date;
 }
