@@ -1,6 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { PaymentMethod } from "../../../../constants/payment-method.constant";
-import { PaymentStatus } from "../../../../constants/payment-status.constant";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { PaymentMethod } from '../../../../constants/payment-method.constant';
+import { PaymentStatus } from '../../../../constants/payment-status.constant';
 
 @Entity('payments')
 export class PaymentEntity {
@@ -10,10 +10,10 @@ export class PaymentEntity {
   @Column({ nullable: false })
   orderId: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: PaymentMethod.CASH_ON_DELIVERY, type: 'enum', enum: PaymentMethod })
   paymentMethod: PaymentMethod;
 
-  @Column({ nullable: false, default: PaymentStatus.PENDING })
+  @Column({ nullable: false, default: PaymentStatus.PENDING, type: 'enum', enum: PaymentStatus })
   paymentStatus: PaymentStatus;
 
   @Column({ nullable: false })
@@ -21,7 +21,7 @@ export class PaymentEntity {
 
   @CreateDateColumn({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
+    default: () => 'CURRENT_TIMESTAMP(6)'
   })
   createdAt: Date;
 }
