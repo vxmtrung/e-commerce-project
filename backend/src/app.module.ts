@@ -27,51 +27,70 @@ import { ReviewModule } from './modules/reviews/review.module';
     ProductModule,
     ReviewModule,
     ConfigModule.forRoot({
-    isGlobal: true,
-    envFilePath: '../.env',
-  }),
-  TypeOrmModule.forRootAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService: ConfigService) => ({
-      name: 'default',
-      type: 'postgres',
-      host: configService.get<string>('DB_HOST'),
-      port: configService.get<number>('DB_PORT'),
-      username: configService.get<string>('DB_USERNAME'),
-      password: configService.get<string>('DB_PASSWORD'),
-      database: configService.get<string>('DB_DATABASE'),
-      namingStrategy: new SnakeNamingStrategy(),
-      entities: [
-        __dirname + '/**/*.entity.{ts,js}',
-        __dirname + '/modules/**/**/entities/*.entity{.ts,.js}',
-        __dirname + '/modules/**/*.view-entity{.ts,.js}',
-      ],
-      migrations: [__dirname + 'src/migrations/*{.ts,.js}'],
-      logging: true,
-      synchronize: false,
-      migrationsRun: false,
+      isGlobal: true,
+      envFilePath: '../.env'
     }),
-    dataSourceFactory: (options) => {
-      if (!options) {
-        throw new Error('Invalid Options Passed');
-      }
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        name: 'default',
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        namingStrategy: new SnakeNamingStrategy(),
+        entities: [
+          __dirname + '/**/*.entity.{ts,js}',
+          __dirname + '/modules/**/**/entities/*.entity{.ts,.js}',
+          __dirname + '/modules/**/*.view-entity{.ts,.js}'
+        ],
+        migrations: [__dirname + 'src/migrations/*{.ts,.js}'],
+        logging: true,
+        synchronize: false,
+        migrationsRun: false
+      }),
+      // dataSourceFactory: (options) => {
+      //   if (!options) {
+      //     throw new Error('Invalid Options Passed');
+      //   }
 
-      return Promise.resolve(
-        addTransactionalDataSource(new DataSource(options)),
-      );
-    },
-  }),],
-  controllers: [AppController],
-  providers: [AppService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
+      //   return Promise.resolve(addTransactionalDataSource(new DataSource(options)));
+      // }
+
+      dataSourceFactory: async (options) => {
+        let existingDataSource: DataSource | null = null;
+
+        if (!options) {
+          throw new Error('Invalid Options Passed');
+        }
+
+        if (existingDataSource) {
+          return existingDataSource;
+        }
+
+        const newDataSource = new DataSource(options);
+        await newDataSource.initialize();
+        addTransactionalDataSource(newDataSource);
+
+        existingDataSource = newDataSource;
+        return newDataSource;
+      }
+    })
   ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard
+    }
+  ]
 })
 export class AppModule {}
