@@ -6,8 +6,9 @@ import { UpdateOrderItemQuantityDto } from '../dtos/update-order-item-quantity';
 import { OrderEntity } from '../domains/entities/order.entity';
 import { OrderItemEntity } from '../domains/entities/order-item.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { IOrderRepository } from '../repositories/order.repository';
+import { IOrderItemRepository } from '../repositories/order-item.repository';
 
 export interface IOrderService {
   findAll(): Promise<OrderEntity[]>;
@@ -24,10 +25,10 @@ export interface IOrderService {
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
-    @InjectRepository(OrderEntity)
-    private orderRepository: Repository<OrderEntity>,
-    @InjectRepository(OrderItemEntity)
-    private orderItemsRepository: Repository<OrderItemEntity>,
+    @Inject('IOrderRepository')
+    private orderRepository: IOrderRepository,
+    @Inject('IOrderItemRepository')
+    private orderItemsRepository: IOrderItemRepository,
   ) {}
 
   async findAll() {
