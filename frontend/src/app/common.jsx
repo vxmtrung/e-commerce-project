@@ -9,7 +9,6 @@ import { localStorageLib } from './common/local_storage';
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const hostname = typeof location !== 'undefined' ? location.hostname : null;
 // const socket = io(backendUrl);
-//TODO: Tiến
 const T = {
     debug:
         hostname === 'localhost' || hostname === '127.0.0.1',
