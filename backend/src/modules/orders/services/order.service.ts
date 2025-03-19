@@ -15,7 +15,10 @@ export interface IOrderService {
   createOrder(createOrderDto: CreateOrderDto): Promise<OrderEntity>;
   deleteOrder(id: string): Promise<DeleteResult>;
   updateStatus(id: string, status: UpdateOrderStatusDto['status']): Promise<UpdateResult>;
-  updateShippingAddress(id: string, shipping_address: UpdateShippingAddressDto['shipping_address']): Promise<UpdateResult>;
+  updateShippingAddress(
+    id: string,
+    shipping_address: UpdateShippingAddressDto['shipping_address']
+  ): Promise<UpdateResult>;
   addOrderItem(orderId: string, createOrderItemDto: CreateOrderItemDto): Promise<OrderItemEntity>;
   deleteOrderItem(id: string): Promise<DeleteResult>;
   deleteOrderItemByOrder(orderId: string): Promise<DeleteResult>;
@@ -28,7 +31,7 @@ export class OrderService implements IOrderService {
     @Inject('IOrderRepository')
     private orderRepository: IOrderRepository,
     @Inject('IOrderItemRepository')
-    private orderItemsRepository: IOrderItemRepository,
+    private orderItemsRepository: IOrderItemRepository
   ) {}
 
   async findAll() {
@@ -41,7 +44,7 @@ export class OrderService implements IOrderService {
   }
 
   async deleteOrder(id: string) {
-    this.orderItemsRepository.delete({ orderId: id});
+    this.orderItemsRepository.delete({ orderId: id });
     return this.orderRepository.delete(id);
   }
 
