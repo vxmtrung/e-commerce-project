@@ -5,7 +5,7 @@ import { CreateOrderItemDto } from '../dtos/create-order-item.dto';
 import { UpdateOrderItemQuantityDto } from '../dtos/update-order-item-quantity';
 import { OrderEntity } from '../domains/entities/order.entity';
 import { OrderItemEntity } from '../domains/entities/order-item.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import { IOrderRepository } from '../repositories/order.repository';
 import { IOrderItemRepository } from '../repositories/order-item.repository';
