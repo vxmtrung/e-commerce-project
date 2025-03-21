@@ -7,6 +7,7 @@ import { UpdateProductImgDto } from '../domains/dtos/requests/update-product-img
 
 export interface IProductImgRepository {
   findProductImgsByProductInstanceId(productInstanceId: string): Promise<ProductImgEntity[]>;
+  findProductImgById(id: string): Promise<ProductImgEntity | null>;
   createProductImg(createProductImgDto: CreateProductImgDto): Promise<ProductImgEntity>;
   updateProductImg(id: string, updateProductImgDto: UpdateProductImgDto): Promise<UpdateResult>;
   deleteProductImgById(id: string): Promise<DeleteResult>;
@@ -27,6 +28,16 @@ export class ProductImgRepository implements IProductImgRepository {
     });
 
     return productImgs;
+  }
+
+  async findProductImgById(id: string): Promise<ProductImgEntity | null> {
+    const productImg = this.productImgRepository.findOne({
+      where: {
+        id
+      }
+    });
+
+    return productImg;
   }
 
   async createProductImg(createProductImgDto: CreateProductImgDto): Promise<ProductImgEntity> {

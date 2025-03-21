@@ -1,4 +1,11 @@
-import { HttpException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException
+} from '@nestjs/common';
 import { IProductRepository } from '../repositories/product.repository';
 import { ProductEntity } from '../domains/entities/product.entity';
 import { CreateProductDto } from '../domains/dtos/requests/create-product.dto';
@@ -10,6 +17,7 @@ import { Sorting } from '../../../decorators/sorting-params.decorator';
 import { PaginatedResource } from '../../../helpers/types/paginated-resource.type';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateProductDto } from '../domains/dtos/requests/update-product.dto';
+import { IProductInstanceService } from './product-instance.service';
 
 export interface IProductService {
   getProducts(
@@ -18,6 +26,7 @@ export interface IProductService {
     filter?: Filtering[]
   ): Promise<PaginatedResource<ProductEntity>>;
   getProductById(id: string): Promise<ProductEntity>;
+  getProductsByIds(ids: string[]): Promise<ProductEntity[]>;
   createProduct(createProductDto: CreateProductDto): Promise<ProductEntity>;
   updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<UpdateResult>;
   deleteProductById(id: string): Promise<DeleteResult>;
@@ -31,7 +40,9 @@ export class ProductService {
     @Inject('IBrandService')
     private readonly brandService: IBrandService,
     @Inject('ICategoryService')
-    private readonly categoryService: ICategoryService
+    private readonly categoryService: ICategoryService,
+    @Inject(forwardRef(() => 'IProductInstanceService'))
+    private readonly productInstanceService: IProductInstanceService
   ) {}
 
   async getProducts(
@@ -61,6 +72,20 @@ export class ProductService {
       }
 
       return product;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
+  }
+
+  async getProductsByIds(ids: string[]): Promise<ProductEntity[]> {
+    try {
+      const products = await this.productRepository.findProductsByIds(ids);
+
+      return products;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -130,11 +155,20 @@ export class ProductService {
 
   async deleteProductById(id: string): Promise<DeleteResult> {
     try {
-      const product = await this.productRepository.findProductById(id);
+      const [product, productInstances] = await Promise.all([
+        this.productRepository.findProductById(id),
+        this.productInstanceService.getProductInstancesByProductId(id)
+      ]);
 
       if (!product) {
         throw new NotFoundException(`Product with Id ${id} not found`);
       }
+
+      await Promise.all(
+        productInstances.map((productInstance) =>
+          this.productInstanceService.deleteProductInstanceById(productInstance.id)
+        )
+      );
 
       const res = await this.productRepository.deleteProductById(id);
 

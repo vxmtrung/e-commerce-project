@@ -10,6 +10,10 @@ import { ProductInstanceRepository } from './repositories/product-instance.repos
 import { ProductImgRepository } from './repositories/product-img.repository';
 import { BrandModule } from '../brands/brand.module';
 import { CategoryModule } from '../categories/category.module';
+import { ProductInstanceService } from './services/product-instance.service';
+import { ProductImgService } from './services/product-img.service';
+import { ProductInstanceController } from './controllers/product-instance.controller';
+import { ProductImgController } from './controllers/product-img.controller';
 
 @Module({
   imports: [
@@ -17,8 +21,15 @@ import { CategoryModule } from '../categories/category.module';
     BrandModule,
     CategoryModule
   ],
-  controllers: [ProductController],
-  exports: ['IProductService', 'IProductRepository', 'IProductInstanceRepository', 'IProductImgRepository'],
+  controllers: [ProductController, ProductInstanceController, ProductImgController],
+  exports: [
+    'IProductService',
+    'IProductRepository',
+    'IProductInstanceService',
+    'IProductInstanceRepository',
+    'IProductImgService',
+    'IProductImgRepository'
+  ],
   providers: [
     {
       provide: 'IProductService',
@@ -29,8 +40,16 @@ import { CategoryModule } from '../categories/category.module';
       useClass: ProductRepository
     },
     {
+      provide: 'IProductInstanceService',
+      useClass: ProductInstanceService
+    },
+    {
       provide: 'IProductInstanceRepository',
       useClass: ProductInstanceRepository
+    },
+    {
+      provide: 'IProductImgService',
+      useClass: ProductImgService
     },
     {
       provide: 'IProductImgRepository',

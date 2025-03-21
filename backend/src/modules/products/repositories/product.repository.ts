@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from '../domains/entities/product.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, In, Repository, UpdateResult } from 'typeorm';
 import { CreateProductDto } from '../domains/dtos/requests/create-product.dto';
 import { UpdateProductDto } from '../domains/dtos/requests/update-product.dto';
 import { Filtering } from '../../../decorators/filtering-params.decorator';
@@ -17,6 +17,7 @@ export interface IProductRepository {
     filter?: Filtering[]
   ): Promise<PaginatedResource<ProductEntity>>;
   findProductById(id: string): Promise<ProductEntity | null>;
+  findProductsByIds(ids: string[]): Promise<ProductEntity[]>;
   createProduct(createProductDto: CreateProductDto): Promise<ProductEntity>;
   updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<UpdateResult>;
   deleteProductById(id: string): Promise<DeleteResult>;
@@ -51,6 +52,16 @@ export class ProductRepository implements IProductRepository {
       page,
       size
     };
+  }
+
+  async findProductsByIds(ids: string[]): Promise<ProductEntity[]> {
+    const products = this.productRepository.find({
+      where: {
+        id: In(ids)
+      }
+    });
+
+    return products;
   }
 
   async findProductById(id: string): Promise<ProductEntity | null> {
