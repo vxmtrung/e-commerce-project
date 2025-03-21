@@ -46,6 +46,33 @@ npm run migration:create
 npm run migration:revert
 ```
 
-Thank you!!!
+## 3. About Pagination
+- Some APIs should be paginated to limit payload return. With those APIs, you not only can paginate but also sort and filter. Below is how to call those APIs.
 
-**_ Ai chạy lỗi hú mình phát nhé, cảm ơn _**
+- **Type: Query Params**
+  - ***page:*** Page number you want to get (from 0)
+  - ***size:*** Size of each page you want to get
+  - ***sort:*** You can sort by a field (asc or desc) (empty if you dont want to sort)
+  - ***filter:*** You can filter by a field (with operator and value) or many fields (empty if you dont want to filter)
+
+- ***Syntax:***
+```
+  {endpoint}?page={page index}&size={page size}&sort={field name to sort}:(asc|desc)&filter={field name to filter}:{operator}:{value}
+```
+  - You can add more filter by adding more &filter to query param list
+- ***Operation Support:***
+  - 
+```
+  EQUALS = 'eq',
+  NOT_EQUALS = 'neq',
+  GREATER_THAN = 'gt',
+  GREATER_THAN_OR_EQUALS = 'gte',
+  LESS_THAN = 'lt',
+  LESS_THAN_OR_EQUALS = 'lte',
+  LIKE = 'like',
+  NOT_LIKE = 'nlike',
+  IN = 'in',
+  NOT_IN = 'nin',
+  IS_NULL = 'isnull',
+  IS_NOT_NULL = 'isnotnull'
+```

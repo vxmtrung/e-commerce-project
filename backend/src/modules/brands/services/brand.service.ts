@@ -11,9 +11,17 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { IBrandRepository } from '../repositories/brand.repository';
+import { Filtering } from '../../../decorators/filtering-params.decorator';
+import { Pagination } from '../../../decorators/pagination-params.decorator';
+import { Sorting } from '../../../decorators/sorting-params.decorator';
+import { PaginatedResource } from '../../../helpers/types/paginated-resource.type';
 
 export interface IBrandService {
-  getBrands(): Promise<BrandEntity[]>;
+  getBrands(
+    paginationParams: Pagination,
+    sort?: Sorting,
+    filter?: Filtering[]
+  ): Promise<PaginatedResource<BrandEntity>>;
   createBrand(createBrandDto: CreateBrandDto): Promise<BrandEntity>;
   getBrandById(id: string): Promise<BrandEntity>;
   getBrandByName(name: string): Promise<BrandEntity>;
@@ -28,9 +36,13 @@ export class BrandService implements IBrandService {
     private readonly brandRepository: IBrandRepository
   ) {}
 
-  async getBrands(): Promise<BrandEntity[]> {
+  async getBrands(
+    paginationParams: Pagination,
+    sort?: Sorting,
+    filter?: Filtering[]
+  ): Promise<PaginatedResource<BrandEntity>> {
     try {
-      const brands = await this.brandRepository.findBrands();
+      const brands = await this.brandRepository.findBrands(paginationParams, sort, filter);
 
       return brands;
     } catch (error) {

@@ -1,11 +1,17 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
 import { IBrandService } from '../services/brand.service';
 import { UpdateResult, DeleteResult } from 'typeorm';
 import { CreateBrandDto } from '../domains/dtos/requests/create-brand.dto';
 import { UpdateBrandDto } from '../domains/dtos/requests/update-brand.dto';
 import { BrandEntity } from '../domains/entities/brand.entity';
+import { Pagination, PaginationParams } from '../../../decorators/pagination-params.decorator';
+import { Sorting, SortingParams } from '../../../decorators/sorting-params.decorator';
+import { Filtering, FilteringParams } from '../../../decorators/filtering-params.decorator';
+import { PaginatedResource } from '../../../helpers/types/paginated-resource.type';
+import { PublicRoute } from '../../../decorators/public-route.decorator';
 
 @Controller('brands')
+@PublicRoute()
 export class BrandController {
   constructor(
     @Inject('IBrandService')
@@ -13,8 +19,12 @@ export class BrandController {
   ) {}
 
   @Get()
-  getCategories(@Query('name') name: string): Promise<BrandEntity[] | BrandEntity> {
-    return name ? this.brandService.getBrandByName(name) : this.brandService.getBrands();
+  getBrands(
+    @PaginationParams() paginationParams: Pagination,
+    @SortingParams(['name', 'status']) sort?: Sorting,
+    @FilteringParams(['name', 'status']) filter?: Filtering[]
+  ): Promise<PaginatedResource<BrandEntity>> {
+    return this.brandService.getBrands(paginationParams, sort, filter);
   }
 
   @Get(':id')
