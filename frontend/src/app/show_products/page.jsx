@@ -64,14 +64,14 @@ const { Content } = Layout;
 const Page = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = 8;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:3000/products");
+        const res = await fetch("http://localhost:3000/products?page=0&size=10");
         const jsonData = await res.json();
-        setData(jsonData);
+        setData(jsonData['items']);
       } catch (error) {
         console.error("error fetching data", error);
       }
