@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Post, Put, Query } from '@nestjs/common';
 import { ICategoryService } from '../services/category.service';
 import { CategoryEntity } from '../domains/entities/category.entity';
 import { CreateCategoryDto } from '../domains/dtos/requests/create-category.dto';
 import { UpdateCategoryDto } from '../domains/dtos/requests/update-category.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { PublicRoute } from '../../../decorators/public-route.decorator';
+import { UUIDParam } from '../../../decorators/uuid-param.decorator';
 
 @Controller('categories')
 @PublicRoute()
@@ -20,7 +21,7 @@ export class CategoryController {
   }
 
   @Get(':id')
-  getCategoryById(@Param('id') id: string): Promise<CategoryEntity> {
+  getCategoryById(@UUIDParam('id') id: string): Promise<CategoryEntity> {
     return this.categoryService.getCategoryById(id);
   }
 
@@ -30,12 +31,12 @@ export class CategoryController {
   }
 
   @Put(':id')
-  updateCategory(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto): Promise<UpdateResult> {
+  updateCategory(@UUIDParam('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto): Promise<UpdateResult> {
     return this.categoryService.updateCategory(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  deleteCategory(@Param('id') id: string): Promise<DeleteResult> {
+  deleteCategory(@UUIDParam('id') id: string): Promise<DeleteResult> {
     return this.categoryService.deleteCategoryById(id);
   }
 }

@@ -1,4 +1,5 @@
 import { BadRequestException, createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { isUUID } from 'class-validator';
 import { Request } from 'express';
 
 export interface Filtering {
@@ -42,7 +43,12 @@ export const FilteringParams = createParamDecorator((data, ctx: ExecutionContext
 
     const [rawProperty, rule, value] = filter.split(':');
 
-    const property = rawProperty.replace(/([a-zA-Z0-9_-]+)id$/, (_, match) => match + 'Id');
+    const property = rawProperty.replace(/([a-zA-Z0-9_-]+)id$/, (_, match) => {
+      if (!isUUID(value)) {
+        throw new BadRequestException(`Invalid UUID format for UUID Value in filter: ${value}`);
+      }
+      return match + 'Id';
+    });
 
     if (!data.includes(property)) throw new BadRequestException(`Invalid filter property: ${property}`);
     if (!Object.values(FilterRule).includes(rule as FilterRule))

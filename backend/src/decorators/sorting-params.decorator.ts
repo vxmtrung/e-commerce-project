@@ -19,7 +19,9 @@ export const SortingParams = createParamDecorator((validParams, ctx: ExecutionCo
   if (!sort.match(sortPattern)) throw new BadRequestException('Invalid sort parameter');
 
   // extract the property name and direction and check if they are valid
-  const [property, direction] = sort.split(':');
+  const [rawProperty, direction] = sort.split(':');
+  const property = rawProperty.replace(/([a-zA-Z0-9_-]+)id$/, (_, match) => match + 'Id');
+
   if (!validParams.includes(property)) throw new BadRequestException(`Invalid sort property: ${property}`);
 
   return {

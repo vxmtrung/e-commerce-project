@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Post, Put } from '@nestjs/common';
 import { IBrandService } from '../services/brand.service';
 import { UpdateResult, DeleteResult } from 'typeorm';
 import { CreateBrandDto } from '../domains/dtos/requests/create-brand.dto';
@@ -9,6 +9,7 @@ import { Sorting, SortingParams } from '../../../decorators/sorting-params.decor
 import { Filtering, FilteringParams } from '../../../decorators/filtering-params.decorator';
 import { PaginatedResource } from '../../../helpers/types/paginated-resource.type';
 import { PublicRoute } from '../../../decorators/public-route.decorator';
+import { UUIDParam } from '../../../decorators/uuid-param.decorator';
 
 @Controller('brands')
 @PublicRoute()
@@ -28,7 +29,7 @@ export class BrandController {
   }
 
   @Get(':id')
-  getBrandById(@Param('id') id: string): Promise<BrandEntity> {
+  getBrandById(@UUIDParam('id') id: string): Promise<BrandEntity> {
     return this.brandService.getBrandById(id);
   }
 
@@ -38,12 +39,12 @@ export class BrandController {
   }
 
   @Put(':id')
-  updateBrand(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto): Promise<UpdateResult> {
+  updateBrand(@UUIDParam('id') id: string, @Body() updateBrandDto: UpdateBrandDto): Promise<UpdateResult> {
     return this.brandService.updateBrand(id, updateBrandDto);
   }
 
   @Delete(':id')
-  deleteBrand(@Param('id') id: string): Promise<DeleteResult> {
+  deleteBrand(@UUIDParam('id') id: string): Promise<DeleteResult> {
     return this.brandService.deleteBrandById(id);
   }
 }

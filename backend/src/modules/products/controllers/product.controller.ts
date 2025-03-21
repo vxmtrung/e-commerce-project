@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Post, Put } from '@nestjs/common';
 import { PublicRoute } from 'src/decorators/public-route.decorator';
 import { IProductService } from '../services/product.service';
 import { FilteringParams, Filtering } from '../../../decorators/filtering-params.decorator';
@@ -9,6 +9,7 @@ import { ProductEntity } from '../domains/entities/product.entity';
 import { CreateProductDto } from '../domains/dtos/requests/create-product.dto';
 import { UpdateProductDto } from '../domains/dtos/requests/update-product.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { UUIDParam } from '../../../decorators/uuid-param.decorator';
 
 @Controller('products')
 @PublicRoute()
@@ -29,7 +30,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  getProductById(@Param('id') id: string): Promise<ProductEntity> {
+  getProductById(@UUIDParam('id') id: string): Promise<ProductEntity> {
     return this.productService.getProductById(id);
   }
 
@@ -39,12 +40,12 @@ export class ProductController {
   }
 
   @Put(':id')
-  updateProduct(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto): Promise<UpdateResult> {
+  updateProduct(@UUIDParam('id') id: string, @Body() updateProductDto: UpdateProductDto): Promise<UpdateResult> {
     return this.productService.updateProduct(id, updateProductDto);
   }
 
   @Delete(':id')
-  deleteProduct(@Param('id') id: string): Promise<DeleteResult> {
+  deleteProduct(@UUIDParam('id') id: string): Promise<DeleteResult> {
     return this.productService.deleteProductById(id);
   }
 }
