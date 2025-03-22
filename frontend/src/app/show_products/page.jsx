@@ -1,88 +1,31 @@
-// "use client";
-// import React from "react";
-// import { useEffect, useState } from "react";
-// import { Layout, Pagination, Row, theme } from "antd";
-// import Product_Card from "@/components/product_card";
-// const { Content } = Layout;
-
-// const Page = () => {
-//   const [data, setData] = useState([]);
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       const res = await fetch("http://localhost:3000/products");
-//       const jsonData = await res.json();
-//       setData(jsonData);
-//     };
-
-//     fetchData();
-//   });
-//   const {
-//     token: { colorBgContainer, borderRadiusLG },
-//   } = theme.useToken();
-//   if (!data) return <div>Loading...</div>;
-
-//   return (
-//     <Layout style={{ backgroundColor: "white" }}>
-//       <Content
-//         style={{
-//           padding: "0 48px",
-//         }}
-//       >
-//         <div
-//           style={{
-//             minHeight: 280,
-//             padding: 24,
-//             borderRadius: borderRadiusLG,
-//           }}
-//         >
-//           <Row gutter={16}>
-//             {data.map((element) => (
-//               <Product_Card
-//                 id={element.id}
-//                 img={"/productImage.png"}
-//                 name={element.name}
-//                 brand_name={element.brandId}
-//                 price={element.name}
-//               />
-//             ))}
-//           </Row>
-//         </div>
-//       </Content>
-//       <Pagination defaultCurrent={1} total={20} pageSize={3} />;
-//     </Layout>
-//   );
-// };
-// export default Page;
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { Layout, Pagination, Row } from "antd";
 import Product_Card from "@/components/product_card";
+import client from "@/core/fetch/fetch_api.jsx";
 
 const { Content } = Layout;
 
 const Page = () => {
-  const [data, setData] = useState([]);
+  const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
-
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:3000/products");
-        const jsonData = await res.json();
-        setData(jsonData);
+        const data = await client["get"]("/products?page=0&size=0");
+        setProducts(data.items);
       } catch (error) {
-        console.error("error fetching data", error);
+        console.error("Error fetching products:", error);
       }
     };
 
-    fetchData();
+    fetchProducts();
   }, []);
 
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const visibleProducts = data.slice(startIndex, endIndex);
+  const visibleProducts = products.slice(startIndex, endIndex);
 
   return (
     <Layout style={{ backgroundColor: "white", padding: "20px" }}>
@@ -110,7 +53,7 @@ const Page = () => {
       </Content>
       <Pagination
         current={currentPage}
-        total={data.length}
+        total={products.length}
         pageSize={pageSize}
         onChange={(page) => setCurrentPage(page)}
       />
