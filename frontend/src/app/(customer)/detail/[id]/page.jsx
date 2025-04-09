@@ -2,17 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import {
-  Card,
-  Layout,
-  Spin,
-  Col,
-  Row,
-  InputNumber,
-  ConfigProvider,
-  Progress,
-} from "antd";
-import { notification, Button } from "antd";
+import { Card, Layout, Spin, Col, Row, InputNumber, ConfigProvider, Progress, Input} from "antd";
+import { notification, Button, Modal } from "antd";
 import client from "@/core/fetch/fetch_api.jsx";
 import styles from "./detail.css";
 import { StarFilled } from "@ant-design/icons";
@@ -25,10 +16,67 @@ const reviewStats = [
   { id: 2, starNo: 2, description: "Không hài lòng", reviewerNo: 0 },
   { id: 1, starNo: 1, description: "Rất tệ", reviewerNo: 0 },
 ];
+
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [comment, setComment] = useState('');
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+
+  const [isHovered, setIsHovered] = useState(false);
+  const buttonStyle = {
+    marginTop: "15px", padding: "20px", fontSize: "16px", fontWeight: "bold", color: "white",
+    backgroundColor: isHovered ? "#ff4d72" : "#ff7a91",
+    border: "none", borderRadius: "5px",
+    cursor: "pointer",
+  };
+
+  const [isCommentHovered, setIsCommentHovered] = useState(false);
+  const buttonCommentStyle = {
+    marginTop: "4px", padding: "16px", fontSize: "14px", fontWeight: "bold", color: "white",
+    backgroundColor: isCommentHovered ? "#ff4d72" : "#ff7a91",
+    border: "none", borderRadius: "5px",
+    cursor: "pointer",
+  };
+
+  const [isFocused, setIsFocused] = useState(false);
+  const textAreaStyle = {
+    marginBottom: '10px',
+    borderColor: isFocused ? '#ff7a91' : '#d9d9d9',
+    borderRadius: '5px',
+  };
+
+
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+  };
+
+  const handleSubmitClick = () => {
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleConfirm = () => {
+    setIsConfirmModalVisible(false);
+    notification.open({
+      message: 'Đã bình luận!',
+      description: 'Bạn đã đăng một bình luận về sản phẩm này.',
+      placement: 'bottomRight',
+      duration: 3,
+      style: {
+        backgroundColor: '#fff',
+        color: '#000',
+        border: '1px solid #ff7a91',
+        borderRadius: '8px',
+        boxShadow: '0px 4px 10px rgba(0,0,0,0.2)',
+      },
+    });
+    setComment('');
+  };
+
+  const handleCancel = () => {
+    setIsConfirmModalVisible(false);
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -45,23 +93,6 @@ const ProductDetail = () => {
 
     fetchProduct();
   }, [id]);
-
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     try {
-  //       const url = `/products/${id}`;
-  //       const data = await client["get"](url);
-  //       setProduct(data);
-  //     } catch (error) {
-  //       console.error("API Error:", error);
-  //     } finally {
-  //       console.log("Fetch completed");
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchProduct();
-  // }, [id]);
 
   if (loading)
     return (
@@ -177,17 +208,9 @@ const ProductDetail = () => {
                 </div>
                 <Button
                   onClick={handleAddToCart}
-                  style={{
-                    marginTop: "15px",
-                    padding: "20px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    color: "white",
-                    backgroundColor: "#ff7a91",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
+                  style={buttonStyle}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
                 >
                   Thêm vào giỏ hàng
                 </Button>
@@ -220,11 +243,11 @@ const ProductDetail = () => {
                     justifyContent: "center",
                   }}
                 >
-                  <StarFilled style={{ color: "#ff7a91" }} />
-                  <StarFilled style={{ color: "#ff7a91" }} />
-                  <StarFilled style={{ color: "#ff7a91" }} />
-                  <StarFilled style={{ color: "#ff7a91" }} />
-                  <StarFilled style={{ color: "#ff7a91" }} />
+                  <StarFilled style={{ color: "#FFD95F" }} />
+                  <StarFilled style={{ color: "#FFD95F" }} />
+                  <StarFilled style={{ color: "#FFD95F" }} />
+                  <StarFilled style={{ color: "#FFD95F" }} />
+                  <StarFilled style={{ color: "#FFD95F" }} />
                 </div>
                 <div style={{ marginTop: "10px" }}>294 nhận xét</div>
               </Col>
@@ -239,7 +262,7 @@ const ProductDetail = () => {
                 <Col span={5} align="middle">
                   {reviewStats.map((item) => (
                     <div style={{ marginBottom: "10px" }}>
-                      {item.starNo} sao
+                      {item.starNo} <StarFilled style={{ color: "#FFD95F" }} />
                     </div>
                   ))}
                 </Col>
@@ -267,7 +290,36 @@ const ProductDetail = () => {
                   ))}
                 </Col>
               </Col>
-              <Col span={8}>Viết bình luận....</Col>
+              <Col span={8}>
+                <Input.TextArea
+                  value={comment}
+                  onChange={handleCommentChange}
+                  placeholder="Viết bình luận...."
+                  rows={4}
+                  style={textAreaStyle}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                />
+                <Button
+                  onClick={handleSubmitClick}
+                  style={buttonCommentStyle}
+                  onMouseEnter={() => setIsCommentHovered(true)}
+                  onMouseLeave={() => setIsCommentHovered(false)}
+                >
+                  Thêm bình luận
+                </Button>
+              </Col>
+
+              <Modal
+                title="Thêm bình luận"
+                open={isConfirmModalVisible}
+                onOk={handleConfirm}
+                onCancel={handleCancel}
+                okText="Thêm"
+                cancelText="Đóng"
+              >
+                <p>Bạn chắc chứ?</p>
+              </Modal>
             </Row>
           </Card>
         </Content>

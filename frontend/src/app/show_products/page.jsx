@@ -10,13 +10,29 @@ const Page = () => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const data = await client["get"]("/products?page=0&size=0");
+  //       setProducts(data.items);
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //     }
+  //   };
+
+  //   fetchProducts();
+  // }, []);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await client["get"]("/products?page=0&size=0");
-        setProducts(data.items);
+        const res = await fetch(
+          "http://localhost:3000/products?page=0&size=10"
+        );
+        const jsonData = await res.json();
+        setProducts(jsonData["items"]);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("error fetching products", error);
       }
     };
 
@@ -26,6 +42,7 @@ const Page = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const visibleProducts = products.slice(startIndex, endIndex);
+  console.log(products);
 
   return (
     <Layout style={{ backgroundColor: "white", padding: "20px" }}>
