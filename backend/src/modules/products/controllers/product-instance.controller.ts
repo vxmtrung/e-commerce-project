@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Post, Put } from '@nestjs/common';
 import { PublicRoute } from '../../../decorators/public-route.decorator';
 import { IProductInstanceService } from '../services/product-instance.service';
 import { ProductInstanceEntity } from '../domains/entities/product-instance.entity';
 import { CreateProductInstanceDto } from '../domains/dtos/requests/create-product-instance.dto';
 import { UpdateProductInstanceDto } from '../domains/dtos/requests/update-product-instance.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { UUIDQuery } from '../../../decorators/uuid-query.decorator';
+import { UUIDParam } from '../../../decorators/uuid-param.decorator';
 
 @Controller('product-instances')
 @PublicRoute()
@@ -15,12 +17,12 @@ export class ProductInstanceController {
   ) {}
 
   @Get()
-  getProductInstancesByProductId(@Query('product-id') productId: string): Promise<ProductInstanceEntity[]> {
+  getProductInstancesByProductId(@UUIDQuery('product-id') productId: string): Promise<ProductInstanceEntity[]> {
     return this.productInstanceService.getProductInstancesByProductId(productId);
   }
 
   @Get(':id')
-  getProductInstanceById(@Param('id') id: string): Promise<ProductInstanceEntity> {
+  getProductInstanceById(@UUIDParam('id') id: string): Promise<ProductInstanceEntity> {
     return this.productInstanceService.getProductInstanceById(id);
   }
 
@@ -31,14 +33,14 @@ export class ProductInstanceController {
 
   @Put(':id')
   updateProductInstance(
-    @Param('id') id: string,
+    @UUIDParam('id') id: string,
     @Body() updateProductInstanceDto: UpdateProductInstanceDto
   ): Promise<UpdateResult> {
     return this.productInstanceService.updateProductInstance(id, updateProductInstanceDto);
   }
 
   @Delete(':id')
-  deleteProductInstanceById(id: string): Promise<DeleteResult> {
+  deleteProductInstanceById(@UUIDParam('id') id: string): Promise<DeleteResult> {
     return this.productInstanceService.deleteProductInstanceById(id);
   }
 }
