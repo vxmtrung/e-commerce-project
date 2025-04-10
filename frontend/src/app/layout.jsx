@@ -18,12 +18,6 @@ export default function RootLayout({ children }) {
             <body style={{ backgroundColor: 'white' }}>
                 <ReduxProvider>
                     <AntdRegistry>
-                        {/* <Layout className="min-h-screen">
-                            <Header isLoggedIn={isLoggedIn} />
-                            {isLoggedIn && <BreadcrumbNav />}
-                            <Layout.Content className="p-6">{children}</Layout.Content>
-                            <CustomFooter />
-                        </Layout> */}
                         {children}
                     </AntdRegistry>
                 </ReduxProvider>

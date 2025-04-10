@@ -4,9 +4,18 @@ import { BrandEntity } from '../domains/entities/brand.entity';
 import { CreateBrandDto } from '../domains/dtos/requests/create-brand.dto';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UpdateBrandDto } from '../domains/dtos/requests/update-brand.dto';
+import { Filtering } from '../../../decorators/filtering-params.decorator';
+import { Pagination } from '../../../decorators/pagination-params.decorator';
+import { Sorting } from '../../../decorators/sorting-params.decorator';
+import { PaginatedResource } from '../../../helpers/types/paginated-resource.type';
+import { getOrder, getWhere } from '../../../helpers/filters.helper';
 
 export interface IBrandRepository {
-  findBrands(): Promise<BrandEntity[]>;
+  findBrands(
+    paginationParams: Pagination,
+    sort?: Sorting,
+    filter?: Filtering[]
+  ): Promise<PaginatedResource<BrandEntity>>;
   createBrand(createBrandDto: CreateBrandDto): Promise<BrandEntity>;
   findBrandById(id: string): Promise<BrandEntity | null>;
   findBrandByName(name: string): Promise<BrandEntity | null>;
@@ -21,10 +30,28 @@ export class BrandRepository implements IBrandRepository {
     private brandRepository: Repository<BrandEntity>
   ) {}
 
-  async findBrands(): Promise<BrandEntity[]> {
-    const brands = this.brandRepository.find();
+  async findBrands(
+    paginationParams: Pagination,
+    sort?: Sorting,
+    filter?: Filtering[]
+  ): Promise<PaginatedResource<BrandEntity>> {
+    const { page, limit, size, offset } = paginationParams;
+    const where = getWhere(filter);
+    const order = getOrder(sort);
 
-    return brands;
+    const [brands, total] = await this.brandRepository.findAndCount({
+      where,
+      order,
+      take: limit,
+      skip: offset
+    });
+
+    return {
+      totalItems: total,
+      items: brands,
+      page,
+      size
+    };
   }
 
   async createBrand(createBrandDto: CreateBrandDto): Promise<BrandEntity> {

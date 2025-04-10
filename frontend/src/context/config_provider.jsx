@@ -104,3 +104,46 @@ export default function AntdConfigProvider({ children }) {
         </ConfigProvider>
     );
 }
+
+export const tokenCustomer = {
+    colorPrimary: '#ff69b4',
+    colorBgBase: '#ffffff',
+    colorTextBase: '#ff69b4',
+    colorLink: '#ff69b4',
+    colorLinkHover: '#ff85c1',
+    colorLinkActive: '#ff1493',
+};
+
+export const AntdConfigProviderCustomer = ({ children }) => {
+    return (
+        <ConfigProvider
+            theme={{
+                token: {
+                    colorPrimary: '#ff69b4',
+                    colorBgBase: '#ffffff',
+                    // colorTextBase: '#ff69b4',
+                    // colorLink: '#ff69b4',
+                    // colorLinkHover: '#ff85c1',
+                    // colorLinkActive: '#ff1493',
+                },
+                components: {
+                    Button: {
+                        colorPrimary: '#ff69b4',
+                        colorTextLightSolid: '#fff',
+                    },
+                    Input: {
+                        activeBorderColor: '#ff69b4',
+                        hoverBorderColor: '#ff85c1',
+                    },
+                    Menu: {
+                        colorItemText: '#ff69b4',
+                        colorItemTextHover: '#ff85c1',
+                        colorItemBgActive: '#ffe4ec',
+                    },
+                },
+            }}
+        >
+            {children}
+        </ConfigProvider>
+    );
+};

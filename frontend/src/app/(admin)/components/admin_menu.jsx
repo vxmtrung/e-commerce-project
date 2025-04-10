@@ -42,7 +42,7 @@ export default function SideNav({ ...others }) {
         <Sider ref={nodeRef} breakpoint='lg' collapsedWidth='0' {...others}>
             <Logo
                 title={'HAHAHA'}
-                logoPublicPath={'/logo.svg'}
+                logoPublicPath={'/vercel.svg'}
                 color='blue'
                 asLink
                 href={'/'}
