@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { AdminLayout, loadMenu } from "@/app/(admin)/components/admin_layout";
+import { tokenCustomer } from "@/context/config_provider";
+
 export default function CategoryManagement() {
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
@@ -86,7 +88,7 @@ export default function CategoryManagement() {
 
         {/* Main Content */}
         <div className="w-2/3 bg-white rounded-xl p-6 shadow-lg">
-          <h1 className="text-3xl font-semibold text-gray-800 mb-6">Quản lý danh mục</h1>
+          <h1 className="text-3xl font-semibold mb-6" securitytyle={{ color: tokenCustomer.colorTextBase }}>Quản lý danh mục</h1>
           <form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-4">
             <input
               type="text"
@@ -98,7 +100,8 @@ export default function CategoryManagement() {
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg shadow-md transition duration-200"
+                style={{ backgroundColor: tokenCustomer.colorPrimary }}
+                className="hover:brightness-110 text-white py-3 px-4 rounded-lg shadow-md transition duration-200"
               >
                 {editingId ? "Cập nhật danh mục" : "Thêm danh mục"}
               </button>
@@ -118,7 +121,8 @@ export default function CategoryManagement() {
               <p className="text-gray-600">Selected: <span className="font-medium">{selectedCategory.name}</span></p>
                 <button
                     onClick={() => setShowConfirm(true)}
-                    className="mt-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+                    style={{ backgroundColor: tokenCustomer.colorPrimary }}
+                    className="mt-2 hover:brightness-110 text-white px-4 py-2 rounded-md"
                     >
                     Xóa Danh mục
                 </button>
@@ -129,7 +133,7 @@ export default function CategoryManagement() {
         {showConfirm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
                 <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">Xác nhận xoá</h2>
+                <h2 className="text-xl font-semibold mb-4" style={{ color: tokenCustomer.colorTextBase }}>Xác nhận xoá</h2>
                 <p className="text-gray-600 mb-6">Bạn có chắc chắn muốn xoá danh mục <strong>{selectedCategory?.name}</strong>?</p>
                 <div className="flex justify-end gap-3">
                     <button
