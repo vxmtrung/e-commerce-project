@@ -16,7 +16,7 @@ export const Logo = ({
 
     return asLink ? (
         <Link href={href || '#'} className='logo-link'>
-            <Flex gap={others.gap || 'small'} align='center' {...others}>
+            <Flex gap={others.gap || 'small'} align='center' {...others} vertical>
                 <Image
                     src={logoPublicPath}
                     alt='design sparx logo'
