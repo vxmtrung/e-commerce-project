@@ -94,7 +94,7 @@ export default function CategoryManagement() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter category name"
+              placeholder="Điền tên danh mục"
               className="border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <div className="flex gap-2">
