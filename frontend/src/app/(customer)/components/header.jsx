@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Layout, Menu, Dropdown, Avatar, Badge, Input } from 'antd';
 import { ShoppingCartOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
+import { tokenCustomer } from '@/context/config_provider';
 
 const { Header: AntHeader } = Layout;
 
@@ -29,7 +30,7 @@ export default function Header({ isLoggedIn }) {
   return (
     <AntHeader
       style={{
-        backgroundColor: '#B22222',
+        backgroundColor: tokenCustomer.colorLinkActive,
         padding: '0 24px',
         position: 'sticky',
         top: 0,
@@ -38,7 +39,7 @@ export default function Header({ isLoggedIn }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link href="/" style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>
-          E-Commerce
+          BKLipstick
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

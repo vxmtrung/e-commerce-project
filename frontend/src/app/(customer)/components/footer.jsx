@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { Layout } from 'antd';
 import { FacebookOutlined, TwitterOutlined, InstagramOutlined } from '@ant-design/icons';
+import { tokenCustomer } from '@/context/config_provider';
 
 const { Footer } = Layout;
 
@@ -9,7 +10,7 @@ export default function CustomFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <Footer style={{ textAlign: 'center', backgroundColor: '#333', color: 'white', padding: '24px 16px' }}>
+    <Footer style={{ textAlign: 'center', backgroundColor: tokenCustomer.colorLinkActive, color: tokenCustomer.colorTextBase, padding: '24px 16px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <Link href="/about" style={{ color: 'white', textDecoration: 'none' }}>About Us</Link>
@@ -29,8 +30,8 @@ export default function CustomFooter() {
           </a>
         </div>
 
-        <div style={{ fontSize: '14px' }}>
-          &copy; {currentYear} E-Commerce. All rights reserved.
+        <div style={{ fontSize: '14px', color: 'white' }}>
+          &copy; {currentYear} BKLipstick. All rights reserved.
         </div>
       </div>
     </Footer>

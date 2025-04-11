@@ -13,6 +13,7 @@ const breadcrumbMap = {
   '/about': 'About',
   '/policy': 'Privacy Policy',
   '/contact': 'Contact',
+  '/category': 'Category',
 };
 
 export default function BreadcrumbNav() {
@@ -20,7 +21,7 @@ export default function BreadcrumbNav() {
   const pathSegments = pathname.split('/').filter((segment) => segment);
 
   return (
-    <div style={{ padding: '10px 24px', background: '#f5f5f5' }}>
+    <div style={{ padding: '10px 24px' }}>
       <Breadcrumb>
         <Breadcrumb.Item href="/">
           <HomeOutlined /> <span>Home</span>
