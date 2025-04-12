@@ -18,6 +18,7 @@ import { PaginatedResource } from '../../../helpers/types/paginated-resource.typ
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateProductDto } from '../domains/dtos/requests/update-product.dto';
 import { IProductInstanceService } from './product-instance.service';
+import { IProductInstanceRepository } from '../repositories/product-instance.repository';
 
 export interface IProductService {
   getProducts(
@@ -42,7 +43,9 @@ export class ProductService {
     @Inject('ICategoryService')
     private readonly categoryService: ICategoryService,
     @Inject(forwardRef(() => 'IProductInstanceService'))
-    private readonly productInstanceService: IProductInstanceService
+    private readonly productInstanceService: IProductInstanceService,
+    @Inject('IProductInstanceRepository')
+    private readonly productInstanceRepository: IProductInstanceRepository
   ) {}
 
   async getProducts(
@@ -52,8 +55,29 @@ export class ProductService {
   ): Promise<PaginatedResource<ProductEntity>> {
     try {
       const products = await this.productRepository.findProducts(paginationParams, sort, filter);
+      
+      // Get product IDs from the current page
+      const productIds = products.items.map(product => product.id);
+      
+      // Get aggregated data for these products
+      const aggregatedData = await this.productInstanceRepository.getProductInstancesAggregatedData(productIds);
+      
+      // Create a map for quick lookup
+      const aggregatedDataMap = new Map(
+        aggregatedData.map(data => [data.productId, data])
+      );
+      
+      // Combine the data
+      const productsWithDetails = {
+        ...products,
+        items: products.items.map(product => ({
+          ...product,
+          lowestPrice: aggregatedDataMap.get(product.id)?.lowestPrice || 0,
+          totalQuantity: aggregatedDataMap.get(product.id)?.totalQuantity || 0
+        }))
+      };
 
-      return products;
+      return productsWithDetails;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
