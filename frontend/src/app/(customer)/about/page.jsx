@@ -8,6 +8,5 @@ export default function UserPage() {
         <div>
             Hello
         </div>
-
     );
 }
