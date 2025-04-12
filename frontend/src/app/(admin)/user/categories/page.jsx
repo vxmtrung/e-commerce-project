@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { AdminLayout, loadMenu } from "@/app/(admin)/components/admin_layout";
 import { tokenCustomer } from "@/context/config_provider";
+import AdminPage from "@/app/(admin)/components/admin_page";
 
 export default function CategoryManagement() {
   const [categories, setCategories] = useState([]);
@@ -68,8 +69,14 @@ export default function CategoryManagement() {
   };
 
   return (
-    
-    <div className="container mx-auto p-6 flex gap-6">
+    <AdminPage
+      title="Quản lý danh mục"
+      breadcrumbItems={[
+        { title: 'Trang chủ', href: '/' },
+        { title: 'Quản lý danh mục' }
+      ]}
+    >
+      <div className="container mx-auto flex gap-6 items-start">
         {/* Sidebar */}
         <div className="w-1/3 bg-gray-50 rounded-xl p-4 shadow-sm max-h-[80vh] overflow-y-auto">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Danh mục</h2>
@@ -88,7 +95,8 @@ export default function CategoryManagement() {
 
         {/* Main Content */}
         <div className="w-2/3 bg-white rounded-xl p-6 shadow-lg">
-          <h1 className="text-3xl font-semibold mb-6" securitytyle={{ color: tokenCustomer.colorTextBase }}>Quản lý danh mục</h1>
+
+          <h1 className="text-xl font-semibold mb-4 text-gray-800" securitytyle={{ color: tokenCustomer.colorTextBase }}>Thêm hoặc chỉnh sửa danh mục</h1>
           <form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-4">
             <input
               type="text"
@@ -157,6 +165,8 @@ export default function CategoryManagement() {
             )}
       </div>
 
+    </AdminPage>
+    
     
   );
 }

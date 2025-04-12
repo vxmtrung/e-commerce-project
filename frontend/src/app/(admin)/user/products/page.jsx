@@ -4,6 +4,8 @@ import { Card, Button, notification, Modal, Input, Form, Select } from 'antd';
 import { Layout, Pagination, Row } from "antd";
 import Product_Card_Admin from "@/components/product_card_admin";
 import { v4 as uuidv4 } from 'uuid';
+import AdminPage from "@/app/(admin)/components/admin_page";
+
 const { Content } = Layout;
 
 export default function ProductManager() {
@@ -115,7 +117,14 @@ export default function ProductManager() {
       
 
     return (
-      <Layout style={{ backgroundColor: "white", padding: "20px" }}>
+    <AdminPage
+      title="Quản lý sản phẩm"
+      breadcrumbItems={[
+        { title: 'Trang chủ', href: '/' },
+        { title: 'Quản lý sản phẩm' }
+      ]}
+    >
+      
         <Content>
           <div style={{ minHeight: 280, padding: 24 }}>
             <Button
@@ -210,6 +219,6 @@ export default function ProductManager() {
             </Form.Item>
           </Form>
         </Modal>
-      </Layout>
+    </AdminPage>
     );
 }

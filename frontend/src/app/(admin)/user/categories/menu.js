@@ -1,5 +1,5 @@
 export default {
-    menuKey: 'category',
+    menuKey: '911',
     label: 'Danh mục',
   };
   
