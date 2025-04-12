@@ -20,7 +20,10 @@ const nextConfig = {
 
         return config;
     },
-    reactStrictMode: false
+    reactStrictMode: false,
+    images: {
+        domains: ['cdn.cosmetics.vn'],
+      },
 };
 
 export default nextConfig;
