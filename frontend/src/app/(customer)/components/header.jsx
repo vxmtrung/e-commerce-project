@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Layout, Menu, Dropdown, Avatar, Badge, Input } from 'antd';
+import { Layout, Menu, Dropdown, Avatar, Badge, Input, Image, Space, Flex } from 'antd';
 import { ShoppingCartOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
 import { tokenCustomer } from '@/context/config_provider';
 
@@ -18,14 +18,14 @@ export default function Header({ isLoggedIn }) {
 
   const menuItems = isLoggedIn
     ? [
-        { key: '1', label: <Link href="/profile">Profile</Link> },
-        { key: '2', label: <Link href="/cart">Cart</Link> },
-        { key: '3', label: <Link href="/logout">Log Out</Link> },
-      ]
+      { key: '1', label: <Link href="/profile">Profile</Link> },
+      { key: '2', label: <Link href="/cart">Cart</Link> },
+      { key: '3', label: <Link href="/logout">Log Out</Link> },
+    ]
     : [
-        { key: '1', label: <Link href="/signin">Sign In</Link> },
-        { key: '2', label: <Link href="/signup">Sign Up</Link> },
-      ];
+      { key: '1', label: <Link href="/signin">Sign In</Link> },
+      { key: '2', label: <Link href="/signup">Sign Up</Link> },
+    ];
 
   return (
     <AntHeader
@@ -39,7 +39,7 @@ export default function Header({ isLoggedIn }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link href="/" style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>
-          BKLipstick
+          BK Cosmetics
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

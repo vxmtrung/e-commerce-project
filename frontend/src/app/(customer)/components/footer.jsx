@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Layout } from 'antd';
+import { Image, Layout } from 'antd';
 import { FacebookOutlined, TwitterOutlined, InstagramOutlined } from '@ant-design/icons';
 import { tokenCustomer } from '@/context/config_provider';
 
@@ -18,6 +18,12 @@ export default function CustomFooter() {
           <Link href="/contact" style={{ color: 'white', textDecoration: 'none' }}>Contact</Link>
         </div>
 
+        <Image
+          src={'/cosmetics logo-bg.png'}
+          alt='design sparx logo'
+          width={100}
+          height={100}
+        />
         <div style={{ display: 'flex', gap: '12px', fontSize: '18px' }}>
           <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: 'white' }}>
             <FacebookOutlined />
@@ -31,7 +37,7 @@ export default function CustomFooter() {
         </div>
 
         <div style={{ fontSize: '14px', color: 'white' }}>
-          &copy; {currentYear} BKLipstick. All rights reserved.
+          &copy; {currentYear} BK Cosmetics. All rights reserved.
         </div>
       </div>
     </Footer>

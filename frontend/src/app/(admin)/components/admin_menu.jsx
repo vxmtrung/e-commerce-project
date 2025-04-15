@@ -1,6 +1,6 @@
 'use client';
 import { Logo } from '@/components/logo';
-import { COLOR } from '@/context/config_provider';
+import { COLOR, tokenCustomer } from '@/context/config_provider';
 import { useAppSelector } from '@/hooks/redux_hooks';
 import { ConfigProvider, Layout, Menu } from 'antd';
 import { usePathname } from 'next/navigation';
@@ -41,14 +41,14 @@ export default function SideNav({ ...others }) {
     return (
         <Sider ref={nodeRef} breakpoint='lg' collapsedWidth='0' {...others}>
             <Logo
-                title={'HAHAHA'}
-                logoPublicPath={'/vercel.svg'}
+                title={'Admin site'}
+                logoPublicPath={'/cosmetics logo.png'}
                 color='blue'
                 asLink
                 href={'/'}
                 justify='center'
                 gap='small'
-                imgSize={{ h: 28, w: 28 }}
+                imgSize={{ h: 60, w: 60 }}
                 style={{ padding: '1rem 0' }}
             />
             <ConfigProvider
