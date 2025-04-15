@@ -106,7 +106,7 @@ const ProductManagement = () => {
             okText="Đồng ý"
             cancelText="Huỷ"
           >
-            <Button icon={<DeleteOutlined />} danger />
+            <Button icon={<DeleteOutlined />} color='danger' variant='solid' />
           </Popconfirm>
         </Space>
       ),
@@ -145,7 +145,7 @@ const ProductManagement = () => {
             okText="Đồng ý"
             cancelText="Huỷ"
           >
-            <Button icon={<DeleteOutlined />} danger />
+            <Button icon={<DeleteOutlined />} color='danger' variant='solid' />
           </Popconfirm>
         </Space>
       ),
@@ -159,36 +159,18 @@ const ProductManagement = () => {
       breadcrumbItems={[{ title: 'Phân loại' }]}
     >
       <Tabs defaultActiveKey="1">
-      <TabPane tab="Brand" key="1">
-        <Space style={{ marginBottom: 16 }}>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => brandRef.current.open()}
-          >
-            Thêm Brand
-          </Button>
-        </Space>
+        <TabPane tab="Brand" key="1">
+          <FloatButton type='primary' icon={<PlusOutlined />} onClick={() => brandRef.current.open()} tooltip='Thêm loại thương hiệu' />
+          <Table dataSource={brandData} columns={brandColumns} rowKey="id" />
 
-        <Table dataSource={brandData} columns={brandColumns} rowKey="id" />
+          <BrandModal ref={brandRef} onSubmit={handleCreateOrUpdateBrand} />
+        </TabPane>
+        <TabPane tab="Category" key="2">
+          <Table dataSource={categoryData} columns={categoryColumns} rowKey="id" />
+          <FloatButton type='primary' icon={<PlusOutlined />} onClick={() => categoryRef.current.open()} tooltip='Thêm loại sản phẩm' />
 
-        <BrandModal ref={brandRef} onSubmit={handleCreateOrUpdateBrand} />
-      </TabPane>
-      <TabPane tab="Category" key="2">
-        <Space style={{ marginBottom: 16 }}>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => categoryRef.current.open()}
-          >
-            Thêm Category
-          </Button>
-        </Space>
-
-        <Table dataSource={categoryData} columns={categoryColumns} rowKey="id" />
-
-        <CategoryModal ref={categoryRef} onSubmit={handleCreateOrUpdateCategory} />
-      </TabPane>
+          <CategoryModal ref={categoryRef} onSubmit={handleCreateOrUpdateCategory} />
+        </TabPane>
 
       </Tabs>
     </AdminPage>

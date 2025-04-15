@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Card, Button, notification, Modal, Input, Form, Select, Space, Table, Popconfirm, Upload } from 'antd';
+import { Card, Button, notification, Modal, Input, Form, Select, Space, Table, Popconfirm, Upload, FloatButton } from 'antd';
 import { Layout, Pagination, Row } from "antd";
 import Product_Card_Admin from "@/components/product_card_admin";
 import AdminPage from "@/app/(admin)/components/admin_page";
@@ -108,8 +108,8 @@ export default function ProductManager() {
         },
       });
       if (response1.ok) {
-          notification.success({ message: "Xóa sản phẩm thành công!" });
-          fetchProducts();
+        notification.success({ message: "Xóa sản phẩm thành công!" });
+        fetchProducts();
       } else {
         notification.error({ message: "Xóa sản phẩm không thành công!" });
       }
@@ -131,7 +131,7 @@ export default function ProductManager() {
     });
     setShowEditModal(true);
   };
-  
+
   const [showEditModal, setShowEditModal] = useState(false);
   const handleUpdateProduct = async (values) => {
     setShowEditModal(false);
@@ -157,7 +157,7 @@ export default function ProductManager() {
           quantity: values.quantity
         }),
       });
-      
+
       if (res.ok && res1.ok) {
         notification.success({ message: "Cập nhật sản phẩm thành công!" });
         fetchProducts();
@@ -196,7 +196,7 @@ export default function ProductManager() {
             okText="Đồng ý"
             cancelText="Huỷ"
           >
-            <Button icon={<DeleteOutlined />} danger />
+            <Button icon={<DeleteOutlined />} color='danger' variant='solid' />
           </Popconfirm>
         </Space>
       ),
@@ -209,22 +209,8 @@ export default function ProductManager() {
       icon={<BookOutlined />}
       breadcrumbItems={[{ title: 'Sản phẩm' }]}
     >
-
-      <Content>
-        <div style={{ minHeight: 280, padding: 24 }}>
-          <Button
-            type="primary"
-            onClick={() => setShowModal(true)}
-            icon={<PlusOutlined />}
-            // style={{ marginBottom: 20, backgroundColor: tokenCustomer.colorPrimary, paddingTop: 20, paddingBottom: 20, paddingRight: 16, paddingLeft: 16 }}
-            style = {{ marginBottom: 16 }}
-            className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
-          >
-            Thêm sản phẩm
-          </Button>
-          <Table dataSource={products} columns={productColumns} rowKey="id" />
-        </div>
-      </Content>
+      <Table dataSource={products} columns={productColumns} rowKey="id" />
+      <FloatButton type='primary' tooltip='Thêm sản phẩm' onClick={() => setShowModal(true)} icon={<PlusOutlined />} />
 
       <Modal
         title="Thêm sản phẩm"
@@ -317,7 +303,7 @@ export default function ProductManager() {
                           await form.validateFields(['name', 'description', 'category_id', 'brand_id']);
                           setProductValues(form.getFieldsValue());
                           setCurrentStep(2);
-                        } catch (err) {}
+                        } catch (err) { }
                       }}
                       className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
                     >
