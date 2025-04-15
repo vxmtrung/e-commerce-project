@@ -54,6 +54,44 @@ export class ProductService {
     filter?: Filtering[]
   ): Promise<PaginatedResource<ProductEntity>> {
     try {
+      // If sorting by price, we need to handle it differently
+      if (sort?.property === 'price') {
+        // First get all products with their aggregated data
+        const products = await this.productRepository.findProducts(paginationParams, undefined, filter);
+        
+        // Get product IDs from the current page
+        const productIds = products.items.map(product => product.id);
+        
+        // Get aggregated data for these products
+        const aggregatedData = await this.productInstanceRepository.getProductInstancesAggregatedData(productIds);
+        
+        // Create a map for quick lookup
+        const aggregatedDataMap = new Map(
+          aggregatedData.map(data => [data.productId, data])
+        );
+        
+        // Combine the data and sort by price
+        const productsWithDetails = {
+          ...products,
+          items: products.items
+            .map(product => ({
+              ...product,
+              lowestPrice: aggregatedDataMap.get(product.id)?.lowestPrice || 0,
+              totalQuantity: aggregatedDataMap.get(product.id)?.totalQuantity || 0
+            }))
+            .sort((a, b) => {
+              if (sort.direction === 'asc') {
+                return (a.lowestPrice || 0) - (b.lowestPrice || 0);
+              } else {
+                return (b.lowestPrice || 0) - (a.lowestPrice || 0);
+              }
+            })
+        };
+
+        return productsWithDetails;
+      }
+      
+      // Existing code for non-price sorting
       const products = await this.productRepository.findProducts(paginationParams, sort, filter);
       
       // Get product IDs from the current page

@@ -22,7 +22,7 @@ export class ProductController {
   @Get()
   getProducts(
     @PaginationParams() paginationParams: Pagination,
-    @SortingParams(['name', 'status', 'categoryId', 'brandId']) sort?: Sorting,
+    @SortingParams(['name', 'status', 'categoryId', 'brandId', 'price']) sort?: Sorting,
     @FilteringParams(['name', 'status', 'categoryId', 'brandId']) filter?: Filtering[]
   ): Promise<PaginatedResource<ProductEntity>> {
     console.log(filter);
