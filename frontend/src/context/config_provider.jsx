@@ -107,7 +107,7 @@ export default function AntdConfigProvider({ children }) {
 
 export const tokenCustomer = {
     colorPrimary: '#ff69b4',
-    colorBgBase: '#ffffff',
+    colorBgBase: '#fff0f5',
     colorTextBase: '#ff69b4',
     colorLink: '#ff69b4',
     colorLinkHover: '#ff85c1',
