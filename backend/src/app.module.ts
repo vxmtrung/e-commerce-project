@@ -30,7 +30,7 @@ import { BrandModule } from './modules/brands/brand.module';
     BrandModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env'
+      envFilePath: '.env'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
