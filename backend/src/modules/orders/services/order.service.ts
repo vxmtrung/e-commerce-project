@@ -6,9 +6,15 @@ import { UpdateOrderItemQuantityDto } from '../dtos/update-order-item-quantity';
 import { OrderEntity } from '../domains/entities/order.entity';
 import { OrderItemEntity } from '../domains/entities/order-item.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IOrderRepository } from '../repositories/order.repository';
 import { IOrderItemRepository } from '../repositories/order-item.repository';
+import { OrderStatsDto } from '../dtos/order-stats.dto';
+import { OrderStatsFilterDto } from '../dtos/order-stats-filter.dto';
+import { OrderDetailDto } from '../dtos/order-detail.dto';
+import { OrderStatus } from 'src/constants/order-status.constant';
+import { IProductRepository } from 'src/modules/products/repositories/product.repository';
+import { IProductInstanceRepository } from 'src/modules/products/repositories/product-instance.repository';
 
 export interface IOrderService {
   findAll(): Promise<OrderEntity[]>;
@@ -23,6 +29,10 @@ export interface IOrderService {
   deleteOrderItem(id: string): Promise<DeleteResult>;
   deleteOrderItemByOrder(orderId: string): Promise<DeleteResult>;
   updateOrderItemQuantity(id: string, quantity: UpdateOrderItemQuantityDto['quantity']): Promise<UpdateResult>;
+  getOrdersByUser(userId: string): Promise<OrderDetailDto[]>;
+  getOrderDetail(id: string): Promise<OrderDetailDto>;
+  cancelOrder(id: string): Promise<UpdateResult>;
+  getOrderStats(filterDto: OrderStatsFilterDto): Promise<OrderStatsDto>;
 }
 
 @Injectable()
@@ -31,7 +41,11 @@ export class OrderService implements IOrderService {
     @Inject('IOrderRepository')
     private orderRepository: IOrderRepository,
     @Inject('IOrderItemRepository')
-    private orderItemsRepository: IOrderItemRepository
+    private orderItemsRepository: IOrderItemRepository,
+    @Inject('IProductRepository')
+    private productRepository: IProductRepository,
+    @Inject('IProductInstanceRepository')
+    private productInstanceRepository: IProductInstanceRepository
   ) {}
 
   async findAll() {
@@ -75,5 +89,163 @@ export class OrderService implements IOrderService {
 
   async updateOrderItemQuantity(id: string, quantity: UpdateOrderItemQuantityDto['quantity']) {
     return this.orderItemsRepository.update(id, { quantity });
+  }
+
+  async getOrdersByUser(userId: string): Promise<OrderDetailDto[]> {
+    const orders = await this.orderRepository.find({
+      where: { userId },
+      order: { createdAt: 'DESC' }
+    });
+  
+    const results: OrderDetailDto[] = [];
+  
+    for (const order of orders) {
+      const orderItems = await this.orderItemsRepository.find({ where: { orderId: order.id } });
+      
+      // Fetch products one by one or modify the repository method to accept an array
+      const products = [];
+      for (const item of orderItems) {
+        const product = await this.productRepository.findProductById(item.productId);
+        if (product) {
+          products.push(product);
+        }
+      }
+  
+      const items = orderItems.map(item => {
+        const product = products.find(p => p.id === item.productId);
+        const price = product?.price || 0;
+        return {
+          productId: item.productId,
+          productName: product?.name || 'Unknown',
+          quantity: item.quantity,
+          price,
+          subTotal: price * item.quantity,
+        };
+      });
+  
+      const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
+  
+      results.push({
+        orderId: order.id,
+        status: order.status,
+        shippingAddress: order.shippingAddress,
+        createdAt: order.createdAt,
+        totalPrice,
+        items,
+      });
+    }
+  
+    return results;
+  }
+
+  async getOrderDetail(orderId: string): Promise<OrderDetailDto> {
+    const order = await this.orderRepository.findOneBy({ id: orderId });
+    if (!order) throw new NotFoundException('Order not found');
+  
+    const orderItems = await this.orderItemsRepository.find({ where: { orderId } });
+  
+    // Fetch products one by one or modify the repository method to accept an array
+    const products = [];
+    for (const item of orderItems) {
+      const product = await this.productRepository.findProductById(item.productId);
+      if (product) {
+        products.push(product);
+      }
+    }
+  
+    const items = orderItems.map(item => {
+      const product = products.find(p => p.id === item.productId);
+      const price = product?.price || 0;
+      return {
+        productId: item.productId,
+        productName: product?.name || 'Unknown',
+        quantity: item.quantity,
+        price,
+        subTotal: price * item.quantity,
+      };
+    });
+  
+    const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
+  
+    return {
+      orderId: order.id,
+      status: order.status,
+      shippingAddress: order.shippingAddress,
+      createdAt: order.createdAt,
+      totalPrice,
+      items,
+    };
+  }
+  
+  async cancelOrder(id: string): Promise<UpdateResult> {
+    const order = await this.orderRepository.findOne({ where: { id } });
+  
+    if (!order) {
+      throw new NotFoundException(`Order with id ${id} not found`);
+    }
+  
+    // Optional: prevent cancel if already completed or cancelled
+    if (order.status === OrderStatus.RECEIVED || order.status === OrderStatus.CANCELLED) {
+      throw new BadRequestException('Cannot cancel a completed or already cancelled order');
+    }
+  
+    return this.orderRepository.update(id, { status: OrderStatus.CANCELLED });
+  }
+
+  async getOrderStats(filterDto: OrderStatsFilterDto): Promise<OrderStatsDto> {
+    const { startDate, endDate } = filterDto;
+  
+    const query = this.orderRepository.createQueryBuilder('order');
+  
+    if (startDate) {
+      query.andWhere('order.created_at >= :startDate', { startDate });
+    }
+    if (endDate) {
+      query.andWhere('order.created_at <= :endDate', { endDate });
+    }
+  
+    const orders = await query.getMany();
+    const totalOrders = orders.length;
+    
+    let totalRevenue = 0;
+    const ordersByStatus: Record<string, number> = {};
+    const revenueByDay: Record<string, number> = {};
+  
+    for (const order of orders) {
+      // Get order items for this order
+      const orderItems = await this.orderItemsRepository.find({ 
+        where: { orderId: order.id } 
+      });
+      
+      // Calculate order total using product_instance prices
+      let orderTotal = 0;
+      for (const item of orderItems) {
+        // Get product instance details
+        const productInstance = await this.productInstanceRepository.findProductInstanceById(item.productId);
+        
+        if (productInstance) {
+          orderTotal += productInstance.price * item.quantity;
+        }
+      }
+      
+      totalRevenue += orderTotal;
+      
+      // Count by status
+      ordersByStatus[order.status] = (ordersByStatus[order.status] || 0) + 1;
+      
+      // Group by day
+      const day = order.createdAt.toISOString().slice(0, 10); // yyyy-mm-dd
+      revenueByDay[day] = (revenueByDay[day] || 0) + orderTotal;
+    }
+  
+    return {
+      totalOrders,
+      totalRevenue,
+      ordersByStatus,
+      revenueByDay: Object.entries(revenueByDay).map(([date, revenue]) => ({
+        date,
+        revenue,
+      })),
+    };
   }
 }

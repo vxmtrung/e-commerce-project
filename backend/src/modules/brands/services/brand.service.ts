@@ -22,6 +22,7 @@ export interface IBrandService {
     sort?: Sorting,
     filter?: Filtering[]
   ): Promise<PaginatedResource<BrandEntity>>;
+  getAllBrands(): Promise<BrandEntity[]>;
   createBrand(createBrandDto: CreateBrandDto): Promise<BrandEntity>;
   getBrandById(id: string): Promise<BrandEntity>;
   getBrandByName(name: string): Promise<BrandEntity>;
@@ -44,6 +45,19 @@ export class BrandService implements IBrandService {
     try {
       const brands = await this.brandRepository.findBrands(paginationParams, sort, filter);
 
+      return brands;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
+  }
+
+  async getAllBrands(): Promise<BrandEntity[]> {
+    try {
+      const brands = await this.brandRepository.findAllBrands();
       return brands;
     } catch (error) {
       if (error instanceof HttpException) {

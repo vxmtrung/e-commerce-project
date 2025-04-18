@@ -11,6 +11,7 @@ import { PaginatedResource } from '../../../helpers/types/paginated-resource.typ
 import { getOrder, getWhere } from '../../../helpers/filters.helper';
 
 export interface IBrandRepository {
+  findAllBrands(): Promise<BrandEntity[]>;
   findBrands(
     paginationParams: Pagination,
     sort?: Sorting,
@@ -90,5 +91,9 @@ export class BrandRepository implements IBrandRepository {
     const res = this.brandRepository.update(id, { ...updateBrandDto });
 
     return res;
+  }
+
+  async findAllBrands(): Promise<BrandEntity[]> {
+    return this.brandRepository.find();
   }
 }

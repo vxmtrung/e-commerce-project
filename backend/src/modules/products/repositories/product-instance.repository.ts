@@ -11,6 +11,7 @@ export interface IProductInstanceRepository {
   createProductInstance(createProductInstanceDto: CreateProductInstanceDto): Promise<ProductInstanceEntity>;
   updateProductInstance(id: string, updateProductInstanceDto: UpdateProductInstanceDto): Promise<UpdateResult>;
   deleteProductInstanceById(id: string): Promise<DeleteResult>;
+  getProductInstancesAggregatedData(productIds: string[]): Promise<{ productId: string; lowestPrice: number; totalQuantity: number }[]>;
 }
 
 @Injectable()
@@ -19,6 +20,23 @@ export class ProductInstanceRepository implements IProductInstanceRepository {
     @InjectRepository(ProductInstanceEntity)
     private productInstanceRepository: Repository<ProductInstanceEntity>
   ) {}
+
+  async getProductInstancesAggregatedData(productIds: string[]): Promise<{ productId: string; lowestPrice: number; totalQuantity: number }[]> {
+    const result = await this.productInstanceRepository
+      .createQueryBuilder('pi')
+      .select('pi.productId', 'productId')
+      .addSelect('MIN(pi.price)', 'lowestPrice')
+      .addSelect('SUM(pi.quantity)', 'totalQuantity')
+      .where('pi.productId IN (:...productIds)', { productIds })
+      .groupBy('pi.productId')
+      .getRawMany();
+
+    return result.map(item => ({
+      productId: item.productId,
+      lowestPrice: parseFloat(item.lowestPrice),
+      totalQuantity: parseInt(item.totalQuantity)
+    }));
+  }
 
   async findProductInstancesByProductId(productId: string): Promise<ProductInstanceEntity[]> {
     const productInstances = this.productInstanceRepository.find({

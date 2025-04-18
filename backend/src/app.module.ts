@@ -17,7 +17,6 @@ import { PaymentModule } from './modules/payments/payment.module';
 import { ProductModule } from './modules/products/product.module';
 import { ReviewModule } from './modules/reviews/review.module';
 import { BrandModule } from './modules/brands/brand.module';
-import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -29,7 +28,6 @@ import { CartModule } from './modules/cart/cart.module';
     ProductModule,
     ReviewModule,
     BrandModule,
-    CartModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env'
