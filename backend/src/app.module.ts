@@ -17,6 +17,7 @@ import { PaymentModule } from './modules/payments/payment.module';
 import { ProductModule } from './modules/products/product.module';
 import { ReviewModule } from './modules/reviews/review.module';
 import { BrandModule } from './modules/brands/brand.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { BrandModule } from './modules/brands/brand.module';
     ProductModule,
     ReviewModule,
     BrandModule,
+    CloudinaryModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env'
