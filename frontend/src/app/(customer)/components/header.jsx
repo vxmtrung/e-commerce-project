@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Layout, Menu, Dropdown, Avatar, Badge, Input, Image, Space, Flex } from 'antd';
+import { Layout, Menu, Dropdown, Avatar, Badge, Input } from 'antd';
 import { ShoppingCartOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
 import { tokenCustomer } from '@/context/config_provider';
 
@@ -18,14 +18,14 @@ export default function Header({ isLoggedIn }) {
 
   const menuItems = isLoggedIn
     ? [
-      { key: '1', label: <Link href="/profile">Profile</Link> },
-      { key: '2', label: <Link href="/cart">Cart</Link> },
-      { key: '3', label: <Link href="/logout">Log Out</Link> },
-    ]
+        { key: '1', label: <Link href="/profile">Trang cá nhân</Link> },
+        { key: '2', label: <Link href="/cart">Giỏ hàng</Link> },
+        { key: '3', label: <Link href="/logout">Đăng xuất</Link> },
+      ]
     : [
-      { key: '1', label: <Link href="/signin">Sign In</Link> },
-      { key: '2', label: <Link href="/signup">Sign Up</Link> },
-    ];
+        { key: '1', label: <Link href="/signin">Đăng nhập</Link> },
+        { key: '2', label: <Link href="/signup">Đăng ký</Link> },
+      ];
 
   return (
     <AntHeader
@@ -34,7 +34,7 @@ export default function Header({ isLoggedIn }) {
         padding: '0 24px',
         position: 'sticky',
         top: 0,
-        zIndex: 1000, // Đảm bảo header luôn hiển thị trên cùng
+        zIndex: 1000,
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -45,7 +45,7 @@ export default function Header({ isLoggedIn }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {/* Ô tìm kiếm */}
           <Input
-            placeholder="Search products..."
+            placeholder="Tìm sản phẩm..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onPressEnter={handleSearch}

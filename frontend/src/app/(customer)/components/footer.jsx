@@ -13,14 +13,14 @@ export default function CustomFooter() {
     <Footer style={{ textAlign: 'center', backgroundColor: tokenCustomer.colorLinkActive, color: tokenCustomer.colorTextBase, padding: '24px 16px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <Link href="/about" style={{ color: 'white', textDecoration: 'none' }}>About Us</Link>
-          <Link href="/policy" style={{ color: 'white', textDecoration: 'none' }}>Privacy Policy</Link>
-          <Link href="/contact" style={{ color: 'white', textDecoration: 'none' }}>Contact</Link>
+          <Link href="/about" style={{ color: 'white', textDecoration: 'none' }}>Về chúng tôi</Link>
+          <Link href="/policy" style={{ color: 'white', textDecoration: 'none' }}>Chính sách bảo mật</Link>
+          <Link href="/contact" style={{ color: 'white', textDecoration: 'none' }}>Liên hệ</Link>
         </div>
 
         <Image
           src={'/cosmetics logo-bg.png'}
-          alt='design sparx logo'
+          alt='logo BK Cosmetics'
           width={100}
           height={100}
         />
@@ -37,7 +37,7 @@ export default function CustomFooter() {
         </div>
 
         <div style={{ fontSize: '14px', color: 'white' }}>
-          &copy; {currentYear} BK Cosmetics. All rights reserved.
+          &copy; {currentYear} BK Cosmetics. Đã đăng ký bản quyền.
         </div>
       </div>
     </Footer>
