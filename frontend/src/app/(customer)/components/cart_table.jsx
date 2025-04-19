@@ -2,182 +2,100 @@
 import { tokenCustomer } from '@/context/config_provider';
 import { Button, Col, Image, InputNumber, Row, Space, Table } from 'antd';
 import React from 'react';
+import Link from 'next/link';
 
-const columns = [
-  {
-    title: 'Sản phẩm',
-    dataIndex: 'productName',
-    key: 'productName',
-  },
-  { title: 'Giá tiền', dataIndex: 'price', key: 'price', width: '18%' },
-  { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity', width: '18%' },
-  {
-    title: 'Thành tiền',
-    dataIndex: 'totalPrice',
-    key: 'totalPrice',
-    width: '18%',
-  },
-];
+export default function CartTable({ data = [], onQuantityChange = () => {} }) {
+  const renderProduct = (item) => (
+    <Row gutter={16} align="middle">
+      <Col xs={12} sm={10} md={6} lg={3} xl={3}>
+        <Image src={item.image} alt={item.productName} />
+      </Col>
+      <Col xs={12} sm={14} md={25} lg={21} xl={21}>
+        <div style={{ fontWeight: 'bold' }}>
+          <Link href={`/product/detail`} style={{ color: tokenCustomer.colorLinkActive }}>
+            {item.productName}
+          </Link>
+        </div>
+        <div>{item.description}</div>
+      </Col>
+    </Row>
+  );
 
-const data = [
-  {
-    key: '1',
-    productName: (
-      <Row gutter={16} align="middle">
-        <Col xs={12} sm={10} md={6} lg={3} xl={3}>
-          <Image
-            src="https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg"
-            alt="product"
-          ></Image>
-        </Col>
-        <Col xs={12} sm={14} md={25} lg={21} xl={21}>
-          <div style={{ fontWeight: 'bold' }}>Klairs</div>
-          <div>Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml</div>
-        </Col>
-      </Row>
-    ),
-    price: (
-      <Row align="middle">
-        <Col>
-          <div style={{ fontWeight: 'bold' }}>258.000 đ</div>
-          <div style={{ textDecoration: 'line-through' }}>475.000 đ</div>
-        </Col>
-      </Row>
-    ),
-    quantity: (
-      <InputNumber
-        min={1}
-        max={10}
-        defaultValue={1}
-        style={{ width: '60px' }}
-      />
-    ),
+  const renderPrice = (item) => (
+    <Row align="middle">
+      <Col>
+        <div style={{ fontWeight: 'bold' }}>{item.price.toLocaleString()} đ</div>
+        <div style={{ textDecoration: 'line-through' }}>
+          {item.initialPrice.toLocaleString()} đ
+        </div>
+      </Col>
+    </Row>
+  );
 
-    totalPrice: <div style={{ fontWeight: 'bold' }}>258.000 đ</div>,
-  },
-  {
-    key: '2',
-    productName: (
-      <Row gutter={16} align="middle">
-        <Col xs={12} sm={10} md={6} lg={3} xl={3}>
-          <Image
-            src="https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg"
-            alt="product"
-          ></Image>
-        </Col>
-        <Col xs={12} sm={14} md={25} lg={21} xl={21}>
-          <div style={{ fontWeight: 'bold' }}>Klairs</div>
-          <div>Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml</div>
-        </Col>
-      </Row>
-    ),
-    price: (
-      <Row align="middle">
-        <Col>
-          <div style={{ fontWeight: 'bold' }}>258.000 đ</div>
-          <div style={{ textDecoration: 'line-through' }}>475.000 đ</div>
-        </Col>
-      </Row>
-    ),
-    quantity: (
-      <InputNumber
-        min={1}
-        max={10}
-        defaultValue={1}
-        style={{ width: '60px' }}
-      />
-    ),
+  const renderQuantity = (item) => (
+    <InputNumber
+      min={1}
+      max={10}
+      value={item.quantity}
+      onChange={(value) => onQuantityChange(item.key, value)}
+      style={{ width: '60px' }}
+    />
+  );
 
-    totalPrice: <div style={{ fontWeight: 'bold' }}>258.000 đ</div>,
-  },
-  {
-    key: '3',
-    productName: (
-      <Row gutter={16} align="middle">
-        <Col xs={12} sm={10} md={6} lg={3} xl={3}>
-          <Image
-            src="https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg"
-            alt="product"
-          ></Image>
-        </Col>
-        <Col xs={12} sm={14} md={25} lg={21} xl={21}>
-          <div style={{ fontWeight: 'bold' }}>Klairs</div>
-          <div>Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml</div>
-        </Col>
-      </Row>
-    ),
-    price: (
-      <Row align="middle">
-        <Col>
-          <div style={{ fontWeight: 'bold' }}>258.000 đ</div>
-          <div style={{ textDecoration: 'line-through' }}>475.000 đ</div>
-        </Col>
-      </Row>
-    ),
-    quantity: (
-      <InputNumber
-        min={1}
-        max={10}
-        defaultValue={1}
-        style={{ width: '60px' }}
-      />
-    ),
+  const renderTotalPrice = (item) => (
+    <div style={{ fontWeight: 'bold' }}>
+      {(item.price * (item.quantity || 1)).toLocaleString()} đ
+    </div>
+  );
 
-    totalPrice: <div style={{ fontWeight: 'bold' }}>258.000 đ</div>,
-  },
-  {
-    key: '4',
-    productName: (
-      <Row gutter={16} align="middle">
-        <Col xs={12} sm={10} md={6} lg={3} xl={3}>
-          <Image
-            src="https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg"
-            alt="product"
-          ></Image>
-        </Col>
-        <Col xs={12} sm={14} md={25} lg={21} xl={21}>
-          <div style={{ fontWeight: 'bold' }}>Klairs</div>
-          <div>Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml</div>
-        </Col>
-      </Row>
-    ),
-    price: (
-      <Row align="middle">
-        <Col>
-          <div style={{ fontWeight: 'bold' }}>258.000 đ</div>
-          <div style={{ textDecoration: 'line-through' }}>475.000 đ</div>
-        </Col>
-      </Row>
-    ),
-    quantity: (
-      <InputNumber
-        min={1}
-        max={10}
-        defaultValue={1}
-        style={{ width: '60px' }}
-      />
-    ),
+  const columns = [
+    {
+      title: 'Sản phẩm',
+      dataIndex: 'productName',
+      key: 'productName',
+      render: (_, item) => renderProduct(item),
+    },
+    {
+      title: 'Giá tiền',
+      dataIndex: 'price',
+      key: 'price',
+      width: '18%',
+      render: (_, item) => renderPrice(item),
+    },
+    {
+      title: 'Số lượng',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      width: '18%',
+      render: (_, item) => renderQuantity(item),
+    },
+    {
+      title: 'Thành tiền',
+      dataIndex: 'totalPrice',
+      key: 'totalPrice',
+      width: '18%',
+      render: (_, item) => renderTotalPrice(item),
+    },
+  ];
 
-    totalPrice: <div style={{ fontWeight: 'bold' }}>258.000 đ</div>,
-  },
-];
+  const subtotal = data.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
 
-export default function CartTable() {
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <div style={{ fontSize: '18px' }}>
-        Giỏ hàng( <span style={{ color: 'grey' }}>4 sản phẩm</span>)
+        Giỏ hàng (<span style={{ color: 'grey' }}>{data.length} sản phẩm</span>)
       </div>
       <Table
         columns={columns}
         dataSource={data}
+        pagination={false}
+        rowKey="key"
         components={{
           header: {
             cell: (props) => (
               <th style={{ fontWeight: 'normal' }}>{props.children}</th>
             ),
           },
-          footer: {},
         }}
         footer={() => (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -193,15 +111,15 @@ export default function CartTable() {
                 Tạm tính:{' '}
                 <span
                   style={{
-                    color: tokenCustomer.colorTextBase,
+                    color: tokenCustomer.colorLinkActive,
                     fontWeight: 'bold',
                   }}
                 >
-                  1.032.000 đ
+                  {subtotal.toLocaleString()} đ
                 </span>
               </div>
               <div style={{ color: 'grey' }}>(Đã bao gồm VAT)</div>
-              <Button type="primary">Tiến hành đặt hàng</Button>
+              <Button style={{ backgroundColor: tokenCustomer.colorLinkActive }} type="primary">Tiến hành đặt hàng</Button>
             </div>
           </div>
         )}
