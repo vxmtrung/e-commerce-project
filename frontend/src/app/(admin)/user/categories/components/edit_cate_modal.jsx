@@ -1,58 +1,63 @@
 'use client';
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
-import { Modal, Form, Input, InputNumber } from 'antd';
+import { Modal, Form, Input } from 'antd';
 
 const CategoryModal = forwardRef(({ onSubmit }, ref) => {
-    const [open, setOpen] = useState(false);
-    const [form] = Form.useForm();
+  const [open, setOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [isEdit, setIsEdit] = useState(false);
 
-    useImperativeHandle(ref, () => ({
-        open: (item) => {
-            item ? form.setFieldsValue({ ...item }) : form.resetFields();
-            setOpen(true);
-        },
-        close: () => setOpen(false),
-    }));
-
-    const handleOk = () => {
-        form.submit();
-    };
-
-    const handleCancel = () => {
-        setOpen(false);
-    };
-
-    const handleFinish = (values) => {
-        onSubmit(values);
+  useImperativeHandle(ref, () => ({
+    open: (item) => {
+      if (item) {
+        setIsEdit(true);
+        form.setFieldsValue({ ...item });
+      } else {
+        setIsEdit(false);
         form.resetFields();
-        setOpen(false);
-    };
+      }
+      setOpen(true);
+    },
+    close: () => setOpen(false),
+  }));
 
-    return (
-        <Modal
-            title="Thêm Category"
-            open={open}
-            onCancel={handleCancel}
-            onOk={handleOk}
+  const handleOk = () => form.submit();
+  const handleCancel = () => setOpen(false);
+
+  const handleFinish = (values) => {
+    onSubmit(values);
+    form.resetFields();
+    setOpen(false);
+  };
+
+  return (
+    <Modal
+      title={isEdit ? 'Cập nhật Category' : 'Thêm Category'}
+      open={open}
+      onCancel={handleCancel}
+      onOk={handleOk}
+    >
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
+        <Form.Item
+          name="category"
+          label="Loại"
+          rules={[{ required: true, message: 'Vui lòng nhập mã loại' }]}
         >
-            <Form form={form} layout="vertical" onFinish={handleFinish}>
-                <Form.Item
-                    name="category"
-                    label="Loại"
-                    rules={[{ required: true, message: 'Vui lòng nhập loại' }]}
-                >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="name"
+          label="Tên hiển thị"
+          rules={[{ required: true, message: 'Vui lòng nhập tên hiển thị' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item name="id" hidden>
                     <Input />
-                </Form.Item>
-                <Form.Item
-                    name="name"
-                    label="Tên"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên category' }]}
-                >
-                    <Input />
-                </Form.Item>
-            </Form>
-        </Modal>
-    );
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
 });
 
 export default CategoryModal;

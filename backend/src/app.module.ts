@@ -17,7 +17,7 @@ import { PaymentModule } from './modules/payments/payment.module';
 import { ProductModule } from './modules/products/product.module';
 import { ReviewModule } from './modules/reviews/review.module';
 import { BrandModule } from './modules/brands/brand.module';
-import { CartModule } from './modules/cart/cart.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -29,10 +29,10 @@ import { CartModule } from './modules/cart/cart.module';
     ProductModule,
     ReviewModule,
     BrandModule,
-    CartModule,
+    CloudinaryModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env'
+      envFilePath: '.env'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

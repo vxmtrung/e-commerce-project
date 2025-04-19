@@ -3,7 +3,7 @@ import { type SeederOptions } from 'typeorm-extension';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: '.env' });
 
 const option: DataSourceOptions & SeederOptions =
   process.env.DB == 'deployed'

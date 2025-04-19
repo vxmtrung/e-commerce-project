@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Post, Put, Query } from '@nestjs/common';
 import { IBrandService } from '../services/brand.service';
 import { UpdateResult, DeleteResult } from 'typeorm';
 import { CreateBrandDto } from '../domains/dtos/requests/create-brand.dto';
@@ -21,10 +21,20 @@ export class BrandController {
 
   @Get()
   getBrands(
-    @PaginationParams() paginationParams: Pagination,
+    @Query('page') page?: string,
+    @Query('size') size?: string,
     @SortingParams(['name', 'status']) sort?: Sorting,
     @FilteringParams(['name', 'status']) filter?: Filtering[]
-  ): Promise<PaginatedResource<BrandEntity>> {
+  ): Promise<BrandEntity[] | PaginatedResource<BrandEntity>> {
+    if (!page || !size) {
+      return this.brandService.getAllBrands();
+    }
+    const paginationParams: Pagination = {
+      page: parseInt(page),
+      size: parseInt(size),
+      limit: parseInt(size),
+      offset: (parseInt(page) - 1) * parseInt(size)
+    };
     return this.brandService.getBrands(paginationParams, sort, filter);
   }
 

@@ -1,17 +1,18 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Inject, Query } from '@nestjs/common';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderStatusDto } from '../dtos/update-order-status.dto';
 import { UpdateShippingAddressDto } from '../dtos/update-shipping-address.dto';
 import { CreateOrderItemDto } from '../dtos/create-order-item.dto';
 import { UpdateOrderItemQuantityDto } from '../dtos/update-order-item-quantity';
 import { IOrderService } from '../services/order.service';
+import { OrderStatsFilterDto } from '../dtos/order-stats-filter.dto';
 
 @Controller('orders')
 export class OrderController {
   constructor(
     @Inject('IOrderService')
     private readonly orderService: IOrderService
-  ) {}
+  ) { }
 
   @Get()
   findAll() {
@@ -52,4 +53,20 @@ export class OrderController {
   updateOrderItemQuantity(@Param('id') id: string, @Body() updateOrderItemQuantityDto: UpdateOrderItemQuantityDto) {
     return this.orderService.updateOrderItemQuantity(id, updateOrderItemQuantityDto.quantity);
   }
+
+  @Get('user/:userId')
+  getOrdersByUser(@Param('userId') userId: string) {
+    return this.orderService.getOrdersByUser(userId);
+  }
+
+  @Get(':id')
+  getOrderDetail(@Param('id') orderId: string) {
+    return this.orderService.getOrderDetail(orderId);
+  }
+
+  @Get('stats')
+  getOrderStats(@Query() filterDto: OrderStatsFilterDto) {
+    return this.orderService.getOrderStats(filterDto);
+  }
+
 }
