@@ -26,12 +26,12 @@ export default function CategorySidebar() {
   };
 
   const handleApplyPriceFilter = () => {
-    // to be implemented
+    // để xử lý
   };
 
   return (
     <div>
-      <h3 style={{ padding: '16px 24px', margin: 0, fontWeight: 'bold', color: tokenCustomer.colorLinkActive }}>Category</h3>
+      <h3 style={{ padding: '16px 24px', margin: 0, fontWeight: 'bold', color: tokenCustomer.colorLinkActive }}>Danh mục</h3>
       <Menu
         mode="inline"
         style={{
@@ -57,7 +57,7 @@ export default function CategorySidebar() {
           ),
         }))}
       />
-      <h3 style={{ padding: '16px 24px', marginTop: '8px', fontWeight: 'bold', color: tokenCustomer.colorLinkActive }}>Price range ($)</h3>
+      <h3 style={{ padding: '16px 24px', marginTop: '8px', fontWeight: 'bold', color: tokenCustomer.colorLinkActive }}>Khoảng giá (VNĐ)</h3>
       <div style={{ padding: '16px 24px' }}>
         <div style={{ marginLeft: '16px' }}>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
@@ -65,17 +65,17 @@ export default function CategorySidebar() {
               style={{ width: '100px' }}
               value={minPrice}
               onChange={handleMinPriceChange}
-              placeholder="Min"
+              placeholder="Tối thiểu"
             />
             <InputNumber
               style={{ width: '100px' }}
               value={maxPrice}
               onChange={handleMaxPriceChange}
-              placeholder="Max"
+              placeholder="Tối đa"
             />
           </div>
           <Button style={{ backgroundColor: tokenCustomer.colorLinkActive }} type="primary" onClick={handleApplyPriceFilter}>
-            Apply
+            Áp dụng
           </Button>
         </div>
       </div>
