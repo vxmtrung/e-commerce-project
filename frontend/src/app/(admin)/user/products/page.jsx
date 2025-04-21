@@ -38,7 +38,7 @@ export default function ProductManager() {
   };
 
   const fetchBrands = async () => {
-    const res = await fetch("http://localhost:3000/brands?page=0&size=100");
+    const res = await fetch("http://localhost:3000/brands?page=1&size=100");
     const data = await res.json();
     setBrands(data["items"]);
   };

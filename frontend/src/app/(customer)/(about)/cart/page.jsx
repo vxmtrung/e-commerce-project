@@ -102,7 +102,7 @@ export default function Cart() {
       <div style={{ flex: 1 }}>
         <CartTable data={cartItems} onQuantityChange={handleQuantityChange} />
       </div>
-      <CartInfo subtotal={subtotal} discount={discount} total={total} />
+      <CartInfo subtotal={subtotal} discount={discount} total={total} data={cartItems}/>
     </Space>
   );
 }

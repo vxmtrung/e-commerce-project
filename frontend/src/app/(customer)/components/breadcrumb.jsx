@@ -7,9 +7,10 @@ import Link from 'next/link';
 const breadcrumbMap = {
   '/': 'Trang chủ',
   '/cart': 'Giỏ hàng',
+  '/cart/payment': 'Thanh toán',
   '/product': 'Sản phẩm',
   '/product/detail': 'Chi tiết sản phẩm',
-  '/order': 'Đơn hàng'
+  '/order': 'Đơn hàng',
 };
 
 export default function BreadcrumbNav() {

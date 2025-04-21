@@ -2,9 +2,18 @@
 
 import { tokenCustomer } from '@/context/config_provider';
 import { Button, Card } from 'antd';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
-function CartInfo({ subtotal, discount, total, gift, giftNote }) {
+function CartInfo({ subtotal, discount, total, gift, giftNote, data }) {
+  const router = useRouter();
+
+  const handleProceedToPayment = () => {
+    const checkoutData = { subtotal, discount, total, data };
+    localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+    router.push('/cart/payment');
+  };
+
   return (
     <Card
       title="Hóa đơn của bạn"
@@ -20,7 +29,13 @@ function CartInfo({ subtotal, discount, total, gift, giftNote }) {
         <span style={{ fontWeight: 'bold', color: tokenCustomer.colorLinkActive, fontSize: '1.2em' }}>{new Intl.NumberFormat('vi-VN').format(total)} ₫</span>
       </div>
       <div style={{ marginBottom: '10px', color: 'grey', fontSize: '0.9em' }}>(Đã bao gồm VAT)</div>
-      <Button type="primary" style={{ backgroundColor: tokenCustomer.colorLinkActive }} block size="large">
+      <Button
+        type="primary"
+        block
+        size="large"
+        style={{ backgroundColor: tokenCustomer.colorLinkActive }}
+        onClick={handleProceedToPayment}
+      >
         Tiến hành đặt hàng
       </Button>
     </Card>
