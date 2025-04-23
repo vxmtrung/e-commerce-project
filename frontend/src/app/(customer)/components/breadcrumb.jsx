@@ -9,6 +9,7 @@ const breadcrumbMap = {
   '/cart': 'Giỏ hàng',
   '/product': 'Sản phẩm',
   '/product/detail': 'Chi tiết sản phẩm',
+  '/order': 'Đơn hàng'
 };
 
 export default function BreadcrumbNav() {

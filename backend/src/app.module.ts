@@ -32,7 +32,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
     CloudinaryModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env'
+      envFilePath: '../.env'
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

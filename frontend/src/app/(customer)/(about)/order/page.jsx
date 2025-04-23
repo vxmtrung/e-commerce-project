@@ -25,7 +25,7 @@ const OrderPage = () => {
       id: 'ORD-001',
       date: new Date('2024-04-20'),
       status: 'Đã nhận',
-      total: 299.99,
+      total: 149.00,
       tracking: {
         currentStep: 3,
         steps: [
@@ -36,15 +36,15 @@ const OrderPage = () => {
         ]
       },
       items: [
-        { name: 'Product 1', quantity: 2, price: 99.99 },
-        { name: 'Product 2', quantity: 1, price: 100.00 },
+        { name: 'Kem dưỡng ẩm', quantity: 2, price: 49.000 },
+        { name: 'Gel Trị Mụn', quantity: 1, price: 51.000 },
       ],
     },
     {
       id: 'ORD-002',
       date: new Date('2024-04-18'),
       status: 'Đang xử lý',
-      total: 149.99,
+      total: 53.000,
       tracking: {
         currentStep: 1,
         steps: [
@@ -55,7 +55,26 @@ const OrderPage = () => {
         ]
       },
       items: [
-        { name: 'Product 3', quantity: 1, price: 149.99 },
+        { name: 'Mặt nạ ngủ', quantity: 1, price: 53.000 },
+      ],
+    },
+    {
+      id: 'ORD-003',
+      date: new Date('2024-04-19'),
+      status: 'Đang giao',
+      total: 199.000,
+      tracking: {
+        currentStep: 2,
+        steps: [
+          { title: 'Đã đặt hàng', description: '19/04/2024 09:00' },
+          { title: 'Đang xử lý', description: '19/04/2024 10:30' },
+          { title: 'Đang giao', description: '20/04/2024 08:00' },
+          { title: 'Đã nhận', description: null },
+        ]
+      },
+      items: [
+        { name: 'Sữa rửa mặt', quantity: 1, price: 89.000 },
+        { name: 'Toner', quantity: 1, price: 110.000 },
       ],
     },
   ];
@@ -98,7 +117,7 @@ const OrderPage = () => {
                 <Space direction="vertical" style={{ width: '100%' }}>
                   <Space style={{ width: '100%', justifyContent: 'space-between' }}>
                     <div>
-                      <Title level={4}>Order #{order.id}</Title>
+                      <Title level={4}>Đơn hàng</Title>
                       <Text type="secondary">
                         {dateformat(order.date, 'dd/mm/yyyy')}
                       </Text>
@@ -136,27 +155,203 @@ const OrderPage = () => {
     {
       key: 'in_progress',
       label: 'Đang xử lý',
-      children: 'Processing orders will be shown here',
+      children: (
+        <List
+          itemLayout="vertical"
+          dataSource={orders.filter(order => order.status === 'Đang xử lý')}
+          renderItem={(order) => (
+            <List.Item>
+              <Card>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                    <div>
+                      <Title level={4}>Đơn hàng</Title>
+                      <Text type="secondary">
+                        {dateformat(order.date, 'dd/mm/yyyy')}
+                      </Text>
+                    </div>
+                    <Space>
+                      {getStatusTag(order.status)}
+                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                    </Space>
+                  </Space>
+                  
+                  <List
+                    size="small"
+                    dataSource={order.items}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                          <Text>{item.name} x {item.quantity}</Text>
+                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
+                        </Space>
+                      </List.Item>
+                    )}
+                  />
+
+                  <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
+                    <Button type="default" onClick={() => handleViewDetails(order.id)}>Xem chi tiết</Button>
+                    <Button type="primary" onClick={() => handleTrackOrder(order)}>Theo dõi đơn hàng</Button>
+                  </Space>
+                </Space>
+              </Card>
+            </List.Item>
+          )}
+          locale={{ emptyText: 'Không có đơn hàng nào đang xử lý' }}
+        />
+      ),
     },
     {
       key: 'send',
       label: 'Đang giao',
-      children: 'Processing orders will be shown here',
+      children: (
+        <List
+          itemLayout="vertical"
+          dataSource={orders.filter(order => order.status === 'Đang giao')}
+          renderItem={(order) => (
+            <List.Item>
+              <Card>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                    <div>
+                      <Title level={4}>Đơn hàng</Title>
+                      <Text type="secondary">
+                        {dateformat(order.date, 'dd/mm/yyyy')}
+                      </Text>
+                    </div>
+                    <Space>
+                      {getStatusTag(order.status)}
+                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                    </Space>
+                  </Space>
+                  
+                  <List
+                    size="small"
+                    dataSource={order.items}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                          <Text>{item.name} x {item.quantity}</Text>
+                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
+                        </Space>
+                      </List.Item>
+                    )}
+                  />
+
+                  <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
+                    <Button type="default" onClick={() => handleViewDetails(order.id)}>Xem chi tiết</Button>
+                    <Button type="primary" onClick={() => handleTrackOrder(order)}>Theo dõi đơn hàng</Button>
+                  </Space>
+                </Space>
+              </Card>
+            </List.Item>
+          )}
+          locale={{ emptyText: 'Không có đơn hàng nào đang giao' }}
+        />
+      ),
     },
     {
       key: 'received',
       label: 'Đã nhận',
-      children: 'Shipped orders will be shown here',
+      children: (
+        <List
+          itemLayout="vertical"
+          dataSource={orders.filter(order => order.status === 'Đã nhận')}
+          renderItem={(order) => (
+            <List.Item>
+              <Card>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                    <div>
+                      <Title level={4}>Đơn hàng</Title>
+                      <Text type="secondary">
+                        {dateformat(order.date, 'dd/mm/yyyy')}
+                      </Text>
+                    </div>
+                    <Space>
+                      {getStatusTag(order.status)}
+                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                    </Space>
+                  </Space>
+                  
+                  <List
+                    size="small"
+                    dataSource={order.items}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                          <Text>{item.name} x {item.quantity}</Text>
+                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
+                        </Space>
+                      </List.Item>
+                    )}
+                  />
+
+                  <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
+                    <Button type="default" onClick={() => handleViewDetails(order.id)}>Xem chi tiết</Button>
+                    <Button type="primary" onClick={() => handleTrackOrder(order)}>Theo dõi đơn hàng</Button>
+                  </Space>
+                </Space>
+              </Card>
+            </List.Item>
+          )}
+          locale={{ emptyText: 'Không có đơn hàng nào đã nhận' }}
+        />
+      ),
     },
     {
       key: 'cancelled',
       label: 'Đã hủy',
-      children: 'Delivered orders will be shown here',
+      children: (
+        <List
+          itemLayout="vertical"
+          dataSource={orders.filter(order => order.status === 'Đã hủy')}
+          renderItem={(order) => (
+            <List.Item>
+              <Card>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                    <div>
+                      <Title level={4}>Đơn hàng</Title>
+                      <Text type="secondary">
+                        {dateformat(order.date, 'dd/mm/yyyy')}
+                      </Text>
+                    </div>
+                    <Space>
+                      {getStatusTag(order.status)}
+                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                    </Space>
+                  </Space>
+                  
+                  <List
+                    size="small"
+                    dataSource={order.items}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                          <Text>{item.name} x {item.quantity}</Text>
+                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
+                        </Space>
+                      </List.Item>
+                    )}
+                  />
+
+                  <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
+                    <Button type="default" onClick={() => handleViewDetails(order.id)}>Xem chi tiết</Button>
+                    <Button type="primary" onClick={() => handleTrackOrder(order)}>Theo dõi đơn hàng</Button>
+                  </Space>
+                </Space>
+              </Card>
+            </List.Item>
+          )}
+          locale={{ emptyText: 'Không có đơn hàng nào đã hủy' }}
+        />
+      ),
     },
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className="container mx-auto px-4 pb-4" >
       <Title level={2}>Đơn hàng của tôi</Title>
       <Tabs
         defaultActiveKey="all_orders"
@@ -185,6 +380,8 @@ const OrderPage = () => {
               <Text type="secondary">
                 {selectedOrder.tracking.currentStep === selectedOrder.tracking.steps.length - 1
                   ? 'Đơn hàng đã được giao thành công'
+                  : selectedOrder.tracking.currentStep === 2
+                  ? 'Đơn hàng đang được giao đến bạn'
                   : 'Đơn hàng đang được xử lý'}
               </Text>
             </div>
@@ -195,4 +392,4 @@ const OrderPage = () => {
   );
 };
 
-export default OrderPage; 
+export default OrderPage;

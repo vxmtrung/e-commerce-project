@@ -13,44 +13,116 @@ const OrderDetailPage = () => {
   const params = useParams();
   const orderId = params.id;
 
-  // Mock order data - replace with actual data from your backend
-  const order = {
-    id: orderId,
-    date: new Date('2024-04-20'),
-    status: 'Đã nhận',
-    total: 299.99,
-    shippingAddress: {
-      name: 'Nguyễn Văn A',
-      phone: '0123456789',
-      address: '123 Đường ABC, Phường XYZ, Quận 1, TP.HCM'
-    },
-    paymentMethod: 'Chuyển khoản ngân hàng',
-    tracking: {
-      currentStep: 3,
-      steps: [
-        { title: 'Đã đặt hàng', description: '20/04/2024 10:00' },
-        { title: 'Đang xử lý', description: '20/04/2024 11:30' },
-        { title: 'Đang giao', description: '21/04/2024 09:00' },
-        { title: 'Đã nhận', description: '21/04/2024 15:30' },
-      ]
-    },
-    items: [
-      { 
-        name: 'Product 1', 
-        quantity: 2, 
-        price: 99.99,
-        image: 'https://via.placeholder.com/100',
-        description: 'Mô tả sản phẩm 1'
+  // Mock data mapping based on orderId
+  const orderData = {
+    'ORD-001': {
+      id: 'ORD-001',
+      date: new Date('2024-04-20'),
+      status: 'Đã nhận',
+      total: 149.000,
+      shippingAddress: {
+        name: 'Nguyễn Văn A',
+        phone: '0123456789',
+        address: '123 Đường ABC, Phường XYZ, Quận 1, TP.HCM'
       },
-      { 
-        name: 'Product 2', 
-        quantity: 1, 
-        price: 100.00,
-        image: 'https://via.placeholder.com/100',
-        description: 'Mô tả sản phẩm 2'
+      paymentMethod: 'Chuyển khoản ngân hàng',
+      tracking: {
+        currentStep: 3,
+        steps: [
+          { title: 'Đã đặt hàng', description: '20/04/2024 10:00' },
+          { title: 'Đang xử lý', description: '20/04/2024 11:30' },
+          { title: 'Đang giao', description: '21/04/2024 09:00' },
+          { title: 'Đã nhận', description: '21/04/2024 15:30' },
+        ]
       },
-    ],
+      items: [
+        { 
+          name: 'Kem dưỡng ẩm', 
+          quantity: 2, 
+          price: 49.000,
+          image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6_wWTqo34To5d7RJBWaolIuPLIz93JUtqzA&s',
+          description: 'Kem dưỡng ẩm da mặt'
+        },
+        { 
+          name: 'Gel Trị Mụn', 
+          quantity: 1, 
+          price: 51.000,
+          image: 'https://naris.vn/uploads/san-pham/2022/11/sp1-18.jpg',
+          description: 'Gel trị mụn hiệu quả'
+        },
+      ],
+    },
+    'ORD-002': {
+      id: 'ORD-002',
+      date: new Date('2024-04-18'),
+      status: 'Đang xử lý',
+      total: 53.000,
+      shippingAddress: {
+        name: 'Trần Thị B',
+        phone: '0987654321',
+        address: '456 Đường XYZ, Phường ABC, Quận 2, TP.HCM'
+      },
+      paymentMethod: 'Thanh toán khi nhận hàng',
+      tracking: {
+        currentStep: 1,
+        steps: [
+          { title: 'Đã đặt hàng', description: '18/04/2024 14:00' },
+          { title: 'Đang xử lý', description: '18/04/2024 15:30' },
+          { title: 'Đang giao', description: null },
+          { title: 'Đã nhận', description: null },
+        ]
+      },
+      items: [
+        { 
+          name: 'Mặt nạ ngủ', 
+          quantity: 1, 
+          price: 53.000,
+          image: 'https://adminbeauty.hvnet.vn/Upload/Files/mat-na-ngu-Laneige-Water-Sleeping-Mask-15ml1.jpg',
+          description: 'Mặt nạ ngủ dưỡng da'
+        },
+      ],
+    },
+    'ORD-003': {
+      id: 'ORD-003',
+      date: new Date('2024-04-19'),
+      status: 'Đang giao',
+      total: 199.00,
+      shippingAddress: {
+        name: 'Lê Văn C',
+        phone: '0369852147',
+        address: '789 Đường DEF, Phường GHI, Quận 3, TP.HCM'
+      },
+      paymentMethod: 'Chuyển khoản ngân hàng',
+      tracking: {
+        currentStep: 2,
+        steps: [
+          { title: 'Đã đặt hàng', description: '19/04/2024 09:00' },
+          { title: 'Đang xử lý', description: '19/04/2024 10:30' },
+          { title: 'Đang giao', description: '20/04/2024 08:00' },
+          { title: 'Đã nhận', description: null },
+        ]
+      },
+      items: [
+        { 
+          name: 'Sữa rửa mặt', 
+          quantity: 1, 
+          price: 89.000,
+          image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0ybO1hBzEO34fR3f6a9m9zA0imBaitJMmkw&s',
+          description: 'Sữa rửa mặt dịu nhẹ'
+        },
+        { 
+          name: 'Toner', 
+          quantity: 1, 
+          price: 110.000,
+          image: 'https://product.hstatic.net/200000061108/product/1__10__ac89acf85379445183927f4e5c1ce10c_master.jpg',
+          description: 'Toner cân bằng da'
+        },
+      ],
+    },
   };
+
+  // Get the order data based on the orderId
+  const currentOrder = orderData[orderId];
 
   const formatPrice = (price) => {
     if (!price) return 'N/A';
@@ -82,7 +154,7 @@ const OrderDetailPage = () => {
         Quay lại
       </Button>
 
-      <Title level={2}>Chi tiết đơn hàng #{order.id}</Title>
+      <Title level={2}>Chi tiết đơn hàng</Title>
 
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {/* Order Status */}
@@ -90,11 +162,11 @@ const OrderDetailPage = () => {
           <Space direction="vertical" style={{ width: '100%' }}>
             <Space style={{ width: '100%', justifyContent: 'space-between' }}>
               <Text strong>Trạng thái đơn hàng:</Text>
-              {getStatusTag(order.status)}
+              {getStatusTag(currentOrder.status)}
             </Space>
             <Steps
-              current={order.tracking.currentStep}
-              items={order.tracking.steps.map(step => ({
+              current={currentOrder.tracking.currentStep}
+              items={currentOrder.tracking.steps.map(step => ({
                 title: step.title,
                 description: step.description,
               }))}
@@ -106,7 +178,7 @@ const OrderDetailPage = () => {
         <Card title="Sản phẩm">
           <List
             itemLayout="horizontal"
-            dataSource={order.items}
+            dataSource={currentOrder.items}
             renderItem={(item) => (
               <List.Item>
                 <List.Item.Meta
@@ -128,13 +200,13 @@ const OrderDetailPage = () => {
         <Card title="Thông tin đơn hàng">
           <Descriptions column={1}>
             <Descriptions.Item label="Ngày đặt hàng">
-              {dateformat(order.date, 'dd/mm/yyyy HH:MM')}
+              {dateformat(currentOrder.date, 'dd/mm/yyyy HH:MM')}
             </Descriptions.Item>
             <Descriptions.Item label="Phương thức thanh toán">
-              {order.paymentMethod}
+              {currentOrder.paymentMethod}
             </Descriptions.Item>
             <Descriptions.Item label="Tổng tiền">
-              <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+              <Text strong>{formatPrice(currentOrder.total.toFixed(3))} ₫</Text>
             </Descriptions.Item>
           </Descriptions>
         </Card>
@@ -143,13 +215,13 @@ const OrderDetailPage = () => {
         <Card title="Thông tin giao hàng">
           <Descriptions column={1}>
             <Descriptions.Item label="Người nhận">
-              {order.shippingAddress.name}
+              {currentOrder.shippingAddress.name}
             </Descriptions.Item>
             <Descriptions.Item label="Số điện thoại">
-              {order.shippingAddress.phone}
+              {currentOrder.shippingAddress.phone}
             </Descriptions.Item>
             <Descriptions.Item label="Địa chỉ">
-              {order.shippingAddress.address}
+              {currentOrder.shippingAddress.address}
             </Descriptions.Item>
           </Descriptions>
         </Card>
