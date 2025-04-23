@@ -6,6 +6,7 @@ const mockData = [
         "status": "inProgress",
         "paymentMethod": "COD",
         "paymentStatus": false,
+        "createdAt": 1713100000000,
         "userId": "u1",
         "phoneNumber": "0909123456",
         "email": "john.doe@example.com",
@@ -40,6 +41,7 @@ const mockData = [
         "status": "sent",
         "paymentMethod": "MOMO",
         "paymentStatus": true,
+        "createdAt": 1713150000000,
         "userId": "u2",
         "phoneNumber": "0988123456",
         "email": "nguyenvana@gmail.com",
@@ -67,6 +69,7 @@ const mockData = [
         "status": "received",
         "paymentMethod": "MOMO",
         "paymentStatus": true,
+        "createdAt": 1713200000000,
         "userId": "u3",
         "phoneNumber": "0912345678",
         "email": "tranb@gmail.com",
@@ -101,6 +104,7 @@ const mockData = [
         "status": "cancelled",
         "paymentMethod": "COD",
         "paymentStatus": false,
+        "createdAt": 1713250000000,
         "userId": "u4",
         "phoneNumber": "0978123456",
         "email": "cuongle@gmail.com",
@@ -128,6 +132,7 @@ const mockData = [
         "status": "inProgress",
         "paymentMethod": "MOMO",
         "paymentStatus": false,
+        "createdAt": 1713300000000,
         "userId": "u5",
         "phoneNumber": "0909999999",
         "email": "thuha.pham@gmail.com",
@@ -158,6 +163,7 @@ const mockData = [
         ]
     }
 ];
+
 
 export default function OrderPage() {
     return <></>;
