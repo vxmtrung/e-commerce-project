@@ -3,6 +3,7 @@ import { tokenCustomer } from '@/context/config_provider';
 import { Button, Col, Image, InputNumber, Row, Space, Table } from 'antd';
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function CartTable({ data = [], onQuantityChange = () => {} }) {
   const renderProduct = (item) => (
@@ -80,6 +81,15 @@ export default function CartTable({ data = [], onQuantityChange = () => {} }) {
 
   const subtotal = data.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
 
+  const router = useRouter();
+  const handleProceedToPayment = () => {
+    var discount = 0
+    var total = subtotal
+    const checkoutData = { subtotal, discount, total, data };
+    localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+    router.push('/cart/payment');
+  };
+
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <div style={{ fontSize: '18px' }}>
@@ -119,7 +129,13 @@ export default function CartTable({ data = [], onQuantityChange = () => {} }) {
                 </span>
               </div>
               <div style={{ color: 'grey' }}>(Đã bao gồm VAT)</div>
-              <Button style={{ backgroundColor: tokenCustomer.colorLinkActive }} type="primary">Tiến hành đặt hàng</Button>
+              <Button
+                style={{ backgroundColor: tokenCustomer.colorLinkActive }}
+                type="primary"
+                onClick={handleProceedToPayment}
+              >
+                Tiến hành đặt hàng
+              </Button>
             </div>
           </div>
         )}

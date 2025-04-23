@@ -71,7 +71,7 @@ export default function ProductsPage() {
 
     return (
         // <CustomerLayout>
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-4">
             <div className="mb-4 flex justify-end">
                 <Select
                     defaultValue="default"
