@@ -1,5 +1,12 @@
 'use client';
 
+import React, { useRef, useState } from 'react';
+import { Button, Select, Space, Table, Tag, Tooltip } from 'antd';
+import { T } from '@/app/common';
+import AdminPage from '../../components/admin_page';
+import { InfoCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import OrderModal from './components/order-modal';
+
 const mockData = [
     {
         "orderId": "o1",
@@ -166,5 +173,97 @@ const mockData = [
 
 
 export default function OrderPage() {
-    return <></>;
+    const [state, setState] = useState({
+        data: mockData
+    });
+    const modalRef = useRef();
+
+    const optionsPaymentStatus = [
+        { value: true, label: <Tag color="green">Đã thanh toán</Tag> },
+        { value: false, label: <Tag color="red">Chưa thanh toán</Tag> }
+    ];
+    const colorMap = {
+        inProgress: 'blue',
+        sent: 'gold',
+        received: 'green',
+        cancelled: 'red',
+    };
+    const labelMap = {
+        inProgress: 'Đang xử lý',
+        sent: 'Đã gửi',
+        received: 'Đã nhận',
+        cancelled: 'Đã huỷ',
+    };
+    const optionsOrderStatus = [
+        { value: 'inProgress', label: <Tag color={colorMap.inProgress}>{labelMap.inProgress}</Tag> },
+        { value: 'sent', label: <Tag color={colorMap.sent}>{labelMap.sent}</Tag> },
+        { value: 'received', label: <Tag color={colorMap.received}>{labelMap.received}</Tag> },
+        { value: 'cancelled', label: <Tag color={colorMap.cancelled}>{labelMap.cancelled}</Tag> },
+    ];
+    const columns = [
+        {
+            title: 'Tài khoản',
+            dataIndex: 'username',
+            key: 'username',
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+        },
+        {
+            title: 'Số điện thoại',
+            dataIndex: 'phoneNumber',
+            key: 'phoneNumber',
+        },
+        {
+            title: 'Ngày đặt đơn',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: (value) => T.dateToText(new Date(parseInt(value)))
+        },
+        {
+            title: 'Phương thức thanh toán',
+            dataIndex: 'paymentMethod',
+            key: 'paymentMethod',
+            render: (method) => (
+                <Tag color={method === 'MOMO' ? 'purple' : 'volcano'}>{method}</Tag>
+            ),
+        },
+        {
+            title: 'Tình trạng thanh toán',
+            dataIndex: 'paymentStatus',
+            key: 'paymentStatus',
+            render: (status, record) => <Select options={optionsPaymentStatus} value={status} />,
+        },
+        {
+            title: 'Tình trạng đơn hàng',
+            dataIndex: 'status',
+            key: 'status',
+            render: (status) => <Select options={optionsOrderStatus} value={status} />,
+        },
+        {
+            title: 'Thao tác',
+            render: (_, record) => (
+                <Tooltip title='Chi tiết đơn hàng'>
+                    <Button type='primary' icon={<InfoCircleOutlined />} onClick={() => modalRef.current.show(record)} />
+                </Tooltip>
+            )
+        }
+    ];
+    return (
+        <AdminPage
+            title='Quản lý đơn hàng'
+            icon={<ShoppingCartOutlined />}
+            breadcrumbItems={[{ title: 'Đơn hàng' }]}
+        >
+            <OrderModal ref={modalRef} />
+            <Table
+                columns={columns}
+                dataSource={state.data}
+                pagination={{ pageSize: 25 }}
+            />
+
+        </AdminPage>
+    );
 }
