@@ -74,9 +74,9 @@ const OrderDetailPage = () => {
       },
       items: [
         { 
-          name: 'Mặt nạ ngủ', 
+          name: 'Mascara BROWIT 5.5g', 
           quantity: 1, 
-          price: 53.000,
+          price: 97.000,
           image: 'https://adminbeauty.hvnet.vn/Upload/Files/mat-na-ngu-Laneige-Water-Sleeping-Mask-15ml1.jpg',
           description: 'Mặt nạ ngủ dưỡng da'
         },

@@ -25,7 +25,7 @@ const OrderPage = () => {
       id: 'ORD-001',
       date: new Date('2024-04-20'),
       status: 'Đã nhận',
-      total: 149.00,
+      total: 358.000,
       tracking: {
         currentStep: 3,
         steps: [
@@ -36,15 +36,14 @@ const OrderPage = () => {
         ]
       },
       items: [
-        { name: 'Kem dưỡng ẩm', quantity: 2, price: 49.000 },
-        { name: 'Gel Trị Mụn', quantity: 1, price: 51.000 },
+        { name: 'Dầu gội TRESemmé 640g', quantity: 2, price: 179.000 },
       ],
     },
     {
       id: 'ORD-002',
       date: new Date('2024-04-18'),
       status: 'Đang xử lý',
-      total: 53.000,
+      total: 695.000,
       tracking: {
         currentStep: 1,
         steps: [
@@ -55,14 +54,16 @@ const OrderPage = () => {
         ]
       },
       items: [
-        { name: 'Mặt nạ ngủ', quantity: 1, price: 53.000 },
+        { name: 'Mascara BROWIT 5.5g', quantity: 1, price: 97.000 },
+        { name: 'Son kem lì 3CE Velvet Lip Tint 4g', quantity: 1, price: 279.000 },
+        { name: 'Cushion APERIRE SPF50+ 13g', quantity: 1, price: 319.000 }
       ],
     },
     {
       id: 'ORD-003',
       date: new Date('2024-04-19'),
       status: 'Đang giao',
-      total: 199.000,
+      total: 159.000,
       tracking: {
         currentStep: 2,
         steps: [
@@ -73,8 +74,7 @@ const OrderPage = () => {
         ]
       },
       items: [
-        { name: 'Sữa rửa mặt', quantity: 1, price: 89.000 },
-        { name: 'Toner', quantity: 1, price: 110.000 },
+        { name: 'Kem dưỡng ẩm COCOON Thạch Hoa Hồng 30ml', quantity: 1, price: 159.000 }
       ],
     },
   ];
