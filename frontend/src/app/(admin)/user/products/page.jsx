@@ -24,6 +24,9 @@ export default function ProductManager() {
   const [editForm] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(1);
   const [productValues, setProductValues] = useState([]);
+  const [editing, setEditing] = useState([]);
+  const [selectedInstance, setSelectedInstance] = useState(0);
+  const [discounts, setDiscounts] = useState([0, 0]);
 
   const fetchProducts = async () => {
     const res = await fetch("http://localhost:3000/products?page=0&size=100");
@@ -40,7 +43,7 @@ export default function ProductManager() {
   const fetchBrands = async () => {
     const res = await fetch("http://localhost:3000/brands?page=1&size=100");
     const data = await res.json();
-    setBrands(data["items"]);
+    setBrands(data);
   };
 
   useEffect(() => {
@@ -119,17 +122,30 @@ export default function ProductManager() {
   };
 
   const handleEdit = async (id, name, description) => {
+    setSelectedInstance(0);
+    setDiscounts(prev => prev.map(() => 0));
     const temp = await fetch(`http://localhost:3000/product-instances?product-id=${id}`);
-    const editing = await temp.json();
+    const editing_temp = await temp.json();
+    setEditing(editing_temp);
     editForm.setFieldsValue({
       name: name,
       description: description,
-      price: editing[0]['price'],
-      quantity: editing[0]['quantity'],
+      price: editing_temp[0]['price'],
+      quantity: editing_temp[0]['quantity'],
+      discount: 0,
       id: id,
-      instance_id: editing[0]['id']
+      instance_id: editing_temp[0]['id']
     });
     setShowEditModal(true);
+  };
+
+  const handleChooseInstance = (i) => {
+    setSelectedInstance(i);
+    editForm.setFieldsValue({
+      price: editing[0]['price'] + i * 5000,
+      quantity: editing[0]['quantity'] + i,
+      discount: discounts[i]
+    });
   };
 
   const [showEditModal, setShowEditModal] = useState(false);
@@ -375,6 +391,20 @@ export default function ProductManager() {
               alt="Product"
               style={{ width: "100%", borderRadius: "8px", objectFit: "cover" }}
             />
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "8px" }}>
+              <Button
+                type={selectedInstance === 0 ? "primary" : "default"}
+                onClick={() => handleChooseInstance(0)}
+              >
+                Mẫu 1
+              </Button>
+              <Button
+                type={selectedInstance === 1 ? "primary" : "default"}
+                onClick={() => handleChooseInstance(1)}
+              >
+                Mẫu 2
+              </Button>
+            </div>
           </div>
 
           <div style={{ flex: 2 }}>
@@ -413,6 +443,21 @@ export default function ProductManager() {
                 rules={[{ required: true, message: "Hãy nhập giá!" }]}
               >
                 <Input type="number" />
+              </Form.Item>
+
+              <Form.Item label="Giảm giá" name="discount">
+                <Input
+                  type="number"
+                  value={discounts[selectedInstance]}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setDiscounts(prev => {
+                      const updated = [...prev];
+                      updated[selectedInstance] = value;
+                      return updated;
+                    });
+                  }}
+                />
               </Form.Item>
 
               <Form.Item name="id" hidden>
