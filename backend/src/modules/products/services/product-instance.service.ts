@@ -13,6 +13,7 @@ import { CreateProductInstanceDto } from '../domains/dtos/requests/create-produc
 import { UpdateProductInstanceDto } from '../domains/dtos/requests/update-product-instance.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { IProductImgService } from './product-img.service';
+import { ProductInstanceDto } from '../domains/dtos/response/product-instance.dto';
 
 export interface IProductInstanceService {
   getProductInstancesByProductId(productId: string): Promise<ProductInstanceEntity[]>;
@@ -20,6 +21,7 @@ export interface IProductInstanceService {
   createProductInstance(createProductInstanceDto: CreateProductInstanceDto): Promise<ProductInstanceEntity>;
   updateProductInstance(id: string, updateProductInstanceDto: UpdateProductInstanceDto): Promise<UpdateResult>;
   deleteProductInstanceById(id: string): Promise<DeleteResult>;
+  getProductInstancesDetailByProductId(productId: string): Promise<ProductInstanceDto[]>;
 }
 
 @Injectable()
@@ -44,6 +46,33 @@ export class ProductInstanceService implements IProductInstanceService {
       const productInstances = await this.productInstanceRepository.findProductInstancesByProductId(productId);
 
       return productInstances;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
+  }
+
+  async getProductInstancesDetailByProductId(productId: string): Promise<ProductInstanceDto[]> {
+    try {
+      const product = await this.productService.getProductById(productId);
+
+      if (!product) {
+        throw new NotFoundException(`Not found product with id ${productId}`);
+      }
+
+      const productInstances = await this.productInstanceRepository.findProductInstancesByProductId(productId);
+
+      const res = await Promise.all(
+        productInstances.map(async (pi) => {
+          const imgs = await this.productImgService.getProductImgByProductInstanceId(pi.id);
+
+          return new ProductInstanceDto(pi, imgs);
+        })
+      );
+      return res;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

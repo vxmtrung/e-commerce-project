@@ -19,6 +19,7 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateProductDto } from '../domains/dtos/requests/update-product.dto';
 import { IProductInstanceService } from './product-instance.service';
 import { IProductInstanceRepository } from '../repositories/product-instance.repository';
+import { SearchProductDto } from '../domains/dtos/response/search-product.dto';
 
 export interface IProductService {
   getProducts(
@@ -28,6 +29,11 @@ export interface IProductService {
   ): Promise<PaginatedResource<ProductEntity>>;
   getProductById(id: string): Promise<ProductEntity>;
   getProductsByIds(ids: string[]): Promise<ProductEntity[]>;
+  SearchProducts(
+    paginationParams: Pagination,
+    sort?: Sorting,
+    filter?: Filtering[]
+  ): Promise<PaginatedResource<SearchProductDto>>;
   createProduct(createProductDto: CreateProductDto): Promise<ProductEntity>;
   updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<UpdateResult>;
   deleteProductById(id: string): Promise<DeleteResult>;
@@ -119,6 +125,33 @@ export class ProductService {
         throw new InternalServerErrorException(error);
       }
     }
+  }
+
+  async SearchProducts(
+    paginationParams: Pagination,
+    sort?: Sorting,
+    filter?: Filtering[]
+  ): Promise<PaginatedResource<SearchProductDto>> {
+    const products = await this.productRepository.findProducts(paginationParams, sort, filter);
+
+    const productDtoItems = await Promise.all(
+      products.items.map(async (p) => {
+        const [category, brand, productInstances] = await Promise.all([
+          this.categoryService.getCategoryById(p.categoryId),
+          this.brandService.getBrandById(p.brandId),
+          this.productInstanceService.getProductInstancesDetailByProductId(p.id)
+        ]);
+
+        return new SearchProductDto(p, category, brand, productInstances);
+      })
+    );
+
+    return {
+      totalItems: products.totalItems,
+      items: productDtoItems,
+      page: products.page,
+      size: products.size
+    };
   }
 
   async getProductById(id: string): Promise<ProductEntity> {

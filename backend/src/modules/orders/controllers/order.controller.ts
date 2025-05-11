@@ -12,7 +12,7 @@ export class OrderController {
   constructor(
     @Inject('IOrderService')
     private readonly orderService: IOrderService
-  ) { }
+  ) {}
 
   @Get()
   findAll() {
@@ -68,5 +68,4 @@ export class OrderController {
   getOrderStats(@Query() filterDto: OrderStatsFilterDto) {
     return this.orderService.getOrderStats(filterDto);
   }
-
 }

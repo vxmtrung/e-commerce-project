@@ -18,6 +18,7 @@ import { ProductModule } from './modules/products/product.module';
 import { ReviewModule } from './modules/reviews/review.module';
 import { BrandModule } from './modules/brands/brand.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { VoucherModule } from './modules/voucher/voucher.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
     ReviewModule,
     BrandModule,
     CloudinaryModule,
+    VoucherModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '../.env'

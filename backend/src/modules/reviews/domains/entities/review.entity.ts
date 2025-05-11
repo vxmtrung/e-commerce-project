@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('reviews')
 export class ReviewEntity {
@@ -19,7 +19,7 @@ export class ReviewEntity {
 
   @CreateDateColumn({
     type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP(6)',
+    default: () => 'CURRENT_TIMESTAMP(6)'
   })
   createdAt: Date;
 }
