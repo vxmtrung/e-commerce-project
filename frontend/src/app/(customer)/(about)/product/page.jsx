@@ -116,8 +116,13 @@ export default function ProductsPage() {
                                 >
                                     <Card.Meta
                                         title={
-                                            <div className="text-lg font-semibold transition-colors duration-300 hover:text-[#ff69b4]" style={{ color: '#ff85c1' }}>
-                                                {formatPrice(product.lowestPrice)} ₫
+                                            <div className="flex flex-row space-x-2 items-center">
+                                                <div className="text-lg font-semibold transition-colors duration-300 hover:text-[#ff69b4]" style={{ color: '#ff85c1' }}>
+                                                    {formatPrice(product.lowestPrice)} ₫
+                                                </div>
+                                                <div className="text-sm line-through">
+                                                    202.000 ₫
+                                                </div>
                                             </div>
                                         }
                                         description={
