@@ -24,6 +24,10 @@ export default function ProductManager() {
   const [editForm] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(1);
   const [productValues, setProductValues] = useState([]);
+  const [editing, setEditing] = useState([]);
+  const [selectedInstance, setSelectedInstance] = useState(0);
+  const [discounts, setDiscounts] = useState([0, 0]);
+  const [isAddingNewInstance, setIsAddingNewInstance] = useState(false);
 
   const fetchProducts = async () => {
     const res = await fetch("http://localhost:3000/products?page=0&size=100");
@@ -40,7 +44,7 @@ export default function ProductManager() {
   const fetchBrands = async () => {
     const res = await fetch("http://localhost:3000/brands?page=1&size=100");
     const data = await res.json();
-    setBrands(data["items"]);
+    setBrands(data);
   };
 
   useEffect(() => {
@@ -119,53 +123,71 @@ export default function ProductManager() {
   };
 
   const handleEdit = async (id, name, description) => {
+    setSelectedInstance(0);
+    setDiscounts(prev => prev.map(() => 0));
+    setIsAddingNewInstance(false);
     const temp = await fetch(`http://localhost:3000/product-instances?product-id=${id}`);
-    const editing = await temp.json();
+    const editing_temp = await temp.json();
+    setEditing(editing_temp);
     editForm.setFieldsValue({
       name: name,
       description: description,
-      price: editing[0]['price'],
-      quantity: editing[0]['quantity'],
+      price: editing_temp[0]['price'],
+      quantity: editing_temp[0]['quantity'],
+      discount: 0,
       id: id,
-      instance_id: editing[0]['id']
+      instance_id: editing_temp[0]['id']
     });
     setShowEditModal(true);
+  };
+
+  const handleChooseInstance = (i) => {
+    setSelectedInstance(i);
+    editForm.setFieldsValue({
+      price: editing[0]['price'] + i * 5000,
+      quantity: editing[0]['quantity'] + i,
+      discount: discounts[i]
+    });
   };
 
   const [showEditModal, setShowEditModal] = useState(false);
   const handleUpdateProduct = async (values) => {
     setShowEditModal(false);
-    try {
-      const res = await fetch(`http://localhost:3000/products/${values.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: values.name,
-          description: values.description
-        }),
-      });
+    if (isAddingNewInstance) {
+      
+    } else {
+      try {
+        const res = await fetch(`http://localhost:3000/products/${values.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: values.name,
+            description: values.description
+          }),
+        });
 
-      const res1 = await fetch(`http://localhost:3000/product-instances/${values.instance_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          price: values.price,
-          quantity: values.quantity
-        }),
-      });
+        const res1 = await fetch(`http://localhost:3000/product-instances/${values.instance_id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            price: values.price,
+            quantity: values.quantity
+          }),
+        });
 
-      if (res.ok && res1.ok) {
-        notification.success({ message: "Cập nhật sản phẩm thành công!" });
-        fetchProducts();
-      } else {
+        if (res.ok && res1.ok) {
+          notification.success({ message: "Cập nhật sản phẩm thành công!" });
+          fetchProducts();
+        } else {
+          notification.error({ message: "Cập nhật sản phẩm không thành công!" });
+        }
+      } catch (error) {
         notification.error({ message: "Cập nhật sản phẩm không thành công!" });
       }
-    } catch (error) {
-      notification.error({ message: "Cập nhật sản phẩm không thành công!" });
     }
   };
 
@@ -375,6 +397,41 @@ export default function ProductManager() {
               alt="Product"
               style={{ width: "100%", borderRadius: "8px", objectFit: "cover" }}
             />
+            <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <Button
+                  type={selectedInstance === 0 ? "primary" : "default"}
+                  onClick={() => {
+                    setIsAddingNewInstance(false);
+                    handleChooseInstance(0);
+                  }}
+                >
+                  Mẫu 1
+                </Button>
+                <Button
+                  type={selectedInstance === 1 ? "primary" : "default"}
+                  onClick={() => {
+                    setIsAddingNewInstance(false);
+                    handleChooseInstance(1);
+                  }}
+                >
+                  Mẫu 2
+                </Button>
+              </div>
+
+              <Button
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setIsAddingNewInstance(true);
+                  handleChooseInstance(2);
+                  editForm.setFieldsValue({
+                    quantity: null,
+                    price: null,
+                    discount: null,
+                  });
+                }}
+              />
+            </div>
           </div>
 
           <div style={{ flex: 2 }}>
@@ -415,6 +472,21 @@ export default function ProductManager() {
                 <Input type="number" />
               </Form.Item>
 
+              <Form.Item label="Giảm giá" name="discount">
+                <Input
+                  type="number"
+                  value={discounts[selectedInstance]}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setDiscounts(prev => {
+                      const updated = [...prev];
+                      updated[selectedInstance] = value;
+                      return updated;
+                    });
+                  }}
+                />
+              </Form.Item>
+
               <Form.Item name="id" hidden>
                 <Input />
               </Form.Item>
@@ -424,16 +496,18 @@ export default function ProductManager() {
               </Form.Item>
 
               <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{
-                    padding: "10px 20px",
-                  }}
-                  className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
-                >
-                  Cập nhật
-                </Button>
+                <div style={{ textAlign: "center" }}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    style={{
+                      padding: "10px 20px",
+                    }}
+                    className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
+                  >
+                    {isAddingNewInstance ? "Thêm mẫu mới" : "Cập nhật"}
+                  </Button>
+                </div>
               </Form.Item>
             </Form>
           </div>
