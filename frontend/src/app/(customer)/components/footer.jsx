@@ -19,7 +19,7 @@ export default function CustomFooter() {
         </div>
 
         <Image
-          src={'/cosmetics logo-bg.png'}
+          src={'/Logo-Lunera.png'}
           alt='logo BK Cosmetics'
           width={100}
           height={100}
@@ -37,7 +37,7 @@ export default function CustomFooter() {
         </div>
 
         <div style={{ fontSize: '14px', color: 'white' }}>
-          &copy; {currentYear} BK Cosmetics. Đã đăng ký bản quyền.
+          &copy; {currentYear} Lunera Official. Đã đăng ký bản quyền.
         </div>
       </div>
     </Footer>

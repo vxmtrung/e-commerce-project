@@ -42,7 +42,7 @@ export default function SideNav({ ...others }) {
         <Sider ref={nodeRef} breakpoint='lg' collapsedWidth='0' {...others}>
             <Logo
                 title={'Admin site'}
-                logoPublicPath={'/cosmetics logo.png'}
+                logoPublicPath={'/Logo-Lunera.png'}
                 color='blue'
                 asLink
                 href={'/'}

@@ -25,7 +25,7 @@ const ProductCard = () => {
         {/* Left Image & Thumbnails */}
         <Col span={10}>
           <Image
-            src="https://cf.shopee.vn/file/72a00b1f136e2e4c85677bde7d7d09e5"
+            src="https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg"
             width={200}
             alt="main"
             className="rounded"
@@ -34,7 +34,7 @@ const ProductCard = () => {
             {[...Array(5)].map((_, i) => (
               <Col key={i} span={4}>
                 <Image
-                  src="https://cf.shopee.vn/file/72a00b1f136e2e4c85677bde7d7d09e5"
+                  src="https://bizweb.dktcdn.net/thumb/1024x1024/100/382/633/products/nuoc-hoa-hong-klairs-supple-preparation-unscented-toner9-9764296c7e5d4014b41aa66251372d1a-master.jpg?v=1587697312593"
                   width={40}
                   className="rounded border"
                 />

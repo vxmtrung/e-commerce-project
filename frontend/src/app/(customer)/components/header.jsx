@@ -18,14 +18,14 @@ export default function Header({ isLoggedIn }) {
 
   const menuItems = isLoggedIn
     ? [
-        { key: '1', label: <Link href="/profile">Trang cá nhân</Link> },
-        { key: '2', label: <Link href="/cart">Giỏ hàng</Link> },
-        { key: '3', label: <Link href="/logout">Đăng xuất</Link> },
-      ]
+      { key: '1', label: <Link href="/profile">Trang cá nhân</Link> },
+      { key: '2', label: <Link href="/cart">Giỏ hàng</Link> },
+      { key: '3', label: <Link href="/logout">Đăng xuất</Link> },
+    ]
     : [
-        { key: '1', label: <Link href="/signin">Đăng nhập</Link> },
-        { key: '2', label: <Link href="/signup">Đăng ký</Link> },
-      ];
+      { key: '1', label: <Link href="/signin">Đăng nhập</Link> },
+      { key: '2', label: <Link href="/signup">Đăng ký</Link> },
+    ];
 
   return (
     <AntHeader
@@ -39,7 +39,7 @@ export default function Header({ isLoggedIn }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link href="/" style={{ fontSize: '20px', fontWeight: 'bold', color: 'white' }}>
-          BK Cosmetics
+          Lunera
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
