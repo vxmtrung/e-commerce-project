@@ -4,6 +4,7 @@ import { PaymentInfoDto } from '../dtos/payment-info.dto';
 import { PaymentEntity } from '../domains/entities/payment.entity';
 import { UpdatePaymentDto } from '../dtos/update-payment.dto';
 import { UpdateWebhookDto } from '../dtos/update-webhook.dto';
+import { PublicRoute } from 'src/decorators/public-route.decorator';
 
 @Controller('payments')
 export class PaymentController {
@@ -12,6 +13,7 @@ export class PaymentController {
         private readonly paymentService: IPaymentService
     ) {}
 
+    @PublicRoute()
     @Get('test')
     test(): String {
         return "hello world";
@@ -27,6 +29,7 @@ export class PaymentController {
         return this.paymentService.updatePaymentStatus(updatePaymentDto);
     }
 
+    @PublicRoute()
     @Post("hooks/update/payment-status")
     updatePaymentStatusByWebhook(@Body() updateWebHook: UpdateWebhookDto): Promise<PaymentInfoDto> {
         return this.paymentService.updatePaymentStatusByWebhook(updateWebHook);
