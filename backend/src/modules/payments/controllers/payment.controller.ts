@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Inject } from '@nestjs/common';
 import { IPaymentService } from '../services/payment.service';
 import { PaymentInfoDto } from '../dtos/payment-info.dto';
 import { PaymentEntity } from '../domains/entities/payment.entity';
@@ -8,6 +8,7 @@ import { UpdateWebhookDto } from '../dtos/update-webhook.dto';
 @Controller('payments')
 export class PaymentController {
     constructor(
+        @Inject('IPaymentService')
         private readonly paymentService: IPaymentService
     ) {}
 
