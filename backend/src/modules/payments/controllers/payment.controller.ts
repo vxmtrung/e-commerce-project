@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Inject, Param } from '@nestjs/common';
 import { IPaymentService } from '../services/payment.service';
 import { PaymentInfoDto } from '../dtos/payment-info.dto';
 import { PaymentEntity } from '../domains/entities/payment.entity';
@@ -12,12 +12,12 @@ export class PaymentController {
         private readonly paymentService: IPaymentService
     ) {}
 
-    @Get(":orderId")
-    getPaymentStatus(@Body() orderId: string): Promise<PaymentInfoDto> {
+    @Get('status/:orderId')
+    getPaymentStatus(@Param('orderId') orderId: string): Promise<PaymentInfoDto> {
         return this.paymentService.getPaymentStatus(orderId);
     }
 
-    @Post(":orderId")
+    @Post("update")
     updatePaymentStatus(@Body() updatePaymentDto: UpdatePaymentDto): Promise<PaymentEntity> {
         return this.paymentService.updatePaymentStatus(updatePaymentDto);
     }
