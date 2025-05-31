@@ -12,6 +12,11 @@ export class PaymentController {
         private readonly paymentService: IPaymentService
     ) {}
 
+    @Get('test')
+    test(): String {
+        return "hello world";
+    }
+
     @Get('status/:orderId')
     getPaymentStatus(@Param('orderId') orderId: string): Promise<PaymentInfoDto> {
         return this.paymentService.getPaymentStatus(orderId);
