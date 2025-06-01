@@ -21,6 +21,10 @@ export class PaymentService implements IPaymentService {
         private paymentRepository: Repository<PaymentEntity>
     ) {}
 
+    stringToUuid (str) {
+        return str.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/g, '$1-$2-$3-$4-$5');
+    }
+
     async updatePaymentStatus(updatePaymentDto: UpdatePaymentDto): Promise<PaymentEntity> {
         const orderId = updatePaymentDto.orderId;
         const payment = await this.paymentRepository.findOne({ where: { orderId } });
@@ -42,8 +46,11 @@ export class PaymentService implements IPaymentService {
 
     async updatePaymentStatusByWebhook(updateWebHook: UpdateWebhookDto): Promise<PaymentInfoDto> {
         const orderIds = updateWebHook.content.split(' ');
-        for (const orderId of orderIds) {
+
+        for (const orderIdStr of orderIds) {
             try {
+                const orderId = this.stringToUuid(orderIdStr);
+
                 const payment = await this.paymentRepository.findOne({ where: { orderId } });
                 if (!payment) {
                     throw new Error('Payment not found');
