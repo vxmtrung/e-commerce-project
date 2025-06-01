@@ -4,11 +4,14 @@ import { useState } from 'react';
 import { Layout, Menu, Dropdown, Avatar, Badge, Input } from 'antd';
 import { ShoppingCartOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
 import { tokenCustomer } from '@/context/config_provider';
+import { useAppSelector } from '@/hooks/redux_hooks';
+import { T } from '@/app/common';
 
 const { Header: AntHeader } = Layout;
 
 export default function Header({ isLoggedIn }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const user = useAppSelector('systemState', 'userReducer').user;
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -16,11 +19,11 @@ export default function Header({ isLoggedIn }) {
     }
   };
 
-  const menuItems = isLoggedIn
+  const menuItems = user
     ? [
       { key: '1', label: <Link href="/profile">Trang cá nhân</Link> },
       { key: '2', label: <Link href="/cart">Giỏ hàng</Link> },
-      { key: '3', label: <Link href="/logout">Đăng xuất</Link> },
+      { key: '3', label: <Link href="/login" onClick={() => T.localStorage.storage('token', '')}>Đăng xuất</Link> },
     ]
     : [
       { key: '1', label: <Link href="/signin">Đăng nhập</Link> },
@@ -53,7 +56,7 @@ export default function Header({ isLoggedIn }) {
             style={{ width: '250px' }}
           />
 
-          {isLoggedIn && (
+          {user && (
             <Link href="/cart" style={{ color: 'white', fontSize: '20px', position: 'relative' }}>
               <Badge count={2} size="small" offset={[5, -2]} style={{ backgroundColor: '#ff4d4f' }}>
                 <ShoppingCartOutlined style={{ fontSize: '24px', color: 'white' }} />

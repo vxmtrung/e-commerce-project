@@ -30,7 +30,6 @@ async function apiFetch({
         const response = await fetch(url.href, {
             method: method,
             body: data,
-            credentials: 'include',
             headers: {
                 ...defaultHeaders,
                 ...headers,
