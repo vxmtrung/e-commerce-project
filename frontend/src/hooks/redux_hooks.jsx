@@ -2,4 +2,4 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 export const useAppDispatch = useDispatch;
-export const useAppSelector = (parent, reducer) => useSelector(state => state[parent][`${reducer ?? parent}Reducer`]);
+export const useAppSelector = (parent, reducer) => useSelector(state => state[parent][`${reducer ?? parent}`]);
