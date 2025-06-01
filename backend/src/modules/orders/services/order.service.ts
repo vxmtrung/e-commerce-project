@@ -7,14 +7,16 @@ import { OrderEntity } from '../domains/entities/order.entity';
 import { OrderItemEntity } from '../domains/entities/order-item.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IOrderRepository } from '../repositories/order.repository';
-import { IOrderItemRepository } from '../repositories/order-item.repository';
 import { OrderStatsDto } from '../dtos/order-stats.dto';
 import { OrderStatsFilterDto } from '../dtos/order-stats-filter.dto';
 import { OrderDetailDto } from '../dtos/order-detail.dto';
 import { OrderStatus } from 'src/constants/order-status.constant';
 import { IProductRepository } from 'src/modules/products/repositories/product.repository';
 import { IProductInstanceRepository } from 'src/modules/products/repositories/product-instance.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PaymentEntity } from 'src/modules/payments/domains/entities/payment.entity';
+import { PaymentStatus } from 'src/constants/payment-status.constant';
 
 export interface IOrderService {
   findAll(): Promise<OrderEntity[]>;
@@ -38,23 +40,54 @@ export interface IOrderService {
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
-    @Inject('IOrderRepository')
-    private orderRepository: IOrderRepository,
-    @Inject('IOrderItemRepository')
-    private orderItemsRepository: IOrderItemRepository,
+    @InjectRepository(OrderEntity)
+    private orderRepository: Repository<OrderEntity>,
+    @InjectRepository(OrderItemEntity)
+    private orderItemsRepository: Repository<OrderItemEntity>,
     @Inject('IProductRepository')
     private productRepository: IProductRepository,
     @Inject('IProductInstanceRepository')
-    private productInstanceRepository: IProductInstanceRepository
+    private productInstanceRepository: IProductInstanceRepository,
+    @InjectRepository(PaymentEntity)
+    private paymentRepository: Repository<PaymentEntity>
   ) {}
 
   async findAll() {
     return this.orderRepository.find();
   }
 
-  async createOrder(createOrderDto: CreateOrderDto) {
-    const order = this.orderRepository.create(createOrderDto);
-    return this.orderRepository.save(order);
+  async createOrder(createOrderDto: CreateOrderDto): Promise<OrderEntity> {
+    return this.orderRepository.save({
+      status: OrderStatus.IN_PROGRESS,
+      shippingAddress: createOrderDto.address,
+      userId: createOrderDto.userId,
+      updatedAt: new Date()
+    }).then(
+      async order => {
+        for (const prodItem of createOrderDto.data) {
+          const orderItem = this.orderItemsRepository.create({ 
+            productId: prodItem.key,
+            quantity: prodItem.quantity,
+            orderId: order.id
+          });
+          this.orderItemsRepository.save(orderItem);
+
+          const prodInstance = await this.productInstanceRepository.findProductInstanceById(prodItem.key);
+          prodInstance.quantity -= prodItem.quantity;
+          this.productInstanceRepository.updateProductInstance(prodInstance.id, {...prodInstance});
+        }
+
+        // create payment
+        const newPayment = new PaymentEntity();
+        newPayment.orderId = order.id;
+        newPayment.paymentMethod = createOrderDto.paymentMethod;
+        newPayment.paymentStatus = PaymentStatus.PENDING;
+        newPayment.amount = createOrderDto.total;
+        this.paymentRepository.save(newPayment);
+
+        return this.orderRepository.save(order);
+      }
+    );
   }
 
   async deleteOrder(id: string) {

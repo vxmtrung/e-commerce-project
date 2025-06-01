@@ -5,6 +5,8 @@ import { PaymentStatus } from 'src/constants/payment-status.constant';
 import { PaymentInfoDto } from '../dtos/payment-info.dto';
 import { UpdatePaymentDto } from '../dtos/update-payment.dto';
 import { UpdateWebhookDto } from '../dtos/update-webhook.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 export interface IPaymentService {
     updatePaymentStatus(updatePaymentDto: UpdatePaymentDto): Promise<PaymentEntity>;
@@ -15,8 +17,8 @@ export interface IPaymentService {
 @Injectable()
 export class PaymentService implements IPaymentService {
     constructor(
-        @Inject('IPaymentRepository')
-        private paymentRepository: IPaymentRepository
+        @InjectRepository(PaymentEntity)
+        private paymentRepository: Repository<PaymentEntity>
     ) {}
 
     async updatePaymentStatus(updatePaymentDto: UpdatePaymentDto): Promise<PaymentEntity> {
