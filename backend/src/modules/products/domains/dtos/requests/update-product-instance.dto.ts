@@ -25,4 +25,7 @@ export class UpdateProductInstanceDto {
   @ApiProperty()
   @IsBoolean()
   status: boolean;
+
+  @ApiProperty({ nullable: true })
+  discountPercent?: number;
 }

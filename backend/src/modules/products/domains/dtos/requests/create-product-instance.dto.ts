@@ -21,4 +21,7 @@ export class CreateProductInstanceDto {
   @ApiProperty()
   @IsUUID()
   productId: string;
+
+  @ApiProperty({ nullable: true })
+  discountPercent?: number;
 }
