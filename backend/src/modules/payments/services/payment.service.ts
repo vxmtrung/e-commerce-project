@@ -41,25 +41,31 @@ export class PaymentService implements IPaymentService {
     }
 
     async updatePaymentStatusByWebhook(updateWebHook: UpdateWebhookDto): Promise<PaymentInfoDto> {
-        const orderId = updateWebHook.content.split(' ')[0];
-        const payment = await this.paymentRepository.findOne({ where: { orderId } });
-        if (!payment) {
-            throw new Error('Payment not found');
-        }
+        const orderIds = updateWebHook.content.split(' ');
+        for (const orderId of orderIds) {
+            try {
+                const payment = await this.paymentRepository.findOne({ where: { orderId } });
+                if (!payment) {
+                    throw new Error('Payment not found');
+                }
 
-        if (updateWebHook.transferAmount === payment.amount) {
-            payment.paymentStatus = PaymentStatus.COMPLETED;
-        }
-        else {
-            payment.paymentStatus = PaymentStatus.FAILED;
-        }
+                if (updateWebHook.transferAmount === payment.amount) {
+                    payment.paymentStatus = PaymentStatus.COMPLETED;
+                }
+                else {
+                    payment.paymentStatus = PaymentStatus.FAILED;
+                }
 
-        await this.paymentRepository.save(payment);
+                await this.paymentRepository.save(payment);
 
-        return {
-            orderId: payment.orderId,
-            amount: payment.amount,
-            paymentStatus: payment.paymentStatus
-        };
+                return {
+                    orderId: payment.orderId,
+                    amount: payment.amount,
+                    paymentStatus: payment.paymentStatus
+                };
+            }
+            catch(e) {};
+        }
+        return null;
     }
 }

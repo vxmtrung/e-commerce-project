@@ -32,7 +32,6 @@ export class PaymentController {
   @PublicRoute()
   @Post('hooks/update/payment-status')
   updatePaymentStatusByWebhook(@Body() updateWebHook: UpdateWebhookDto): Promise<PaymentInfoDto> {
-    console.log(updateWebHook);
     return this.paymentService.updatePaymentStatusByWebhook(updateWebHook);
   }
 }
