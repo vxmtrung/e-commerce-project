@@ -26,7 +26,7 @@ export class AuthService implements IAuthService {
     private jwtService: JwtService
   ) {}
 
-  async signIn(userLoginDto: UserLoginDto): Promise<AccessToken> {
+  async signIn(userLoginDto: UserLoginDto): Promise<any> {
     try {
       const userInfo = await this.userService.getUserByUsername(userLoginDto.username);
 
@@ -45,7 +45,10 @@ export class AuthService implements IAuthService {
 
       const token = await this.jwtService.signAsync(payload);
 
-      return new AccessToken(token);
+      return {
+        token: token,
+        user: payload
+      };
     } catch (error) {
       console.log(error);
       if (error instanceof HttpException) {
