@@ -31,6 +31,7 @@ export class Migration1741708488257 implements MigrationInterface {
       "price" integer NOT NULL, 
       "quantity" integer NOT NULL, 
       "product_id" character varying NOT NULL, 
+      "discount_percent" integer NOT NULL DEFAULT 0,
       "status" boolean NOT NULL DEFAULT true, 
       "created_at" TIMESTAMP NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone, 
       "updated_at" TIMESTAMP NOT NULL DEFAULT now(), 

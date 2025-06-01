@@ -8,30 +8,30 @@ import { PublicRoute } from 'src/decorators/public-route.decorator';
 
 @Controller('payments')
 export class PaymentController {
-    constructor(
-        @Inject('IPaymentService')
-        private readonly paymentService: IPaymentService
-    ) {}
+  constructor(
+    @Inject('IPaymentService')
+    private readonly paymentService: IPaymentService
+  ) {}
 
-    @PublicRoute()
-    @Get('test')
-    test(): String {
-        return "hello world";
-    }
+  @PublicRoute()
+  @Get('test')
+  test(): string {
+    return 'hello world';
+  }
 
-    @Get('status/:orderId')
-    getPaymentStatus(@Param('orderId') orderId: string): Promise<PaymentInfoDto> {
-        return this.paymentService.getPaymentStatus(orderId);
-    }
+  @Get('status/:orderId')
+  getPaymentStatus(@Param('orderId') orderId: string): Promise<PaymentInfoDto> {
+    return this.paymentService.getPaymentStatus(orderId);
+  }
 
-    @Post("update")
-    updatePaymentStatus(@Body() updatePaymentDto: UpdatePaymentDto): Promise<PaymentEntity> {
-        return this.paymentService.updatePaymentStatus(updatePaymentDto);
-    }
+  @Post('update')
+  updatePaymentStatus(@Body() updatePaymentDto: UpdatePaymentDto): Promise<PaymentEntity> {
+    return this.paymentService.updatePaymentStatus(updatePaymentDto);
+  }
 
-    @PublicRoute()
-    @Post("hooks/update/payment-status")
-    updatePaymentStatusByWebhook(@Body() updateWebHook: UpdateWebhookDto): Promise<PaymentInfoDto> {
-        return this.paymentService.updatePaymentStatusByWebhook(updateWebHook);
-    }
+  @PublicRoute()
+  @Post('hooks/update/payment-status')
+  updatePaymentStatusByWebhook(@Body() updateWebHook: UpdateWebhookDto): Promise<PaymentInfoDto> {
+    return this.paymentService.updatePaymentStatusByWebhook(updateWebHook);
+  }
 }

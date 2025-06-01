@@ -132,7 +132,7 @@ export class ProductService {
     sort?: Sorting,
     filter?: Filtering[]
   ): Promise<PaginatedResource<SearchProductDto>> {
-    const products = await this.productRepository.findProducts(paginationParams, sort, filter);
+    const products = await this.productRepository.findProductsWithFilter(filter);
 
     const productDtoItems = await Promise.all(
       products.items.map(async (p) => {
@@ -146,11 +146,27 @@ export class ProductService {
       })
     );
 
+    const start = paginationParams.page * paginationParams.size;
+    const end = start + paginationParams.size;
+
+    if (sort) {
+      const sorted = productDtoItems.sort((a, b) =>
+        sort.direction == 'asc' ? a.lowestPrice - b.lowestPrice : b.lowestPrice - a.lowestPrice
+      );
+
+      return {
+        totalItems: products.totalItems,
+        items: sorted.slice(start, end),
+        page: paginationParams.page,
+        size: paginationParams.size
+      };
+    }
+
     return {
       totalItems: products.totalItems,
-      items: productDtoItems,
-      page: products.page,
-      size: products.size
+      items: productDtoItems.slice(start, end),
+      page: paginationParams.page,
+      size: paginationParams.size
     };
   }
 

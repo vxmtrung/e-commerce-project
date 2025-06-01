@@ -89,7 +89,7 @@ export class ProductController {
   @ApiQuery({
     name: 'sort',
     type: 'string',
-    description: `{sort field}:{sort direction}. For example: name:asc`,
+    description: `{sort field}:{sort direction}. For example: price:asc`,
     required: false
   })
   @ApiQuery({
@@ -110,8 +110,23 @@ export class ProductController {
             "name": "Kem dưỡng ẩm",
             "description": "Kem dưỡng ẩm chăm sóc da",
             "status": true,
-            "lowestPrice": 49000,
-            "highestPrice": 49000,
+            "lowestInstance": {
+              "id": "261b4661-dbb1-4699-b42b-88fd131a25d2",
+              "name": "Phiên bản 2025",
+              "price": 49000,
+              "discountPercent": 10,
+              "quantity": 30,
+              "productImgs": [
+                {
+                  "id": "12393e05-2c9a-493a-85a0-47077cf0c33b",
+                  "productInstanceId": "261b4661-dbb1-4699-b42b-88fd131a25d2",
+                  "link": "https://images2.thanhnien.vn/zoom/700_438/528068263637045248/2024/1/26/e093e9cfc9027d6a142358d24d2ee350-65a11ac2af785880-17061562929701875684912-37-0-587-880-crop-1706239860681642023140.jpg",
+                  "status": true
+                }
+              ]
+            },
+            "lowestPrice": 44100,
+            "highestPrice": 44100,
             "category": {
               "id": "b4557c01-9076-4686-8c6d-2692bd2ba0a4",
               "name": "Dưỡng da",
@@ -127,12 +142,13 @@ export class ProductController {
                 "id": "261b4661-dbb1-4699-b42b-88fd131a25d2",
                 "name": "Phiên bản 2025",
                 "price": 49000,
+                "discountPercent": 10,
                 "quantity": 30,
                 "productImgs": [
                   {
-                    "id": "faa606b2-35d8-4b13-8f1d-1cb7fa87aff7",
+                    "id": "12393e05-2c9a-493a-85a0-47077cf0c33b",
                     "productInstanceId": "261b4661-dbb1-4699-b42b-88fd131a25d2",
-                    "link": "https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/09/hinh-anh-co-don.jpg",
+                    "link": "https://images2.thanhnien.vn/zoom/700_438/528068263637045248/2024/1/26/e093e9cfc9027d6a142358d24d2ee350-65a11ac2af785880-17061562929701875684912-37-0-587-880-crop-1706239860681642023140.jpg",
                     "status": true
                   }
                 ]
@@ -148,7 +164,7 @@ export class ProductController {
   })
   searchProducts(
     @PaginationParams() paginationParams: Pagination,
-    @SortingParams(['name', 'status', 'categoryId', 'brandId', 'price']) sort?: Sorting,
+    @SortingParams(['price']) sort?: Sorting,
     @FilteringParams(['name', 'status', 'categoryId', 'brandId']) filter?: Filtering[]
   ): Promise<PaginatedResource<SearchProductDto>> {
     return this.productService.SearchProducts(paginationParams, sort, filter);

@@ -6,6 +6,7 @@ export class ProductInstanceDto {
   name: string;
   description: string;
   price: number;
+  discountPercent: number;
   quantity: number;
   productImgs: ProductImgEntity[];
 
@@ -13,6 +14,7 @@ export class ProductInstanceDto {
     this.id = productInstance.id;
     this.name = productInstance.name;
     this.price = productInstance.price;
+    this.discountPercent = productInstance.discountPercent;
     this.quantity = productInstance.quantity;
     this.productImgs = productImgs;
   }

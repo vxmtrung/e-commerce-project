@@ -21,6 +21,7 @@ export interface IProductRepository {
   createProduct(createProductDto: CreateProductDto): Promise<ProductEntity>;
   updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<UpdateResult>;
   deleteProductById(id: string): Promise<DeleteResult>;
+  findProductsWithFilter(filter?: Filtering[]): Promise<PaginatedResource<ProductEntity>>;
 }
 
 @Injectable()
@@ -51,6 +52,21 @@ export class ProductRepository implements IProductRepository {
       items: products,
       page,
       size
+    };
+  }
+
+  async findProductsWithFilter(filter?: Filtering[]): Promise<PaginatedResource<ProductEntity>> {
+    const where = getWhere(filter);
+
+    const [products, total] = await this.productRepository.findAndCount({
+      where
+    });
+
+    return {
+      totalItems: total,
+      items: products,
+      page: 0,
+      size: total
     };
   }
 

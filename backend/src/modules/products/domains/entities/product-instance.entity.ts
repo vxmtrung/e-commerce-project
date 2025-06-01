@@ -34,6 +34,10 @@ export class ProductInstanceEntity {
   // imgIds: string[];
 
   @ApiProperty()
+  @Column({ nullable: false, default: 0 })
+  discountPercent: number;
+
+  @ApiProperty()
   @Column({ nullable: false, default: true })
   status: boolean;
 
