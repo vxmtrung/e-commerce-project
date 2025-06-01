@@ -141,9 +141,6 @@ export class OrderController {
   }
 
   @Get('user/:userId')
-  @ApiBody({
-    type: String
-  })
   @ApiResponse({
     status: 201,
     description: 'Create Order Successfully',
@@ -167,9 +164,6 @@ export class OrderController {
   }
 
   @Get(':id')
-  @ApiBody({
-    type: String
-  })
   @ApiResponse({
     status: 201,
     description: 'Create Order Successfully',
