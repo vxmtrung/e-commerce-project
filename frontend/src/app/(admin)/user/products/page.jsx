@@ -132,6 +132,7 @@ export default function ProductManager() {
     editForm.setFieldsValue({
       name: name,
       description: description,
+      name_instance: "150ml",
       price: editing_temp[0]['price'],
       quantity: editing_temp[0]['quantity'],
       discount: 0,
@@ -143,10 +144,13 @@ export default function ProductManager() {
 
   const handleChooseInstance = (i) => {
     setSelectedInstance(i);
+    var temp_name = "150ml"
+    if (i == 1) temp_name = "200ml"
     editForm.setFieldsValue({
       price: editing[0]['price'] + i * 5000,
       quantity: editing[0]['quantity'] + i,
-      discount: discounts[i]
+      discount: discounts[i],
+      name_instance: temp_name
     });
   };
 
@@ -406,7 +410,7 @@ export default function ProductManager() {
                     handleChooseInstance(0);
                   }}
                 >
-                  Mẫu 1
+                  150ml
                 </Button>
                 <Button
                   type={selectedInstance === 1 ? "primary" : "default"}
@@ -415,7 +419,7 @@ export default function ProductManager() {
                     handleChooseInstance(1);
                   }}
                 >
-                  Mẫu 2
+                  200ml
                 </Button>
               </div>
 
@@ -428,6 +432,7 @@ export default function ProductManager() {
                     quantity: null,
                     price: null,
                     discount: null,
+                    name_instance: null,
                   });
                 }}
               />
@@ -457,6 +462,14 @@ export default function ProductManager() {
               </Form.Item>
 
               <Form.Item
+                label="Tên mẫu"
+                name="name_instance"
+                rules={[{ required: true, message: "Hãy nhập tên mẫu!" }]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
                 label="Số lượng"
                 name="quantity"
                 rules={[{ required: true, message: "Hãy nhập số lượng!" }]}
@@ -472,7 +485,7 @@ export default function ProductManager() {
                 <Input type="number" />
               </Form.Item>
 
-              <Form.Item label="Giảm giá" name="discount">
+              <Form.Item label="Giảm giá (%)" name="discount">
                 <Input
                   type="number"
                   value={discounts[selectedInstance]}
