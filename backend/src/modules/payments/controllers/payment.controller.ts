@@ -5,6 +5,7 @@ import { PaymentEntity } from '../domains/entities/payment.entity';
 import { UpdatePaymentDto } from '../dtos/update-payment.dto';
 import { UpdateWebhookDto } from '../dtos/update-webhook.dto';
 import { PublicRoute } from 'src/decorators/public-route.decorator';
+import { ApiBody, ApiResponse } from '@nestjs/swagger';
 
 @Controller('payments')
 export class PaymentController {
@@ -25,6 +26,14 @@ export class PaymentController {
   }
 
   @Post('update')
+  @ApiBody({
+    type: UpdatePaymentDto
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Update Payment Successfully',
+    example: PaymentEntity
+  })
   updatePaymentStatus(@Body() updatePaymentDto: UpdatePaymentDto): Promise<PaymentEntity> {
     return this.paymentService.updatePaymentStatus(updatePaymentDto);
   }
