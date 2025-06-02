@@ -84,6 +84,52 @@ const ProductManagement = () => {
     fetchData();
   }, []);
 
+  const refreshBrandData = async () => {
+    const [brandRes, productRes] = await Promise.all([
+      fetch(`${backendUrl}/brands`),
+      fetch(`${backendUrl}/products?size=50&page=0`),
+    ]);
+
+    const brands = await brandRes.json();
+    const productData = await productRes.json();
+    const products = productData.items || [];
+
+    const brandCountMap = products.reduce((acc, product) => {
+      acc[product.brandId] = (acc[product.brandId] || 0) + 1;
+      return acc;
+    }, {});
+    console.log('Brand count map:', brandCountMap);
+    const brandsWithCount = brands.map(brand => ({
+      ...brand,
+      numbersProduct: brandCountMap[brand.id] || 0,
+    }));
+
+    setBrandData(brandsWithCount);
+  };
+
+  const refreshCategoryData = async () => {
+    const [categoryRes, productRes] = await Promise.all([
+      fetch(`${backendUrl}/categories`),
+      fetch(`${backendUrl}/products?size=50&page=0`),
+    ]);
+
+    const categories = await categoryRes.json();
+    const productData = await productRes.json();
+    const products = productData.items || [];
+
+    const categoryCountMap = products.reduce((acc, product) => {
+      acc[product.categoryId] = (acc[product.categoryId] || 0) + 1;
+      return acc;
+    }, {});
+
+    const categoriesWithCount = categories.map(category => ({
+      ...category,
+      numbersProduct: categoryCountMap[category.id] || 0,
+    }));
+
+    setCategoryData(categoriesWithCount);
+  };
+
   const handleCreateOrUpdateBrand = async (values) => {
     try {
       const method = values.id ? 'PUT' : 'POST';
@@ -99,8 +145,7 @@ const ProductManagement = () => {
 
       if (!res.ok) throw new Error();
 
-      const updatedBrands = await fetch(`${backendUrl}/brands`).then(res => res.json());
-      setBrandData(updatedBrands);
+      await refreshBrandData();
 
       message.success(values.id ? 'Cập nhật brand thành công' : 'Thêm brand thành công');
       brandRef.current.close();
@@ -117,8 +162,7 @@ const ProductManagement = () => {
 
       if (!res.ok) throw new Error();
 
-      const updatedBrands = await fetch(`${backendUrl}/brands`).then(res => res.json());
-      setBrandData(updatedBrands);
+      await refreshBrandData();
       message.success('Đã xoá brand');
     } catch (err) {
       message.error('Xoá brand thất bại');
@@ -140,8 +184,7 @@ const ProductManagement = () => {
 
       if (!res.ok) throw new Error();
 
-      const updatedCategories = await fetch(`${backendUrl}/categories`).then(res => res.json());
-      setCategoryData(updatedCategories);
+      await refreshCategoryData(); 
 
       message.success(values.id ? 'Cập nhật category thành công' : 'Thêm category thành công');
       categoryRef.current.close();
@@ -158,8 +201,7 @@ const ProductManagement = () => {
 
       if (!res.ok) throw new Error();
 
-      const updatedCategories = await fetch(`${backendUrl}/categories`).then(res => res.json());
-      setCategoryData(updatedCategories);
+      await refreshCategoryData();;
       message.success('Đã xoá category');
     } catch (err) {
       message.error('Xoá category thất bại');
