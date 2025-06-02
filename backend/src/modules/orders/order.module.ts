@@ -7,14 +7,15 @@ import { OrderService } from "./services/order.service";
 import { Repository } from "typeorm";
 import { ProductModule } from "../products/product.module";
 import { PaymentEntity } from "../payments/domains/entities/payment.entity";
+import { UserEntity } from "../users/domains/entities/user.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OrderEntity, OrderItemEntity, PaymentEntity]),
+    TypeOrmModule.forFeature([OrderEntity, OrderItemEntity, PaymentEntity, UserEntity]),
     ProductModule
   ],
   controllers: [OrderController],
-  exports: ['IOrderService', 'IOrderRepository', 'IOrderItemRepository', 'IPaymentRepository'],
+  exports: ['IOrderService', 'IOrderRepository', 'IOrderItemRepository', 'IPaymentRepository', 'IUserRepository'],
   providers: [
     {
       provide: 'IOrderService',
@@ -31,6 +32,10 @@ import { PaymentEntity } from "../payments/domains/entities/payment.entity";
     {
       provide: 'IPaymentRepository',
       useClass: Repository<PaymentEntity>
+    },
+    {
+      provide: 'IUserRepository',
+      useClass: Repository<UserEntity>
     },
   ]
 })

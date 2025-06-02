@@ -17,6 +17,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaymentEntity } from 'src/modules/payments/domains/entities/payment.entity';
 import { PaymentStatus } from 'src/constants/payment-status.constant';
+import { UserEntity } from 'src/modules/users/domains/entities/user.entity';
 
 export interface IOrderService {
   findAll(): Promise<OrderEntity[]>;
@@ -49,7 +50,9 @@ export class OrderService implements IOrderService {
     @Inject('IProductInstanceRepository')
     private productInstanceRepository: IProductInstanceRepository,
     @InjectRepository(PaymentEntity)
-    private paymentRepository: Repository<PaymentEntity>
+    private paymentRepository: Repository<PaymentEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>
   ) {}
 
   async findAll() {
@@ -134,22 +137,29 @@ export class OrderService implements IOrderService {
 
     for (const order of orders) {
       const orderItems = await this.orderItemsRepository.find({ where: { orderId: order.id } });
+      const payments = await this.paymentRepository.find({ where: { orderId: order.id } });
+      const user = await this.userRepository.findOneBy({ id: order.userId });
 
-      // Fetch products one by one or modify the repository method to accept an array
+      const productInstances = [];
       const products = [];
       for (const item of orderItems) {
-        const product = await this.productRepository.findProductById(item.productId);
-        if (product) {
-          products.push(product);
-        }
+        const productInstance = await this.productInstanceRepository.findProductInstanceById(item?.productId);
+        const product = await this.productRepository.findProductById(productInstance?.productId);
+
+        productInstances.push(productInstance);
+        products.push(product);
       }
 
       const items = orderItems.map((item) => {
-        const product = products.find((p) => p.id === item.productId);
-        const price = product?.price || 0;
+        const productInstance = productInstances.find(p => p.id === item.productId);
+        const product = products.find(p => p.id === productInstance?.productId);
+        const price = productInstance?.price || 0;
+
         return {
-          productId: item.productId,
+          productId: product?.id,
+          instanceId: productInstance?.id,
           productName: product?.name || 'Unknown',
+          instanceName: productInstance?.name,
           quantity: item.quantity,
           price,
           subTotal: price * item.quantity
@@ -158,14 +168,32 @@ export class OrderService implements IOrderService {
 
       const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
 
-      results.push({
-        orderId: order.id,
-        status: order.status,
-        shippingAddress: order.shippingAddress,
-        createdAt: order.createdAt,
-        totalPrice,
-        items
-      });
+      if (payments) {
+        for (const payment of payments) {
+          results.push({
+            orderId: order.id,
+            status: order.status,
+            shippingAddress: order.shippingAddress,
+            createdAt: order.createdAt,
+            totalPrice,
+            paymentMethod: payment.paymentMethod,
+            paymentStatus: payment.paymentStatus,
+            buyer: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              phoneNumber: user.phoneNumber,
+              username: user.username,
+              role: user.role,
+              status: user.status,
+              createdAt: user.createdAt,
+              updatedAt: user.updatedAt,
+              deletedAt: user.deletedAt
+            },
+            items
+          });
+        }
+      }
     }
 
     return results;
@@ -176,26 +204,33 @@ export class OrderService implements IOrderService {
     if (!order) throw new NotFoundException('Order not found');
 
     const orderItems = await this.orderItemsRepository.find({ where: { orderId } });
+    const payment = await this.paymentRepository.findOneBy({ orderId: order.id });
+    const user = await this.userRepository.findOneBy({ id: order.userId });
 
-    // Fetch products one by one or modify the repository method to accept an array
+    const productInstances = [];
     const products = [];
     for (const item of orderItems) {
-      const product = await this.productRepository.findProductById(item.productId);
-      if (product) {
-        products.push(product);
-      }
+      const productInstance = await this.productInstanceRepository.findProductInstanceById(item?.productId);
+      const product = await this.productRepository.findProductById(productInstance?.productId);
+
+      productInstances.push(productInstance);
+      products.push(product);
     }
 
     const items = orderItems.map((item) => {
-      const product = products.find((p) => p.id === item.productId);
+      const productInstance = productInstances.find(p => p.id === item.productId);
+      const product = products.find(p => p.id === productInstance?.productId);
       const price = product?.price || 0;
+
       return {
-        productId: item.productId,
-        productName: product?.name || 'Unknown',
-        quantity: item.quantity,
-        price,
-        subTotal: price * item.quantity
-      };
+          productId: product?.id,
+          instanceId: productInstance?.id,
+          productName: product?.name || 'Unknown',
+          instanceName: productInstance?.name,
+          quantity: item.quantity,
+          price,
+          subTotal: price * item.quantity
+        };
     });
 
     const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
@@ -206,6 +241,20 @@ export class OrderService implements IOrderService {
       shippingAddress: order.shippingAddress,
       createdAt: order.createdAt,
       totalPrice,
+      paymentMethod: payment?.paymentMethod,
+      paymentStatus: payment?.paymentStatus,
+      buyer: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        username: user.username,
+        role: user.role,
+        status: user.status,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        deletedAt: user.deletedAt
+      },
       items
     };
   }
