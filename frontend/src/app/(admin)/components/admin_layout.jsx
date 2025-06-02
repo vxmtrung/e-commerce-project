@@ -18,7 +18,7 @@ const { Content } = Layout;
 const systemStateUserSetDetail = 'systemStateUser:SetDetail';
 const systemStateMenusSetList = 'systemStateMenus:SetList';
 export function AdminLayout({ children, menus }) {
-    const user = null // useAppSelector('systemState', 'user').user;
+    const user = useAppSelector('systemState', 'user').user;
     const items = [
         {
             key: 'PROFILE',
@@ -39,7 +39,7 @@ export function AdminLayout({ children, menus }) {
             icon: <LogoutOutlined />
         }
     ];
-    const theme = null //useAppSelector('systemState', 'theme').theme;
+    const theme = useAppSelector('systemState', 'theme').theme;
     const {
         token: { borderRadius },
     } = antdTheme.useToken();
