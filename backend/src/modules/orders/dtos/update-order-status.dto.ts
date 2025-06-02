@@ -6,4 +6,8 @@ export class UpdateOrderStatusDto {
   @IsEnum(OrderStatus)
   @ApiProperty()
   status: OrderStatus;
+
+  constructor(status: OrderStatus) {
+    this.status = status;
+  }
 }

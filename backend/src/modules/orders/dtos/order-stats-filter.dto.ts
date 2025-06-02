@@ -11,4 +11,9 @@ export class OrderStatsFilterDto {
   @IsDateString()
   @ApiProperty()
   endDate?: string;
+
+  constructor(startDate: string, endDate: string) {
+    this.startDate = startDate;
+    this.endDate = endDate;
+  }
 }

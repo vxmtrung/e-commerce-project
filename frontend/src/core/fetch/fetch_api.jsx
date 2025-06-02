@@ -1,3 +1,4 @@
+import { T } from '@/app/common';
 
 
 async function apiFetch({
@@ -33,6 +34,7 @@ async function apiFetch({
             headers: {
                 ...defaultHeaders,
                 ...headers,
+                Authorization: `Bearer ${T.localStorage.storage('token') || ''}`
             },
             ...options,
         });
