@@ -20,11 +20,22 @@ export default function PaymentPage() {
     }
   }, []);
 
-  const handleSubmit = (values) => {
-    console.log('Form submitted:', {
-      ...values,
-      ...checkoutData,
+  const handleSubmit = async (values) => {
+    await fetch(
+      'http://localhost:3000/orders',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          ...values,
+          ...checkoutData,
+        })
+      }
+    ).then(res => {
+      console.log('Form submitted:', res);
+    }).catch(e => {
+      console.log(e);
     });
+
     localStorage.removeItem('checkoutData');
     openSuccessNotification();
 

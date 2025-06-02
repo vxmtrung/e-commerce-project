@@ -9,6 +9,7 @@ import { OrderStatsFilterDto } from '../dtos/order-stats-filter.dto';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { OrderDetailDto } from '../dtos/order-detail.dto';
 import { OrderStatus } from 'src/constants/order-status.constant';
+import { PublicRoute } from 'src/decorators/public-route.decorator';
 
 @Controller('orders')
 export class OrderController {
@@ -140,6 +141,7 @@ export class OrderController {
     return this.orderService.updateOrderItemQuantity(id, updateOrderItemQuantityDto.quantity);
   }
 
+  // @PublicRoute()
   @Get('user/:userId')
   @ApiResponse({
     status: 201,
@@ -150,9 +152,25 @@ export class OrderController {
       shippingAddress: "string",
       createdAt: "Date",
       totalPrice: "number",
+      paymentMethod: "CREDIT_CARD / BANK_TRANSFER / CASH_ON_DELIVERY",
+      paymentStatus: "PENDING / COMPLETED / FAILED",
+      buyer: {
+        id: "string",
+        name: "string",
+        email: "string",
+        phoneNumber: "string",
+        username: "string",
+        role: "USER/ ADMIN",
+        status: "boolean",
+        createdAt: "Date",
+        updatedAt: "Date",
+        deletedAt: "Date",
+      },
       items: [{
         productId: "string",
+        instanceId: "string",
         productName: "string",
+        instanceName: "string",
         quantity: "number",
         price: "number",
         subTotal: "number",
@@ -163,6 +181,7 @@ export class OrderController {
     return this.orderService.getOrdersByUser(userId);
   }
 
+  // @PublicRoute()
   @Get(':id')
   @ApiResponse({
     status: 201,

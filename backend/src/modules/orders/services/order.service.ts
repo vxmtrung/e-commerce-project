@@ -220,7 +220,7 @@ export class OrderService implements IOrderService {
     const items = orderItems.map((item) => {
       const productInstance = productInstances.find(p => p.id === item.productId);
       const product = products.find(p => p.id === productInstance?.productId);
-      const price = product?.price || 0;
+      const price = productInstance?.price || 0;
 
       return {
           productId: product?.id,

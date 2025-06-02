@@ -1,9 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, Card, Tag, Button, List, Space, Typography, Modal, Steps } from 'antd';
 import { useRouter } from 'next/navigation';
 import dateformat from 'dateformat';
+
+// [
+//     {
+//       id: 'ORD-001',
+//       date: new Date('2024-04-20'),
+//       status: 'Đã nhận',
+//       total: 149.00,
+//       tracking: {
+//         currentStep: 3,
+//         steps: [
+//           { title: 'Đã đặt hàng', description: '20/04/2024 10:00' },
+//           { title: 'Đang xử lý', description: '20/04/2024 11:30' },
+//           { title: 'Đang giao', description: '21/04/2024 09:00' },
+//           { title: 'Đã nhận', description: '21/04/2024 15:30' },
+//         ]
+//       },
+//       items: [
+//         { name: 'Kem dưỡng ẩm', quantity: 2, price: 49.000 },
+//         { name: 'Gel Trị Mụn', quantity: 1, price: 51.000 },
+//       ],
+//     },
+//     {
+//       id: 'ORD-002',
+//       date: new Date('2024-04-18'),
+//       status: 'Đang xử lý',
+//       total: 53.000,
+//       tracking: {
+//         currentStep: 1,
+//         steps: [
+//           { title: 'Đã đặt hàng', description: '18/04/2024 14:00' },
+//           { title: 'Đang xử lý', description: '18/04/2024 15:30' },
+//           { title: 'Đang giao', description: null },
+//           { title: 'Đã nhận', description: null },
+//         ]
+//       },
+//       items: [
+//         { name: 'Mặt nạ ngủ', quantity: 1, price: 53.000 },
+//       ],
+//     },
+//     {
+//       id: 'ORD-003',
+//       date: new Date('2024-04-19'),
+//       status: 'Đang giao',
+//       total: 199.000,
+//       tracking: {
+//         currentStep: 2,
+//         steps: [
+//           { title: 'Đã đặt hàng', description: '19/04/2024 09:00' },
+//           { title: 'Đang xử lý', description: '19/04/2024 10:30' },
+//           { title: 'Đang giao', description: '20/04/2024 08:00' },
+//           { title: 'Đã nhận', description: null },
+//         ]
+//       },
+//       items: [
+//         { name: 'Sữa rửa mặt', quantity: 1, price: 89.000 },
+//         { name: 'Toner', quantity: 1, price: 110.000 },
+//       ],
+//     },
+//   ]
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -18,66 +77,52 @@ const OrderPage = () => {
   const [activeTab, setActiveTab] = useState('all_orders');
   const [trackingModalVisible, setTrackingModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const userId = '7f44b733-b813-4ead-8228-00076b99ab82';
+  const [orders, setOrders] = useState([]);
 
-  // Mock order data - replace with actual data from your backend
-  const orders = [
-    {
-      id: 'ORD-001',
-      date: new Date('2024-04-20'),
-      status: 'Đã nhận',
-      total: 149.00,
-      tracking: {
-        currentStep: 3,
-        steps: [
-          { title: 'Đã đặt hàng', description: '20/04/2024 10:00' },
-          { title: 'Đang xử lý', description: '20/04/2024 11:30' },
-          { title: 'Đang giao', description: '21/04/2024 09:00' },
-          { title: 'Đã nhận', description: '21/04/2024 15:30' },
-        ]
-      },
-      items: [
-        { name: 'Kem dưỡng ẩm', quantity: 2, price: 49.000 },
-        { name: 'Gel Trị Mụn', quantity: 1, price: 51.000 },
-      ],
-    },
-    {
-      id: 'ORD-002',
-      date: new Date('2024-04-18'),
-      status: 'Đang xử lý',
-      total: 53.000,
-      tracking: {
-        currentStep: 1,
-        steps: [
-          { title: 'Đã đặt hàng', description: '18/04/2024 14:00' },
-          { title: 'Đang xử lý', description: '18/04/2024 15:30' },
-          { title: 'Đang giao', description: null },
-          { title: 'Đã nhận', description: null },
-        ]
-      },
-      items: [
-        { name: 'Mặt nạ ngủ', quantity: 1, price: 53.000 },
-      ],
-    },
-    {
-      id: 'ORD-003',
-      date: new Date('2024-04-19'),
-      status: 'Đang giao',
-      total: 199.000,
-      tracking: {
-        currentStep: 2,
-        steps: [
-          { title: 'Đã đặt hàng', description: '19/04/2024 09:00' },
-          { title: 'Đang xử lý', description: '19/04/2024 10:30' },
-          { title: 'Đang giao', description: '20/04/2024 08:00' },
-          { title: 'Đã nhận', description: null },
-        ]
-      },
-      items: [
-        { name: 'Sữa rửa mặt', quantity: 1, price: 89.000 },
-        { name: 'Toner', quantity: 1, price: 110.000 },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetch(
+        `http://localhost:3000/orders/user/${userId}`,
+        {
+          method: 'GET'
+        }
+      ).then(
+        async res => {
+          const status = ['IN_PROGRESS', 'SENT', 'CANCELLED', 'RECEIVED'];
+          const data = await res.json();
+
+          setOrders(data.map(order => {
+            return {
+              id: order?.orderId,
+              date: new Date(order?.createdAt),
+              status: order?.status,
+              total: order?.totalPrice,
+              tracking: {
+                currentStep: Math.max(status.findIndex(s => s === order?.status), 0),
+                steps: [
+                  { title: 'Đã đặt hàng', description: '20/04/2024 10:00' },
+                  { title: 'Đang xử lý', description: '20/04/2024 11:30' },
+                  { title: 'Đang giao', description: '21/04/2024 09:00' },
+                  { title: 'Đã nhận', description: '21/04/2024 15:30' },
+                ]
+              },
+              items: order?.items?.map(item => {
+                return {
+                  name: item?.productName + ' (' + item?.instanceName + ')',
+                  quantity: item?.quantity,
+                  price: item?.price
+                };
+              }),
+            };
+          }));
+        }
+      ).catch(
+        e => console.log(e)
+      );
+    };
+    fetchData();
+  }, []);
 
   const getStatusTag = (status) => {
     const statusColors = {
@@ -124,7 +169,7 @@ const OrderPage = () => {
                     </div>
                     <Space>
                       {getStatusTag(order.status)}
-                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                      <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
                   
@@ -135,7 +180,7 @@ const OrderPage = () => {
                       <List.Item>
                         <Space style={{ width: '100%', justifyContent: 'space-between' }}>
                           <Text>{item.name} x {item.quantity}</Text>
-                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
+                          <Text>{formatPrice((item.price * item.quantity).toFixed(0))} ₫</Text>
                         </Space>
                       </List.Item>
                     )}
