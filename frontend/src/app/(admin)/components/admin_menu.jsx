@@ -14,7 +14,7 @@ export default function SideNav({ ...others }) {
     const [openKeys, setOpenKeys] = useState(['']);
     const [current, setCurrent] = useState('');
     const rootSubmenuKeys = others.menus.map((menu) => menu.key);
-    const user = null //useAppSelector('systemState', 'user').user;
+    const user = useAppSelector('systemState', 'user').user;
 
     const onOpenChange = (keys) => {
         const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
