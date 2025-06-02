@@ -14,12 +14,6 @@ export class PaymentController {
     private readonly paymentService: IPaymentService
   ) {}
 
-  @PublicRoute()
-  @Get('test')
-  test(): string {
-    return 'hello world';
-  }
-
   @Get('status/:orderId')
   getPaymentStatus(@Param('orderId') orderId: string): Promise<PaymentInfoDto> {
     return this.paymentService.getPaymentStatus(orderId);

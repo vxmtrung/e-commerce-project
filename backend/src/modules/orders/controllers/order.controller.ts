@@ -166,8 +166,39 @@ export class OrderController {
   @Get(':id')
   @ApiResponse({
     status: 201,
-    description: 'Create Order Successfully',
-    example: OrderDetailDto
+    description: 'Get Order Detail Successfully',
+    example: {
+      orderId: "string",
+      status: "string",
+      shippingAddress: "string",
+      createdAt: "Date",
+      totalPrice: "number",
+      paymentMethod: "CREDIT_CARD / BANK_TRANSFER / CASH_ON_DELIVERY",
+      paymentStatus: "PENDING / COMPLETED / FAILED",
+      buyer: {
+        id: "string",
+        name: "string",
+        email: "string",
+        phoneNumber: "string",
+        username: "string",
+        role: "USER / ADMIN",
+        status: "boolean",
+        createdAt: "Date",
+        updatedAt: "Date",
+        deletedAt: "Date"
+      },
+      items: [
+        {
+          productId: "string",
+          instanceId: "string",
+          productName: "string",
+          instanceName: "string",
+          quantity: "number",
+          price: "number",
+          subTotal: "number"
+        }
+      ]
+    }
   })
   getOrderDetail(@Param('id') orderId: string) {
     return this.orderService.getOrderDetail(orderId);
