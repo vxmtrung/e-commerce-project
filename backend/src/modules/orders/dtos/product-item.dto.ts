@@ -29,4 +29,19 @@ export class ProductItemDto {
 
   @IsNotEmpty()
   quantity: number;
+
+  constructor(
+    brand: string, description: string, image: string,
+    initialPrice: number, key: string, price: number,
+    productName: string, quantity: number
+  ) {
+    this.brand = brand;
+    this.description = description;
+    this.image = image;
+    this.initialPrice = initialPrice;
+    this.key = key;
+    this.price = price;
+    this.productName = productName;
+    this.quantity = quantity;
+  }
 }

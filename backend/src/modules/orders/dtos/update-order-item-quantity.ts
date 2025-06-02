@@ -6,4 +6,8 @@ export class UpdateOrderItemQuantityDto {
   @Min(1)
   @ApiProperty()
   quantity: number;
+
+  constructor(quantity: number) {
+    this.quantity = quantity;
+  }
 }
