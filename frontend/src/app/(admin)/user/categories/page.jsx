@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Tabs,
   Table,
@@ -21,62 +21,149 @@ import BrandModal from './components/edit_brand_modal';
 
 const { TabPane } = Tabs;
 
-const initialBrands = [
-  { id: 1, name: 'Klairs', numbersProduct: 12 },
-  { id: 2, name: 'The Ordinary', numbersProduct: 12 },
-  { id: 3, name: 'Innisfree', numbersProduct: 12 },
-];
-
-const initialCategories = [
-  { id: 1, category: 'Toner', name: 'Nước hoa hồng', numbersProduct: 12 },
-  { id: 2, category: 'Serum', name: 'Tinh chất', numbersProduct: 8 },
-  { id: 3, category: 'Moisturizer', name: 'Kem dưỡng', numbersProduct: 15 },
-];
 
 const ProductManagement = () => {
-  const [brandData, setBrandData] = useState(initialBrands);
-  const [categoryData, setCategoryData] = useState(initialCategories);
+  const [brandData, setBrandData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   const categoryRef = useRef();
   const brandRef = useRef();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [brandRes, categoryRes, productRes] = await Promise.all([
+          fetch(`${backendUrl}/brands`),
+          fetch(`${backendUrl}/categories`),
+          fetch(`${backendUrl}/products?size=50&page=0`), 
+        ]);
+
+        if (!brandRes.ok || !categoryRes.ok || !productRes.ok) {
+          throw new Error('Lỗi fetch dữ liệu');
+        }
+
+        const brands = await brandRes.json();
+        const categories = await categoryRes.json();
+        const productData = await productRes.json();
+        const products = productData.items || [];
+
+
+        const brandCountMap = products.reduce((acc, product) => {
+          const brandId = product.brandId;
+          acc[brandId] = (acc[brandId] || 0) + 1;
+          return acc;
+        }, {});
+
+
+        const categoryCountMap = products.reduce((acc, product) => {
+          const categoryId = product.categoryId;
+          acc[categoryId] = (acc[categoryId] || 0) + 1;
+          return acc;
+        }, {});
+
+
+        const brandsWithCount = brands.map(brand => ({
+          ...brand,
+          numbersProduct: brandCountMap[brand.id] || 0,
+        }));
+
+
+        const categoriesWithCount = categories.map(category => ({
+          ...category,
+          numbersProduct: categoryCountMap[category.id] || 0,
+        }));
+
+        setBrandData(brandsWithCount);
+        setCategoryData(categoriesWithCount);
+      } catch (err) {
+        console.error('Lỗi khi tải dữ liệu:', err);
+        message.error('Không thể tải dữ liệu: ' + err.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleCreateOrUpdateBrand = async (values) => {
-    if (values.id) {
-      const updated = brandData.map(item =>
-        item.id === values.id ? { ...item, ...values } : item
-      );
-      setBrandData(updated);
-      message.success('Cập nhật brand thành công');
-    } else {
-      const newId = Math.max(...brandData.map(item => item.id), 0) + 1;
-      setBrandData([...brandData, { ...values, id: newId, numbersProduct: 0 }]);
-      message.success('Thêm brand thành công');
+    try {
+      const method = values.id ? 'PUT' : 'POST';
+      const url = values.id
+        ? `${backendUrl}/brands/${values.id}`
+        : `${backendUrl}/brands`;
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!res.ok) throw new Error();
+
+      const updatedBrands = await fetch(`${backendUrl}/brands`).then(res => res.json());
+      setBrandData(updatedBrands);
+
+      message.success(values.id ? 'Cập nhật brand thành công' : 'Thêm brand thành công');
+      brandRef.current.close();
+    } catch (err) {
+      message.error('Thao tác brand thất bại');
     }
-    brandRef.current.close();
   };
 
-  const handleDeleteBrand = (id) => {
-    setBrandData(brandData.filter(item => item.id !== id));
-    message.success('Đã xoá brand');
+  const handleDeleteBrand = async (id) => {
+    try {
+      const res = await fetch(`${backendUrl}/brands/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) throw new Error();
+
+      const updatedBrands = await fetch(`${backendUrl}/brands`).then(res => res.json());
+      setBrandData(updatedBrands);
+      message.success('Đã xoá brand');
+    } catch (err) {
+      message.error('Xoá brand thất bại');
+    }
   };
 
   const handleCreateOrUpdateCategory = async (values) => {
-    if (values.id) {
-      const updated = categoryData.map(item =>
-        item.id === values.id ? { ...item, ...values } : item
-      );
-      setCategoryData(updated);
-      message.success('Cập nhật category thành công');
-    } else {
-      const newId = Math.max(...categoryData.map(item => item.id), 0) + 1;
-      setCategoryData([...categoryData, { ...values, id: newId, numbersProduct: 0 }]);
-      message.success('Thêm category thành công');
+    try {
+      const method = values.id ? 'PUT' : 'POST';
+      const url = values.id
+        ? `${backendUrl}/categories/${values.id}`
+        : `${backendUrl}/categories`;
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!res.ok) throw new Error();
+
+      const updatedCategories = await fetch(`${backendUrl}/categories`).then(res => res.json());
+      setCategoryData(updatedCategories);
+
+      message.success(values.id ? 'Cập nhật category thành công' : 'Thêm category thành công');
+      categoryRef.current.close();
+    } catch (err) {
+      message.error('Thao tác category thất bại');
     }
-    categoryRef.current.close();
   };
 
-  const handleDeleteCategory = (id) => {
-    setCategoryData(categoryData.filter(item => item.id !== id));
-    message.success('Đã xoá category');
+  const handleDeleteCategory = async (id) => {
+    try {
+      const res = await fetch(`${backendUrl}/categories/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) throw new Error();
+
+      const updatedCategories = await fetch(`${backendUrl}/categories`).then(res => res.json());
+      setCategoryData(updatedCategories);
+      message.success('Đã xoá category');
+    } catch (err) {
+      message.error('Xoá category thất bại');
+    }
   };
 
   const brandColumns = [
@@ -114,11 +201,11 @@ const ProductManagement = () => {
   ];
 
   const categoryColumns = [
-    {
-      title: 'Loại',
-      dataIndex: 'category',
-      key: 'category',
-    },
+    // {
+    //   title: 'Loại',
+    //   dataIndex: 'category',
+    //   key: 'category',
+    // },
     {
       title: 'Tên',
       dataIndex: 'name',
