@@ -10,15 +10,22 @@ import {
   Typography,
   Space,
   Modal,
+  message,
 } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
+import { useAppSelector } from '@/hooks/redux_hooks';
 
 const { Title, Text, Paragraph } = Typography;
 
 const ProductCard = ({ productDetail }) => {
   const [selectedVolume, setSelectedVolume] = useState('180ml');
-
   const volumeOptions = ['2×180ml', '2×30ml', '10ml', '30ml', '180ml'];
+  const user = useAppSelector('systemState', 'userReducer').user;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const currentCart = JSON.parse(localStorage.getItem(user?.id)) || [];
+  const productIndex = currentCart.findIndex(
+    (item) => item.id === productDetail.id
+  );
 
   const formatPrice = (price) => {
     if (price == 0) return 0;
@@ -26,34 +33,48 @@ const ProductCard = ({ productDetail }) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
-  const price = formatPrice(
-    (productDetail?.price * (100 - productDetail?.discountPercent)) / 100
-  );
-
-  const marketPrice = formatPrice(productDetail?.price);
-
-  const savings = formatPrice(
+  const finalPrice =
+    (productDetail?.price * (100 - productDetail?.discountPercent)) / 100;
+  const marketPrice = productDetail?.price;
+  const savings =
     productDetail?.price -
-      (productDetail?.price * (100 - productDetail?.discountPercent)) / 100
-  );
+    (productDetail?.price * (100 - productDetail?.discountPercent)) / 100;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const formattedFinalPrice = formatPrice(finalPrice);
+  const formattedMarketPrice = formatPrice(marketPrice);
+  const formattedSavings = formatPrice(savings);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
-    localStorage.setItem(
-      productDetail.id,
-      JSON.stringify({
-        brand: productDetail.brand,
-        name: productDetail.productName,
-        marketPrice, //giá gốc
-        price, //giá đã giảm
-        img: 'https://th.bing.com/th/id/OIP.Msemb0oPJ1dkR00ANAh6iwHaHa?rs=1&pid=ImgDetMain',
-      })
-    );
+    if (user) {
+      //đã đăng nhập
+      if (productIndex === -1) {
+        //chưa có sản phẩm trong cart -> thêm vào cart
+        const newProduct = {
+          id: productDetail.id,
+          brand: productDetail.brand,
+          productName: productDetail.productName,
+          initialPrice: marketPrice, //giá gốc
+          price: finalPrice, //giá đã giảm
+          image: productDetail.img,
+          description: productDetail.shortDescription,
+        };
+
+        currentCart.push(newProduct);
+        localStorage.setItem(user.id, JSON.stringify(currentCart));
+        message.success('Thêm vào giỏ hàng thành công!');
+      } else {
+        //đã có -> xoá khỏi cart
+        currentCart.splice(productIndex, 1);
+        localStorage.setItem(user.id, JSON.stringify(currentCart));
+        message.info('Đã xoá khỏi giỏ hàng');
+      }
+    }
+
     setIsModalOpen(false);
-    console.log(JSON.parse(localStorage.getItem(productDetail.id)));
+    console.log(JSON.parse(localStorage.getItem(user?.id)));
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -65,7 +86,8 @@ const ProductCard = ({ productDetail }) => {
         {/* Left Image & Thumbnails */}
         <Col span={10}>
           <Image
-            src="https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg"
+            // src="https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg"
+            src={productDetail.img}
             width={200}
             alt="main"
             className="rounded"
@@ -74,8 +96,9 @@ const ProductCard = ({ productDetail }) => {
             {[...Array(5)].map((_, i) => (
               <Col key={i} span={4}>
                 <Image
-                  src="https://bizweb.dktcdn.net/thumb/1024x1024/100/382/633/products/nuoc-hoa-hong-klairs-supple-preparation-unscented-toner9-9764296c7e5d4014b41aa66251372d1a-master.jpg?v=1587697312593"
-                  width={40}
+                  // src="https://bizweb.dktcdn.net/thumb/1024x1024/100/382/633/products/nuoc-hoa-hong-klairs-supple-preparation-unscented-toner9-9764296c7e5d4014b41aa66251372d1a-master.jpg?v=1587697312593"
+                  src={productDetail.img}
+                  swidth={40}
                   className="rounded border"
                 />
               </Col>
@@ -91,11 +114,11 @@ const ProductCard = ({ productDetail }) => {
               {productDetail.productName}
             </Title>
             <Title level={3} className="text-red-600 !mb-0">
-              {price} đ
+              {formattedFinalPrice} đ
             </Title>
             <Text>
-              Giá trị trường: {marketPrice} ₫ - Tiết kiệm: {savings} ₫ (
-              {productDetail.discountPercent} %)
+              Giá trị trường: {formattedMarketPrice} ₫ - Tiết kiệm:{' '}
+              {formattedSavings} ₫ ({productDetail.discountPercent} %)
             </Text>
             <Space>
               <Text strong>Dung Tích:</Text>
@@ -130,7 +153,15 @@ const ProductCard = ({ productDetail }) => {
                 onOk={handleOk}
                 onCancel={handleCancel}
               >
-                <p>Thêm sản phẩm này vào giỏ hàng của bạn?</p>
+                {user ? (
+                  productIndex === -1 ? (
+                    <p>Thêm sản phẩm này vào giỏ hàng của bạn?</p>
+                  ) : (
+                    <p>Xoá sản phẩm này khỏi giỏ hàng của bạn?</p>
+                  )
+                ) : (
+                  <p>Vui lòng đăng nhập để thêm vào giỏ hàng</p>
+                )}
               </Modal>
             </Space>
             <Paragraph className="mt-4" type="secondary">

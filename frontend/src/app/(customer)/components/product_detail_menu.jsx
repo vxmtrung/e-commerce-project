@@ -48,7 +48,7 @@ const ProductDetailMenu = ({ productDetail }) => {
     {
       key: '1',
       label: 'Barcode',
-      children: '8809115025050',
+      children: productDetail.id,
     },
     {
       key: '2',
@@ -137,8 +137,8 @@ const ProductDetailMenu = ({ productDetail }) => {
         <div style={{ fontWeight: 'bold', fontSize: '24px' }}>
           Mô tả sản phẩm
         </div>
-        <div>
-          {/* {props.description} */}
+        {productDetail.longDescription}
+        {/* <div>
           Tinh Chất Klairs Vitamin C Dưỡng Sáng Da, Mờ Thâm 35ml là sản phẩm
           tinh chất đến từ thương hiệu Klairs của Hàn Quốc, tiếp thêm sinh lực
           trẻ hóa làn da với sức mạnh của 5% Vitamin C dạng Acid L-ascorbic nhẹ
@@ -159,7 +159,7 @@ const ProductDetailMenu = ({ productDetail }) => {
           Sáng Da, Mờ Thâm Klairs Freshly Juiced Vitamin Drop, khi được hàng
           triệu khách hàng đón nhận và đạt được rất nhiều thành tựu, giải thưởng
           không chỉ ở Hàn Quốc mà còn ở các thị trường khác trên toàn cầu.
-        </div>
+        </div> */}
       </div>
 
       <hr style={{ margin: '50px 0px' }} />

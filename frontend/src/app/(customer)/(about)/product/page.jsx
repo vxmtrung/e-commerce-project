@@ -107,15 +107,6 @@ export default function ProductsPage() {
                   href={`product/detail?id=${product?.id}&&name=${product?.name}`}
                 >
                   <Card
-                    onClick={() =>
-                      localStorage.setItem(
-                        product?.id,
-                        JSON.stringify({
-                          brand: product?.brand.name,
-                          img: product?.image_url,
-                        })
-                      )
-                    }
                     hoverable
                     className="transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
                     cover={

@@ -11,12 +11,11 @@ export default function DetailPage() {
   const id = useSearchParams().get('id');
   const name = useSearchParams().get('name');
   //   const brand = JSON.parse(localStorage.getItem(id)).brand || 'Idk Brand';
-  const brand = JSON.parse(localStorage.getItem(id)).brand || 'idk';
-  const img =
-    JSON.parse(localStorage.getItem(id)).img ||
-    'https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg';
-  console.log(brand);
-  console.log(img);
+  //   const brand = 'idk';
+  //   const img =
+  //     'https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg';
+  //   console.log(brand);
+  //   console.log(img);
 
   useEffect(() => {
     fetchProductDetail();
@@ -30,16 +29,23 @@ export default function DetailPage() {
         `http://localhost:3000/product-instances/${id}/detail`
       );
       const detail = await productDetailResponse.json();
+
+      const parentProductResponse = await fetch(
+        `http://localhost:3000/products/search?page=0&size=1&filter=name:eq:${name}`
+      );
+      const parentProduct = await parentProductResponse.json();
+
       detail.productName = name;
-      detail.brand = brand;
-      detail.img = img;
+      detail.brand = parentProduct.items[0].brand.name || 'Unknown Brand';
+      detail.img =
+        parentProduct.items[0].productInstances.find((item) => item.id == id)
+          .productImgs[0]?.link ||
+        'https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg';
+      detail.shortDescription = parentProduct.items[0].description;
+      detail.longDescription = detail.description || detail.shortDescription;
 
       setProductDetail(detail);
       console.log(detail);
-
-      //cần brand, lấy từ /products/search -> localstorage
-      //cần img, lấy từ /product-imgs -> localstorage
-      //cần mô tả, lấy từ /products/search or /product-instances/id/detail
     } catch (error) {
       console.error('Error fetching product detail:', error);
       setProductDetail([]);

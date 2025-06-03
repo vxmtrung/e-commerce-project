@@ -4,6 +4,7 @@ import CartTable from '../../components/cart_table';
 import CartInfo from '../../components/cart_info';
 import { Space } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { useAppSelector } from '@/hooks/redux_hooks';
 
 const initialCartData = [
   {
@@ -86,7 +87,11 @@ const initialCartData = [
 ];
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState(initialCartData);
+  const user = useAppSelector('systemState', 'userReducer').user;
+  const cartData = JSON.parse(localStorage.getItem(user?.id)) || [];
+
+  // const [cartItems, setCartItems] = useState(initialCartData);
+  const [cartItems, setCartItems] = useState(cartData);
   const [subtotal, setSubtotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(0);
