@@ -24,8 +24,9 @@ const ProductCard = ({ productDetail }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const currentCart = JSON.parse(localStorage.getItem(user?.id)) || [];
   const productIndex = currentCart.findIndex(
-    (item) => item.id === productDetail.id
+    (item) => item.key === productDetail.id
   );
+  console.log(productIndex);
 
   const formatPrice = (price) => {
     if (price == 0) return 0;
@@ -53,13 +54,14 @@ const ProductCard = ({ productDetail }) => {
       if (productIndex === -1) {
         //chưa có sản phẩm trong cart -> thêm vào cart
         const newProduct = {
-          id: productDetail.id,
+          key: productDetail.id,
           brand: productDetail.brand,
           productName: productDetail.productName,
           initialPrice: marketPrice, //giá gốc
           price: finalPrice, //giá đã giảm
           image: productDetail.img,
           description: productDetail.shortDescription,
+          name: productDetail.name, //phiên bản
         };
 
         currentCart.push(newProduct);
