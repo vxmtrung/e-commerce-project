@@ -2,20 +2,36 @@
 import { tokenCustomer } from '@/context/config_provider';
 import { Menu, InputNumber, Button } from 'antd';
 import Link from 'next/link';
-import { useState } from 'react';
-
-const categories = [
-  { key: 'vaseline', label: 'Vaseline', path: '/category/vaseline' },
-  { key: 'lip-ice', label: 'LipIce', path: '/category/lip-ice' },
-  { key: 'silky-girl', label: 'SilkyGirl', path: '/category/silky-girl' },
-  { key: 'nivea', label: 'Nivea', path: '/category/nivea' },
-  { key: 'cocoon', label: 'Cocoon', path: '/category/cocoon' },
-  { key: 'bare-soul', label: 'BareSoul', path: '/category/bare-soul' },
-];
+import { useState, useEffect } from 'react';
 
 export default function CategorySidebar() {
+  const [categories, setCategories] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories`);
+        if (response.ok) {
+          const categoriesData = await response.json();
+          const transformed = categoriesData
+            .filter(category => category.status)
+            .map(category => ({
+              key: category.id,
+              label: category.name,
+              path: `/category/${category.id}`
+            }));
+          setCategories(transformed);
+        } else {
+          setCategories([]);
+        }
+      } catch {
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleMinPriceChange = (value) => {
     setMinPrice(value);
@@ -46,11 +62,9 @@ export default function CategorySidebar() {
           label: (
             <a
               href={category.path}
-              style={{
-                color: 'black',
-              }}
-              onMouseEnter={(e) => (e.target.style.color = tokenCustomer.colorLinkHover)}
-              onMouseLeave={(e) => (e.target.style.color = 'black')}
+              style={{ color: 'black' }}
+              onMouseEnter={e => (e.target.style.color = tokenCustomer.colorLinkHover)}
+              onMouseLeave={e => (e.target.style.color = 'black')}
             >
               {category.label}
             </a>
