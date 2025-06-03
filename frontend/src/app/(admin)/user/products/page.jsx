@@ -77,11 +77,12 @@ export default function ProductManager() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: `Phiên bản ${new Date().getFullYear()}`,
+            name: values.name_instance,
+            description: null, 
             price: values.price,
             quantity: values.quantity,
             productId: newProduct.id,
-            status: true
+            discountPercent: values.discount
           }),
         });
 
@@ -191,7 +192,7 @@ export default function ProductManager() {
             name: values.name_instance,
             price: values.price,
             quantity: values.quantity,
-            discountPercent: values.discount
+            discountPercent: values.discount === null ? 0 : values.discount
           }),
         });
 
@@ -206,6 +207,34 @@ export default function ProductManager() {
       }
     }
   };
+
+  const handleDeleteInstance = async () => {
+    const instanceId = editForm.getFieldValue("instance_id");
+    if (!instanceId) {
+      notification.error({ message: "Không thể xoá!" });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances/${instanceId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        notification.success({ message: "Xoá mẫu thành công!" });
+        setShowEditModal(false);
+        fetchProducts();
+      } else {
+        notification.error({ message: "Xoá mẫu không thành công!" });
+      }
+    } catch (err) {
+      notification.error({ message: "Xoá mẫu không thành công!" });
+    }
+  };
+
 
   const productColumns = [
     {
@@ -354,6 +383,14 @@ export default function ProductManager() {
               {currentStep === 2 && (
                 <>
                   <Form.Item
+                    label="Tên mẫu"
+                    name="name_instance"
+                    rules={[{ required: true, message: 'Hãy nhập tên mẫu!' }]}
+                  >
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item
                     label="Số lượng"
                     name="quantity"
                     rules={[{ required: true, message: 'Hãy nhập số lượng!' }]}
@@ -365,6 +402,13 @@ export default function ProductManager() {
                     label="Giá"
                     name="price"
                     rules={[{ required: true, message: 'Hãy nhập giá!' }]}
+                  >
+                    <Input type="number" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Giảm giá"
+                    name="discount"
                   >
                     <Input type="number" />
                   </Form.Item>
@@ -464,7 +508,7 @@ export default function ProductManager() {
                 name="name"
                 rules={[{ required: true, message: "Hãy nhập tên sản phẩm!" }]}
               >
-                <Input />
+                <Input disabled={isAddingNewInstance} />
               </Form.Item>
 
               <Form.Item
@@ -472,7 +516,7 @@ export default function ProductManager() {
                 name="description"
                 rules={[{ required: true, message: "Hãy nhập mô tả!" }]}
               >
-                <Input.TextArea />
+                <Input.TextArea disabled={isAddingNewInstance} />
               </Form.Item>
 
               <Form.Item
@@ -512,17 +556,32 @@ export default function ProductManager() {
               </Form.Item>
 
               <Form.Item>
-                <div style={{ textAlign: "center" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: "16px" }}>
                   <Button
                     type="primary"
                     htmlType="submit"
-                    style={{
-                      padding: "10px 20px",
-                    }}
+                    style={{ padding: "10px 20px" }}
                     className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
                   >
                     {isAddingNewInstance ? "Thêm mẫu mới" : "Cập nhật"}
                   </Button>
+
+                  {!isAddingNewInstance && (
+                    <Popconfirm
+                      title="Bạn có chắc muốn xoá mẫu này không?"
+                      onConfirm={handleDeleteInstance}
+                      okText="Đồng ý"
+                      cancelText="Huỷ"
+                    >
+                      <Button
+                        danger
+                        style={{ padding: "10px 20px" }}
+                        className="hover:brightness-110 rounded-lg shadow-md transition duration-200"
+                      >
+                        Xoá mẫu
+                      </Button>
+                    </Popconfirm>
+                  )}
                 </div>
               </Form.Item>
             </Form>
