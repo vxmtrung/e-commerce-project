@@ -13,7 +13,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -23,7 +24,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -33,7 +35,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -43,7 +46,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -53,7 +57,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -63,7 +68,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -73,7 +79,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
 ];
@@ -85,24 +92,36 @@ export default function Cart() {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    const newSubtotal = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+    const newSubtotal = cartItems.reduce(
+      (sum, item) => sum + item.price * (item.quantity || 1),
+      0
+    );
     setSubtotal(newSubtotal);
     setTotal(newSubtotal - discount);
   }, [cartItems, discount]);
 
   const handleQuantityChange = (key, newQuantity) => {
-    const updatedCartItems = cartItems.map(item =>
+    const updatedCartItems = cartItems.map((item) =>
       item.key === key ? { ...item, quantity: newQuantity } : item
     );
     setCartItems(updatedCartItems);
   };
 
   return (
-    <Space direction="horizontal" size="large" style={{ width: '100%', alignItems: 'flex-start' }}>
+    <Space
+      direction="horizontal"
+      size="large"
+      style={{ width: '100%', alignItems: 'flex-start' }}
+    >
       <div style={{ flex: 1 }}>
         <CartTable data={cartItems} onQuantityChange={handleQuantityChange} />
       </div>
-      <CartInfo subtotal={subtotal} discount={discount} total={total} data={cartItems}/>
+      <CartInfo
+        subtotal={subtotal}
+        discount={discount}
+        total={total}
+        data={cartItems}
+      />
     </Space>
   );
 }

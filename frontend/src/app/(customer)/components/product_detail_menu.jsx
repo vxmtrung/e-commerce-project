@@ -1,36 +1,36 @@
-"use client";
-import React, { useEffect, useState, useRef } from "react";
-import { Row, Col, Menu, Progress, Card } from "antd";
-import { Badge, Descriptions } from "antd";
-import { tokenCustomer } from "@/context/config_provider";
-import { StarFilled } from "@ant-design/icons";
+'use client';
+import React, { useEffect, useState, useRef } from 'react';
+import { Row, Col, Menu, Progress, Card } from 'antd';
+import { Badge, Descriptions } from 'antd';
+import { tokenCustomer } from '@/context/config_provider';
+import { StarFilled } from '@ant-design/icons';
 
-const ProductDetailMenu = () => {
-  const [current, setCurrent] = useState("description");
+const ProductDetailMenu = ({ productDetail }) => {
+  const [current, setCurrent] = useState('description');
   const items = [
     {
       label: (
         <a
           href="#description"
           style={{
-            color: current == "description" ? undefined : "black",
+            color: current == 'description' ? undefined : 'black',
           }}
         >
           Mô tả
         </a>
       ),
-      key: "description",
+      key: 'description',
     },
     {
       label: (
         <a
           href="#detail"
-          style={{ color: current == "detail" ? undefined : "black" }}
+          style={{ color: current == 'detail' ? undefined : 'black' }}
         >
           Thông số
         </a>
       ),
-      key: "detail",
+      key: 'detail',
     },
     // {
     //   label: (
@@ -46,29 +46,29 @@ const ProductDetailMenu = () => {
   ];
   const details = [
     {
-      key: "1",
-      label: "Barcode",
-      children: "8809115025050",
+      key: '1',
+      label: 'Barcode',
+      children: '8809115025050',
     },
     {
-      key: "2",
-      label: "Thương hiệu",
-      children: "ClearSkin",
+      key: '2',
+      label: 'Thương hiệu',
+      children: productDetail.brand,
     },
     {
-      key: "3",
-      label: "Xuất xứ thương hiệu",
-      children: "Hàn Quốc",
+      key: '3',
+      label: 'Xuất xứ thương hiệu',
+      children: 'Hàn Quốc',
     },
     {
-      key: "4",
-      label: "Nơi sản xuất",
-      children: "Korea",
+      key: '4',
+      label: 'Nơi sản xuất',
+      children: 'Korea',
     },
     {
-      key: "5",
-      label: "Phiên bản",
-      children: "2021",
+      key: '5',
+      label: 'Phiên bản',
+      children: productDetail.name,
       span: 2,
     },
   ];
@@ -93,15 +93,15 @@ const ProductDetailMenu = () => {
     }
 
     if (detailTop < window.innerHeight / 3) {
-      setCurrent("detail");
+      setCurrent('detail');
     } else if (descriptionTop < window.innerHeight / 3) {
-      setCurrent("description");
+      setCurrent('description');
     }
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const onClick = (e) => {
@@ -116,11 +116,11 @@ const ProductDetailMenu = () => {
         mode="horizontal"
         items={items}
         style={{
-          position: "sticky",
+          position: 'sticky',
           //   top: 64,
           top: 0,
           zIndex: 1000,
-          background: "white",
+          background: 'white',
         }}
       />
 
@@ -128,13 +128,13 @@ const ProductDetailMenu = () => {
         id="description"
         ref={descriptionRef}
         style={{
-          paddingTop: "20px",
-          paddingLeft: "13px",
+          paddingTop: '20px',
+          paddingLeft: '13px',
           lineHeight: 2,
-          scrollMarginTop: "80px",
+          scrollMarginTop: '80px',
         }}
       >
-        <div style={{ fontWeight: "bold", fontSize: "24px" }}>
+        <div style={{ fontWeight: 'bold', fontSize: '24px' }}>
           Mô tả sản phẩm
         </div>
         <div>
@@ -162,17 +162,17 @@ const ProductDetailMenu = () => {
         </div>
       </div>
 
-      <hr style={{ margin: "50px 0px" }} />
+      <hr style={{ margin: '50px 0px' }} />
 
       <div
         id="detail"
         ref={detailRef}
         style={{
-          paddingLeft: "13px",
-          scrollMarginTop: "80px",
+          paddingLeft: '13px',
+          scrollMarginTop: '80px',
         }}
       >
-        <div style={{ fontWeight: "bold", fontSize: "24px" }}>Thông số</div>
+        <div style={{ fontWeight: 'bold', fontSize: '24px' }}>Thông số</div>
         <Descriptions Info bordered items={details} column={1} />
       </div>
 

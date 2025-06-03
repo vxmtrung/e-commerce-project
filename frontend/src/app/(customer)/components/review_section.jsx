@@ -9,12 +9,12 @@ const { Option } = Select;
 const ReviewItem = ({ reviewItem }) => {
   const convertToStringTime = (time) => {
     if (!time) {
-      return "";
+      return '';
     }
 
     const getFormatedTime = (time) => {
       if (!time) {
-        return "--";
+        return '--';
       }
 
       if (time < 10) {
@@ -24,7 +24,11 @@ const ReviewItem = ({ reviewItem }) => {
     };
 
     const date = new Date(parseInt(time, 10));
-    return `${getFormatedTime(date.getHours())}:${getFormatedTime(date.getMinutes())} | ${getFormatedTime(date.getDate())}-${getFormatedTime(date.getMonth() + 1)}-${getFormatedTime(date.getFullYear())}`;
+    return `${getFormatedTime(date.getHours())}:${getFormatedTime(
+      date.getMinutes()
+    )} | ${getFormatedTime(date.getDate())}-${getFormatedTime(
+      date.getMonth() + 1
+    )}-${getFormatedTime(date.getFullYear())}`;
   };
 
   return (
@@ -34,8 +38,12 @@ const ReviewItem = ({ reviewItem }) => {
         <div>
           <div className="flex items-center gap-2">
             <Rate disabled defaultValue={5} className="text-sm" />
-            <span className="font-semibold text-green-600">{reviewItem?.reviewerName}</span>
-            <span className="text-gray-500 text-sm">| {reviewItem?.productName}</span>
+            <span className="font-semibold text-green-600">
+              {reviewItem?.reviewerName}
+            </span>
+            <span className="text-gray-500 text-sm">
+              | {reviewItem?.productName}
+            </span>
           </div>
 
           <p className="mt-2">{reviewItem?.reviewContents}</p>
@@ -44,7 +52,9 @@ const ReviewItem = ({ reviewItem }) => {
             {reviewItem?.replyContents}
           </div>
 
-          <span className="text-gray-400 text-xs">{convertToStringTime(reviewItem?.time)}</span>
+          <span className="text-gray-400 text-xs">
+            {convertToStringTime(reviewItem?.time)}
+          </span>
         </div>
       </div>
     </div>
@@ -63,44 +73,44 @@ export default function ReviewSection() {
   ]);
   const [reviews, setReviews] = React.useState([
     {
-      reviewerName: "Trương Bảo Mẫn",
-      productName: "Nước Hoa Hồng Klairs Dành Cho Da Nhạy Cảm 180ml",
-      reviewContents: "tui xài này r , dùng rất oki cũng giảm mụn tí",
-      replyContents: "Hasaki xin chào! Cảm ơn Trương Bảo Mẫn đã dành thời gian đánh giá. Sự hài lòng của " +
-        "khách hàng là động lực to lớn để Hasaki ngày càng phát triển hơn nữa về chất lượng dịch vụ. Cảm ơn bạn đã tin tưởng và mua sắm tại Hasaki.",
-      time: "1549312452000"
+      reviewerName: 'Trương Bảo Mẫn',
+      productName: 'Nước Hoa Hồng Klairs Dành Cho Da Nhạy Cảm 180ml',
+      reviewContents: 'tui xài này r , dùng rất oki cũng giảm mụn tí',
+      replyContents:
+        'Hasaki xin chào! Cảm ơn Trương Bảo Mẫn đã dành thời gian đánh giá. Sự hài lòng của ' +
+        'khách hàng là động lực to lớn để Hasaki ngày càng phát triển hơn nữa về chất lượng dịch vụ. Cảm ơn bạn đã tin tưởng và mua sắm tại Hasaki.',
+      time: '1549312452000',
     },
     {
-      reviewerName: "Trương Bảo Mẫn",
-      productName: "Nước Hoa Hồng Klairs Dành Cho Da Nhạy Cảm 180ml",
-      reviewContents: "tui xài này r , dùng rất oki cũng giảm mụn tí",
-      replyContents: "Hasaki xin chào! Cảm ơn Trương Bảo Mẫn đã dành thời gian đánh giá. Sự hài lòng của " +
-        "khách hàng là động lực to lớn để Hasaki ngày càng phát triển hơn nữa về chất lượng dịch vụ. Cảm ơn bạn đã tin tưởng và mua sắm tại Hasaki.",
-      time: "1549312452000"
-    }
+      reviewerName: 'Trương Bảo Mẫn',
+      productName: 'Nước Hoa Hồng Klairs Dành Cho Da Nhạy Cảm 180ml',
+      reviewContents: 'tui xài này r , dùng rất oki cũng giảm mụn tí',
+      replyContents:
+        'Hasaki xin chào! Cảm ơn Trương Bảo Mẫn đã dành thời gian đánh giá. Sự hài lòng của ' +
+        'khách hàng là động lực to lớn để Hasaki ngày càng phát triển hơn nữa về chất lượng dịch vụ. Cảm ơn bạn đã tin tưởng và mua sắm tại Hasaki.',
+      time: '1549312452000',
+    },
   ]);
 
-  React.useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const res = await fetch(
-          "http://localhost:3000/products?page=0&size=10"
-        );
-        const jsonData = await res.json();
-        setReviews(jsonData.items);
-      } catch (error) {
-        console.error("error fetching reviews", error);
-      }
-    };
+  // React.useEffect(() => {
+  //   const fetchReviews = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         "http://localhost:3000/products?page=0&size=10"
+  //       );
+  //       const jsonData = await res.json();
+  //       setReviews(jsonData.items);
+  //     } catch (error) {
+  //       console.error("error fetching reviews", error);
+  //     }
+  //   };
 
-    fetchReviews();
-  }, []);
+  //   fetchReviews();
+  // }, []);
 
   return (
     <Card className="!w-full shadow-xl rounded-2xl">
-      <h2 className="text-xl font-bold mb-4">
-        Đánh giá
-      </h2>
+      <h2 className="text-xl font-bold mb-4">Đánh giá</h2>
 
       <div className="text-gray-500 dark:text-gray-400">
         Đánh giá trung bình
@@ -124,7 +134,11 @@ export default function ReviewSection() {
                 className="w-48"
               />
               <span className="text-sm text-gray-600">
-                {item.star === 5 ? 'Rất hài lòng' : item.star === 4 ? 'Hài lòng' : ''}
+                {item.star === 5
+                  ? 'Rất hài lòng'
+                  : item.star === 4
+                  ? 'Hài lòng'
+                  : ''}
               </span>
             </div>
           ))}
@@ -135,9 +149,7 @@ export default function ReviewSection() {
             Chia sẻ nhận xét của bạn về sản phẩm này
           </div>
 
-          <Button type="primary">
-            Viết Bình luận
-          </Button>
+          <Button type="primary">Viết Bình luận</Button>
         </div>
       </div>
 
@@ -149,15 +161,13 @@ export default function ReviewSection() {
         </Select>
       </div>
 
-      {
-        reviews.map((reviewItem, index) => (
-          <ReviewItem key={index} reviewItem={reviewItem} />
-        ))
-      }
+      {reviews.map((reviewItem, index) => (
+        <ReviewItem key={index} reviewItem={reviewItem} />
+      ))}
 
       <div className="flex justify-center mt-6">
         <Pagination defaultCurrent={1} total={13 * 10} pageSize={10} />
       </div>
     </Card>
   );
-};
+}
