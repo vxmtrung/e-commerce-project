@@ -53,13 +53,14 @@ const ProductCard = ({ productDetail }) => {
       if (productIndex === -1) {
         //chưa có sản phẩm trong cart -> thêm vào cart
         const newProduct = {
-          id: productDetail.id,
+          key: productDetail.id,
           brand: productDetail.brand,
           productName: productDetail.productName,
           initialPrice: marketPrice, //giá gốc
           price: finalPrice, //giá đã giảm
           image: productDetail.img,
           description: productDetail.shortDescription,
+          name: productDetail.name, //phiên bản
         };
 
         currentCart.push(newProduct);
