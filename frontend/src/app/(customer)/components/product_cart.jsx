@@ -24,8 +24,9 @@ const ProductCard = ({ productDetail }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const currentCart = JSON.parse(localStorage.getItem(user?.id)) || [];
   const productIndex = currentCart.findIndex(
-    (item) => item.id === productDetail.id
+    (item) => item.key === productDetail.id
   );
+  console.log(productIndex);
 
   const formatPrice = (price) => {
     if (price == 0) return 0;
