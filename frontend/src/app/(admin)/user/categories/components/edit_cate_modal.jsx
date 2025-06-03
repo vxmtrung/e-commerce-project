@@ -38,13 +38,13 @@ const CategoryModal = forwardRef(({ onSubmit }, ref) => {
       onOk={handleOk}
     >
       <Form form={form} layout="vertical" onFinish={handleFinish}>
-        <Form.Item
+        {/* <Form.Item
           name="category"
           label="Loại"
           rules={[{ required: true, message: 'Vui lòng nhập mã loại' }]}
         >
           <Input />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item
           name="name"
           label="Tên hiển thị"
