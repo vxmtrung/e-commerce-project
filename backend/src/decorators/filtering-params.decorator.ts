@@ -35,7 +35,8 @@ export const FilteringParams = createParamDecorator((data, ctx: ExecutionContext
   const filterArray = Array.isArray(filters) ? filters : [filters]; // Đảm bảo filter là mảng
   for (const filter of filterArray) {
     if (
-      !filter.match(/^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):[a-zA-Z0-9_,-]+$/) &&
+      // !filter.match(/^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):[a-zA-Z0-9_,-]+$/) &&
+      !filter.match(/^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):.+$/) &&
       !filter.match(/^[a-zA-Z0-9_]+:(isnull|isnotnull)$/)
     ) {
       throw new BadRequestException('Invalid filter parameter');
