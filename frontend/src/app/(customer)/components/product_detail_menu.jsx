@@ -5,7 +5,8 @@ import { Badge, Descriptions } from 'antd';
 import { tokenCustomer } from '@/context/config_provider';
 import { StarFilled } from '@ant-design/icons';
 
-const ProductDetailMenu = ({ productDetail }) => {
+const ProductDetailMenu = ({ product, instance, brand }) => {
+  // const ProductDetailMenu = ({ productDetail }) => {
   const [current, setCurrent] = useState('description');
   const items = [
     {
@@ -48,12 +49,13 @@ const ProductDetailMenu = ({ productDetail }) => {
     {
       key: '1',
       label: 'Barcode',
-      children: productDetail.id,
+      children: 'jj',
+      children: product.id,
     },
     {
       key: '2',
       label: 'Thương hiệu',
-      children: productDetail.brand,
+      children: brand,
     },
     {
       key: '3',
@@ -68,7 +70,7 @@ const ProductDetailMenu = ({ productDetail }) => {
     {
       key: '5',
       label: 'Phiên bản',
-      children: productDetail.name,
+      children: instance.name?.substring(10),
       span: 2,
     },
   ];
@@ -137,7 +139,7 @@ const ProductDetailMenu = ({ productDetail }) => {
         <div style={{ fontWeight: 'bold', fontSize: '24px' }}>
           Mô tả sản phẩm
         </div>
-        {productDetail.longDescription}
+        {product.description}
         {/* <div>
           Tinh Chất Klairs Vitamin C Dưỡng Sáng Da, Mờ Thâm 35ml là sản phẩm
           tinh chất đến từ thương hiệu Klairs của Hàn Quốc, tiếp thêm sinh lực

@@ -18,12 +18,12 @@ export default function Header({ isLoggedIn }) {
       window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
     }
   };
-
   const menuItems = user
     ? [
       { key: '1', label: <Link href="/profile">Trang cá nhân</Link> },
       { key: '2', label: <Link href="/cart">Giỏ hàng</Link> },
-      { key: '3', label: <Link href="/login" onClick={() => T.localStorage.storage('token', '')}>Đăng xuất</Link> },
+      { key: '3', label: <Link href="/order">Đơn hàng của tôi</Link> },
+      { key: '4', label: <Link href="/login" onClick={() => T.localStorage.storage('token', '')}>Đăng xuất</Link> },
     ]
     : [
       { key: '1', label: <Link href="/signin">Đăng nhập</Link> },

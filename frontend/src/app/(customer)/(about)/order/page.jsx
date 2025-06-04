@@ -4,66 +4,8 @@ import { useState, useEffect } from 'react';
 import { Tabs, Card, Tag, Button, List, Space, Typography, Modal, Steps } from 'antd';
 import { useRouter } from 'next/navigation';
 import dateformat from 'dateformat';
-
-// [
-//     {
-//       id: 'ORD-001',
-//       date: new Date('2024-04-20'),
-//       status: 'Đã nhận',
-//       total: 149.00,
-//       tracking: {
-//         currentStep: 3,
-//         steps: [
-//           { title: 'Đã đặt hàng', description: '20/04/2024 10:00' },
-//           { title: 'Đang xử lý', description: '20/04/2024 11:30' },
-//           { title: 'Đang giao', description: '21/04/2024 09:00' },
-//           { title: 'Đã nhận', description: '21/04/2024 15:30' },
-//         ]
-//       },
-//       items: [
-//         { name: 'Kem dưỡng ẩm', quantity: 2, price: 49.000 },
-//         { name: 'Gel Trị Mụn', quantity: 1, price: 51.000 },
-//       ],
-//     },
-//     {
-//       id: 'ORD-002',
-//       date: new Date('2024-04-18'),
-//       status: 'Đang xử lý',
-//       total: 53.000,
-//       tracking: {
-//         currentStep: 1,
-//         steps: [
-//           { title: 'Đã đặt hàng', description: '18/04/2024 14:00' },
-//           { title: 'Đang xử lý', description: '18/04/2024 15:30' },
-//           { title: 'Đang giao', description: null },
-//           { title: 'Đã nhận', description: null },
-//         ]
-//       },
-//       items: [
-//         { name: 'Mặt nạ ngủ', quantity: 1, price: 53.000 },
-//       ],
-//     },
-//     {
-//       id: 'ORD-003',
-//       date: new Date('2024-04-19'),
-//       status: 'Đang giao',
-//       total: 199.000,
-//       tracking: {
-//         currentStep: 2,
-//         steps: [
-//           { title: 'Đã đặt hàng', description: '19/04/2024 09:00' },
-//           { title: 'Đang xử lý', description: '19/04/2024 10:30' },
-//           { title: 'Đang giao', description: '20/04/2024 08:00' },
-//           { title: 'Đã nhận', description: null },
-//         ]
-//       },
-//       items: [
-//         { name: 'Sữa rửa mặt', quantity: 1, price: 89.000 },
-//         { name: 'Toner', quantity: 1, price: 110.000 },
-//       ],
-//     },
-//   ]
-
+import { useAppSelector } from '@/hooks/redux_hooks';
+import { T } from '@/app/common';
 const { Title, Text } = Typography;
 const { Step } = Steps;
 
@@ -73,57 +15,68 @@ const formatPrice = (price) => {
 };
 
 const OrderPage = () => {
+  const client = T.client;
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('all_orders');
   const [trackingModalVisible, setTrackingModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const userId = '7f44b733-b813-4ead-8228-00076b99ab82';
   const [orders, setOrders] = useState([]);
-
+  const user = useAppSelector('systemState', 'userReducer').user;
   useEffect(() => {
     const fetchData = async () => {
-      await fetch(
-        `http://localhost:3000/orders/user/${userId}`,
-        {
-          method: 'GET'
-        }
-      ).then(
-        async res => {
-          const status = ['IN_PROGRESS', 'SENT', 'CANCELLED', 'RECEIVED'];
-          const data = await res.json();
+      try {
+        if (!user?.id) return;
+        const data = await client.get(`/orders/user/${user.id}`);
+        // const response = await fetch(`http://localhost:3000/orders/user/${user.id}`, {
+        //   headers: {
+        //     'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5MWRlNzllLTU0NWMtNGY1MS1iZmZkLTIwZjBmYWU1MDhkNCIsIm5hbWUiOiJOZ3V5ZW4iLCJ1c2VybmFtZSI6Im5ndXllbmdsMDMiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc0ODk1MTg2NywiZXhwIjoxNzQ5MDM4MjY3fQ.Od_Ju44jZQe2CWiXRlKAGQ2ouNfQOUzcaeVAAYs3qr4`
+        //   }
+        // });
+        // const data = await response.json();
+        // console.log('Orders:', data);
+        // Status mapping from backend to frontend display text
+        const statusMap = {
+          'IN_PROGRESS': 'Đang xử lý',
+          'SENT': 'Đang giao',
+          'CANCELLED': 'Đã hủy',
+          'RECEIVED': 'Đã nhận'
+        }; setOrders(data.map(order => {
+          const orderStatus = statusMap[order?.status] || 'Đang xử lý';
+          const steps = [
+            { title: 'Đã đặt hàng', description: dateformat(order?.createdAt, 'dd/mm/yyyy HH:MM') },
+            { title: 'Đang xử lý', description: order?.status === 'IN_PROGRESS' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
+            { title: 'Đang giao', description: order?.status === 'SENT' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
+            { title: 'Đã nhận', description: order?.status === 'RECEIVED' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
+          ];
 
-          setOrders(data.map(order => {
-            return {
-              id: order?.orderId,
-              date: new Date(order?.createdAt),
-              status: order?.status,
-              total: order?.totalPrice,
-              tracking: {
-                currentStep: Math.max(status.findIndex(s => s === order?.status), 0),
-                steps: [
-                  { title: 'Đã đặt hàng', description: '20/04/2024 10:00' },
-                  { title: 'Đang xử lý', description: '20/04/2024 11:30' },
-                  { title: 'Đang giao', description: '21/04/2024 09:00' },
-                  { title: 'Đã nhận', description: '21/04/2024 15:30' },
-                ]
-              },
-              items: order?.items?.map(item => {
-                return {
-                  name: item?.productName + ' (' + item?.instanceName + ')',
-                  quantity: item?.quantity,
-                  price: item?.price
-                };
-              }),
-            };
-          }));
-        }
-      ).catch(
-        e => console.log(e)
-      );
+          return {
+            id: order?.orderId,
+            date: new Date(order?.createdAt),
+            status: orderStatus,
+            total: order?.totalPrice,
+            discount: order?.discount,
+            subtotal: order?.subtotal,
+            tracking: {
+              currentStep: order?.status === 'CANCELLED' ? -1 : Math.max(['IN_PROGRESS', 'SENT', 'RECEIVED'].indexOf(order?.status), 0),
+              steps: order?.status === 'CANCELLED' ?
+                [{ title: 'Đã đặt hàng', description: dateformat(order?.createdAt, 'dd/mm/yyyy HH:MM') },
+                { title: 'Đã hủy', description: dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') }] : steps
+            },
+            items: order?.items?.map(item => ({
+              name: item?.productName + (item?.instanceName ? ` (${item?.instanceName})` : ''),
+              quantity: item?.quantity,
+              price: item?.price,
+              discountPercent: item?.discountPercent || 0,
+              finalPrice: item?.price * (100 - (item?.discountPercent || 0)) / 100
+            })),
+          };
+        }));
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
     };
     fetchData();
-  }, []);
-
+  }, [user?.id]);
   const getStatusTag = (status) => {
     const statusColors = {
       'Đã nhận': 'success',
@@ -132,8 +85,10 @@ const OrderPage = () => {
       'Đang giao': 'warning',
     };
 
+    const color = statusColors[status] || 'default';
+
     return (
-      <Tag color={statusColors[status] || 'default'}>
+      <Tag color={color}>
         {status}
       </Tag>
     );
@@ -147,6 +102,24 @@ const OrderPage = () => {
   const handleViewDetails = (orderId) => {
     router.push(`/order/${orderId}`);
   };
+
+  const renderOrderItem = (item) => (
+    <List.Item>
+      <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+        <Text>{item.name} x {item.quantity}</Text>
+        <Space direction="vertical" align="end">
+          {item.discountPercent > 0 && (
+            <Text delete type="secondary" style={{ fontSize: '12px' }}>
+              {formatPrice((item.price * item.quantity).toFixed(0))} ₫
+            </Text>
+          )}
+          <Text type={item.discountPercent > 0 ? "danger" : undefined}>
+            {formatPrice((item.finalPrice * item.quantity).toFixed(0))} ₫
+          </Text>
+        </Space>
+      </Space>
+    </List.Item>
+  );
 
   const items = [
     {
@@ -172,18 +145,11 @@ const OrderPage = () => {
                       <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                          <Text>{item.name} x {item.quantity}</Text>
-                          <Text>{formatPrice((item.price * item.quantity).toFixed(0))} ₫</Text>
-                        </Space>
-                      </List.Item>
-                    )}
+                    renderItem={renderOrderItem}
                   />
 
                   <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -217,21 +183,14 @@ const OrderPage = () => {
                     </div>
                     <Space>
                       {getStatusTag(order.status)}
-                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                      <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                          <Text>{item.name} x {item.quantity}</Text>
-                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
-                        </Space>
-                      </List.Item>
-                    )}
+                    renderItem={renderOrderItem}
                   />
 
                   <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -241,13 +200,12 @@ const OrderPage = () => {
                 </Space>
               </Card>
             </List.Item>
-          )}
-          locale={{ emptyText: 'Không có đơn hàng nào đang xử lý' }}
+          )} locale={{ emptyText: 'Không có đơn hàng nào đang xử lý' }}
         />
       ),
     },
     {
-      key: 'send',
+      key: 'sent',
       label: 'Đang giao',
       children: (
         <List
@@ -266,21 +224,14 @@ const OrderPage = () => {
                     </div>
                     <Space>
                       {getStatusTag(order.status)}
-                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                      <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                          <Text>{item.name} x {item.quantity}</Text>
-                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
-                        </Space>
-                      </List.Item>
-                    )}
+                    renderItem={renderOrderItem}
                   />
 
                   <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -315,21 +266,14 @@ const OrderPage = () => {
                     </div>
                     <Space>
                       {getStatusTag(order.status)}
-                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                      <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                          <Text>{item.name} x {item.quantity}</Text>
-                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
-                        </Space>
-                      </List.Item>
-                    )}
+                    renderItem={renderOrderItem}
                   />
 
                   <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -364,21 +308,14 @@ const OrderPage = () => {
                     </div>
                     <Space>
                       {getStatusTag(order.status)}
-                      <Text strong>{formatPrice(order.total.toFixed(3))} ₫</Text>
+                      <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
-                    renderItem={(item) => (
-                      <List.Item>
-                        <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                          <Text>{item.name} x {item.quantity}</Text>
-                          <Text>{formatPrice((item.price * item.quantity).toFixed(3))} ₫</Text>
-                        </Space>
-                      </List.Item>
-                    )}
+                    renderItem={renderOrderItem}
                   />
 
                   <Space style={{ justifyContent: 'flex-end', width: '100%' }}>
@@ -394,6 +331,10 @@ const OrderPage = () => {
       ),
     },
   ];
+  if (!user) {
+    router.push('/login');
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 pb-4" >
@@ -426,8 +367,8 @@ const OrderPage = () => {
                 {selectedOrder.tracking.currentStep === selectedOrder.tracking.steps.length - 1
                   ? 'Đơn hàng đã được giao thành công'
                   : selectedOrder.tracking.currentStep === 2
-                  ? 'Đơn hàng đang được giao đến bạn'
-                  : 'Đơn hàng đang được xử lý'}
+                    ? 'Đơn hàng đang được giao đến bạn'
+                    : 'Đơn hàng đang được xử lý'}
               </Text>
             </div>
           </div>

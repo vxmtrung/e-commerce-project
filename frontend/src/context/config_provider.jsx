@@ -18,7 +18,7 @@ export const COLOR = {
 };
 
 export default function AntdConfigProvider({ children }) {
-    const theme = useAppSelector('systemState', 'theme')?.theme;
+    const theme = useAppSelector('systemState', 'themeReducer')?.theme;
 
     return (
         <ConfigProvider
