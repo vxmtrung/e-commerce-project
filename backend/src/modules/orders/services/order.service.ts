@@ -71,11 +71,15 @@ export class OrderService implements IOrderService {
       const productInstances = [];
       const products = [];
       for (const item of orderItems) {
-        const productInstance = await this.productInstanceRepository.findProductInstanceById(item?.productId);
-        const product = await this.productRepository.findProductById(productInstance?.productId);
+        if (item?.productId) {
+          const productInstance = await this.productInstanceRepository.findProductInstanceById(item?.productId);
+          productInstances.push(productInstance);
 
-        productInstances.push(productInstance);
-        products.push(product);
+          if (productInstance?.productId) {
+            const product = await this.productRepository.findProductById(productInstance?.productId);
+            products.push(product);
+          }
+        }
       }
 
       const items = await Promise.all(orderItems.map(async (item) => {
