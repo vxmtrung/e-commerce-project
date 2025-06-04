@@ -2,7 +2,7 @@
 import { useAppSelector } from '@/hooks/redux_hooks';
 
 export default function UserPage() {
-    const user = useAppSelector('systemState', 'user').user;
+    const user = useAppSelector('systemState', 'userReducer').user;
 
     return (
         <div>
