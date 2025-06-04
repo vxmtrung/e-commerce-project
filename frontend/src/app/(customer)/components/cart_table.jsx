@@ -14,7 +14,7 @@ export default function CartTable({ data = [], onQuantityChange = () => {} }) {
       <Col xs={12} sm={14} md={25} lg={21} xl={21}>
         <div style={{ fontWeight: 'bold' }}>
           <Link
-            href={`/product/detail?id=${item.key}&name=${item.productName}`}
+            href={`/product/detail?id=${item.productId}`}
             style={{ color: tokenCustomer.colorLinkActive }}
           >
             {item.productName}
