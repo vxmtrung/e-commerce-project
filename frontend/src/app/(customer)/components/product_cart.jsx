@@ -61,7 +61,7 @@ const ProductCard = ({ options, product, productInstances, brand }) => {
   const fetchImg = async (instanceId) => {
     try {
       const imgResponse = await fetch(
-        `http://localhost:3000/product-imgs?product-instance-id=${instanceId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/product-imgs?product-instance-id=${instanceId}`
       );
       const imgJson = await imgResponse.json();
       console.log('img: ', imgJson);

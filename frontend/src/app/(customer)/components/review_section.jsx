@@ -137,8 +137,8 @@ export default function ReviewSection() {
                 {item.star === 5
                   ? 'Rất hài lòng'
                   : item.star === 4
-                  ? 'Hài lòng'
-                  : ''}
+                    ? 'Hài lòng'
+                    : ''}
               </span>
             </div>
           ))}
