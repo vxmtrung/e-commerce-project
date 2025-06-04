@@ -39,7 +39,7 @@ export function AdminLayout({ children, menus }) {
             icon: <LogoutOutlined />
         }
     ];
-    const theme = useAppSelector('systemState', 'theme').theme;
+    const theme = useAppSelector('systemState', 'themeReducer').theme;
     const {
         token: { borderRadius },
     } = antdTheme.useToken();
