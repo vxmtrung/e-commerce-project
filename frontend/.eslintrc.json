@@ -10,7 +10,8 @@
     "react/display-name": "off",
     "quotes": [
       "error",
-      "single"
+      "single",
+      "double"
     ]
   }
 }
