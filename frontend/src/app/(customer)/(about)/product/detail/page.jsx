@@ -64,7 +64,7 @@ export default function DetailPage() {
 
   const options = productInstances.map((item) => ({
     id: item.id,
-    name: item.name.substring(10),
+    name: item.name,
   }));
   console.log('options: ', options);
 
