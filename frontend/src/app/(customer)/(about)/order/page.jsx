@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import { Tabs, Card, Tag, Button, List, Space, Typography, Modal, Steps } from 'antd';
 import { useRouter } from 'next/navigation';
 import dateformat from 'dateformat';
-import { client } from '@/core/fetch/fetch_api';
 import { useAppSelector } from '@/hooks/redux_hooks';
-
+import { T } from '@/app/common';
 const { Title, Text } = Typography;
 const { Step } = Steps;
 
@@ -15,7 +14,9 @@ const formatPrice = (price) => {
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
 
-const OrderPage = () => {  const router = useRouter();
+const OrderPage = () => {
+  const client = T.client;
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('all_orders');
   const [trackingModalVisible, setTrackingModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -39,37 +40,37 @@ const OrderPage = () => {  const router = useRouter();
           'SENT': 'Đang giao',
           'CANCELLED': 'Đã hủy',
           'RECEIVED': 'Đã nhận'
-        };          setOrders(data.map(order => {
-            const orderStatus = statusMap[order?.status] || 'Đang xử lý';
-            const steps = [
-              { title: 'Đã đặt hàng', description: dateformat(order?.createdAt, 'dd/mm/yyyy HH:MM') },
-              { title: 'Đang xử lý', description: order?.status === 'IN_PROGRESS' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
-              { title: 'Đang giao', description: order?.status === 'SENT' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
-              { title: 'Đã nhận', description: order?.status === 'RECEIVED' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
-            ];
+        }; setOrders(data.map(order => {
+          const orderStatus = statusMap[order?.status] || 'Đang xử lý';
+          const steps = [
+            { title: 'Đã đặt hàng', description: dateformat(order?.createdAt, 'dd/mm/yyyy HH:MM') },
+            { title: 'Đang xử lý', description: order?.status === 'IN_PROGRESS' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
+            { title: 'Đang giao', description: order?.status === 'SENT' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
+            { title: 'Đã nhận', description: order?.status === 'RECEIVED' ? dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') : null },
+          ];
 
-            return {
-              id: order?.orderId,
-              date: new Date(order?.createdAt),
-              status: orderStatus,
-              total: order?.totalPrice,
-              discount: order?.discount,
-              subtotal: order?.subtotal,
-              tracking: {
-                currentStep: order?.status === 'CANCELLED' ? -1 : Math.max(['IN_PROGRESS', 'SENT', 'RECEIVED'].indexOf(order?.status), 0),
-                steps: order?.status === 'CANCELLED' ? 
-                  [{ title: 'Đã đặt hàng', description: dateformat(order?.createdAt, 'dd/mm/yyyy HH:MM') },
-                   { title: 'Đã hủy', description: dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') }] : steps
-              },
-              items: order?.items?.map(item => ({
-                name: item?.productName + (item?.instanceName ? ` (${item?.instanceName})` : ''),
-                quantity: item?.quantity,
-                price: item?.price,
-                discountPercent: item?.discountPercent || 0,
-                finalPrice: item?.price * (100 - (item?.discountPercent || 0)) / 100
-              })),
-            };
-          }));
+          return {
+            id: order?.orderId,
+            date: new Date(order?.createdAt),
+            status: orderStatus,
+            total: order?.totalPrice,
+            discount: order?.discount,
+            subtotal: order?.subtotal,
+            tracking: {
+              currentStep: order?.status === 'CANCELLED' ? -1 : Math.max(['IN_PROGRESS', 'SENT', 'RECEIVED'].indexOf(order?.status), 0),
+              steps: order?.status === 'CANCELLED' ?
+                [{ title: 'Đã đặt hàng', description: dateformat(order?.createdAt, 'dd/mm/yyyy HH:MM') },
+                { title: 'Đã hủy', description: dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') }] : steps
+            },
+            items: order?.items?.map(item => ({
+              name: item?.productName + (item?.instanceName ? ` (${item?.instanceName})` : ''),
+              quantity: item?.quantity,
+              price: item?.price,
+              discountPercent: item?.discountPercent || 0,
+              finalPrice: item?.price * (100 - (item?.discountPercent || 0)) / 100
+            })),
+          };
+        }));
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
@@ -83,9 +84,9 @@ const OrderPage = () => {  const router = useRouter();
       'Đã hủy': 'error',
       'Đang giao': 'warning',
     };
-    
+
     const color = statusColors[status] || 'default';
-    
+
     return (
       <Tag color={color}>
         {status}
@@ -144,7 +145,7 @@ const OrderPage = () => {  const router = useRouter();
                       <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
@@ -185,7 +186,7 @@ const OrderPage = () => {  const router = useRouter();
                       <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
@@ -199,7 +200,7 @@ const OrderPage = () => {  const router = useRouter();
                 </Space>
               </Card>
             </List.Item>
-          )}          locale={{ emptyText: 'Không có đơn hàng nào đang xử lý' }}
+          )} locale={{ emptyText: 'Không có đơn hàng nào đang xử lý' }}
         />
       ),
     },
@@ -226,7 +227,7 @@ const OrderPage = () => {  const router = useRouter();
                       <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
@@ -268,7 +269,7 @@ const OrderPage = () => {  const router = useRouter();
                       <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
@@ -310,7 +311,7 @@ const OrderPage = () => {  const router = useRouter();
                       <Text strong>{formatPrice(order.total.toFixed(0))} ₫</Text>
                     </Space>
                   </Space>
-                  
+
                   <List
                     size="small"
                     dataSource={order.items}
@@ -366,8 +367,8 @@ const OrderPage = () => {  const router = useRouter();
                 {selectedOrder.tracking.currentStep === selectedOrder.tracking.steps.length - 1
                   ? 'Đơn hàng đã được giao thành công'
                   : selectedOrder.tracking.currentStep === 2
-                  ? 'Đơn hàng đang được giao đến bạn'
-                  : 'Đơn hàng đang được xử lý'}
+                    ? 'Đơn hàng đang được giao đến bạn'
+                    : 'Đơn hàng đang được xử lý'}
               </Text>
             </div>
           </div>

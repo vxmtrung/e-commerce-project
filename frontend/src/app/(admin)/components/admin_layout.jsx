@@ -18,7 +18,7 @@ const { Content } = Layout;
 const systemStateUserSetDetail = 'systemStateUser:SetDetail';
 const systemStateMenusSetList = 'systemStateMenus:SetList';
 export function AdminLayout({ children, menus }) {
-    const user = useAppSelector('systemState', 'user').user;
+    const user = useAppSelector('systemState', 'userReducer').user;
     const items = [
         {
             key: 'PROFILE',
