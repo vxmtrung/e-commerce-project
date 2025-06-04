@@ -26,6 +26,7 @@ export class AuthController {
       user: {
         id: '55c08693-e812-432c-b0a0-dc19358a76ea',
         name: 'test',
+        email: 'admin@email.com',
         username: 'admin1',
         role: 'USER'
       }

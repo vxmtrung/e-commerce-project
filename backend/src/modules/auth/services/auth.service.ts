@@ -39,6 +39,7 @@ export class AuthService implements IAuthService {
       const payload = {
         id: userInfo.id,
         name: userInfo.name,
+        email: userInfo.email,
         username: userInfo.username,
         role: userInfo.role
       };

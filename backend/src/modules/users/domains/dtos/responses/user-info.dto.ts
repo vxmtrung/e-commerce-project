@@ -8,6 +8,8 @@ export class UserInfoDto {
   @ApiProperty()
   name: string;
   @ApiProperty()
+  email: string;
+  @ApiProperty()
   username: string;
   @ApiProperty()
   password: string;
@@ -19,6 +21,7 @@ export class UserInfoDto {
   constructor(userEntity: UserEntity) {
     this.id = userEntity.id;
     this.name = userEntity.name;
+    this.email = userEntity.email;
     this.username = userEntity.username;
     this.password = userEntity.password;
     this.role = userEntity.role;

@@ -9,17 +9,21 @@ export class OrderItemDetailDto {
   instanceName: string;
   quantity: number;
   price: number;
+  discountPercent: number;
   subTotal: number;
+  imageUrl: string;
 
   constructor(
     productId: string, productName: string, quantity: number,
-    price: number, subTotal: number
+    price: number, discountPercent: number, subTotal: number, imageUrl: string = '/productImage.png'
   ) {
     this.productId = productId;
     this.productName = productName;
     this.quantity = quantity;
     this.price = price;
+    this.discountPercent = discountPercent;
     this.subTotal = subTotal;
+    this.imageUrl = imageUrl;
   }
 }
 

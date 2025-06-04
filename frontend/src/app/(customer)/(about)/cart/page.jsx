@@ -4,6 +4,7 @@ import CartTable from '../../components/cart_table';
 import CartInfo from '../../components/cart_info';
 import { Space } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { useAppSelector } from '@/hooks/redux_hooks';
 
 const initialCartData = [
   {
@@ -13,7 +14,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -23,7 +25,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -33,7 +36,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -43,7 +47,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -53,7 +58,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -63,7 +69,8 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
   {
@@ -73,36 +80,53 @@ const initialCartData = [
     initialPrice: 100000,
     price: 50000,
     description: 'Serum Klairs Vitamin C Cho Da Nhạy Cảm 35ml',
-    image: 'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
+    image:
+      'https://cdn.cosmetics.vn/cham-soc-da/biotherm-aquasource-concentrate-glow-291x291.jpg',
     quantity: 1,
   },
 ];
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState(initialCartData);
+  const user = useAppSelector('systemState', 'userReducer').user;
+  const cartData = JSON.parse(localStorage.getItem(user?.id)) || [];
+
+  // const [cartItems, setCartItems] = useState(initialCartData);
+  const [cartItems, setCartItems] = useState(cartData);
   const [subtotal, setSubtotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    const newSubtotal = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+    const newSubtotal = cartItems.reduce(
+      (sum, item) => sum + item.price * (item.quantity || 1),
+      0
+    );
     setSubtotal(newSubtotal);
     setTotal(newSubtotal - discount);
   }, [cartItems, discount]);
 
   const handleQuantityChange = (key, newQuantity) => {
-    const updatedCartItems = cartItems.map(item =>
+    const updatedCartItems = cartItems.map((item) =>
       item.key === key ? { ...item, quantity: newQuantity } : item
     );
     setCartItems(updatedCartItems);
   };
 
   return (
-    <Space direction="horizontal" size="large" style={{ width: '100%', alignItems: 'flex-start' }}>
+    <Space
+      direction="horizontal"
+      size="large"
+      style={{ width: '100%', alignItems: 'flex-start' }}
+    >
       <div style={{ flex: 1 }}>
         <CartTable data={cartItems} onQuantityChange={handleQuantityChange} />
       </div>
-      <CartInfo subtotal={subtotal} discount={discount} total={total} data={cartItems}/>
+      <CartInfo
+        subtotal={subtotal}
+        discount={discount}
+        total={total}
+        data={cartItems}
+      />
     </Space>
   );
 }

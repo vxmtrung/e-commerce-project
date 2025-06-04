@@ -13,11 +13,16 @@ export default function CartTable({ data = [], onQuantityChange = () => {} }) {
       </Col>
       <Col xs={12} sm={14} md={25} lg={21} xl={21}>
         <div style={{ fontWeight: 'bold' }}>
-          <Link href={`/product/detail`} style={{ color: tokenCustomer.colorLinkActive }}>
+          <Link
+            href={`/product/detail?id=${item.productId}`}
+            style={{ color: tokenCustomer.colorLinkActive }}
+          >
             {item.productName}
           </Link>
         </div>
-        <div>{item.description}</div>
+        <div>
+          {item.description}, {item.name}
+        </div>
       </Col>
     </Row>
   );
@@ -25,7 +30,9 @@ export default function CartTable({ data = [], onQuantityChange = () => {} }) {
   const renderPrice = (item) => (
     <Row align="middle">
       <Col>
-        <div style={{ fontWeight: 'bold' }}>{item.price.toLocaleString()} đ</div>
+        <div style={{ fontWeight: 'bold' }}>
+          {item.price.toLocaleString()} đ
+        </div>
         <div style={{ textDecoration: 'line-through' }}>
           {item.initialPrice.toLocaleString()} đ
         </div>
@@ -79,12 +86,15 @@ export default function CartTable({ data = [], onQuantityChange = () => {} }) {
     },
   ];
 
-  const subtotal = data.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+  const subtotal = data.reduce(
+    (sum, item) => sum + item.price * (item.quantity || 1),
+    0
+  );
 
   const router = useRouter();
   const handleProceedToPayment = () => {
-    var discount = 0
-    var total = subtotal
+    var discount = 0;
+    var total = subtotal;
     const checkoutData = { subtotal, discount, total, data };
     localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
     router.push('/cart/payment');

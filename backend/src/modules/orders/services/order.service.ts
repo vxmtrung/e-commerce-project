@@ -13,6 +13,7 @@ import { OrderDetailDto } from '../dtos/order-detail.dto';
 import { OrderStatus } from 'src/constants/order-status.constant';
 import { IProductRepository } from 'src/modules/products/repositories/product.repository';
 import { IProductInstanceRepository } from 'src/modules/products/repositories/product-instance.repository';
+import { IProductImgService } from 'src/modules/products/services/product-img.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaymentEntity } from 'src/modules/payments/domains/entities/payment.entity';
@@ -49,6 +50,8 @@ export class OrderService implements IOrderService {
     private productRepository: IProductRepository,
     @Inject('IProductInstanceRepository')
     private productInstanceRepository: IProductInstanceRepository,
+    @Inject('IProductImgService')
+    private productImgService: IProductImgService,
     @InjectRepository(PaymentEntity)
     private paymentRepository: Repository<PaymentEntity>,
     @InjectRepository(UserEntity)
@@ -150,10 +153,20 @@ export class OrderService implements IOrderService {
         products.push(product);
       }
 
-      const items = orderItems.map((item) => {
+      const items = await Promise.all(orderItems.map(async (item) => {
         const productInstance = productInstances.find(p => p.id === item.productId);
         const product = products.find(p => p.id === productInstance?.productId);
         const price = productInstance?.price || 0;
+        const discountPercent = productInstance?.discountPercent || 0;
+        const discountedPrice = price * (100 - discountPercent) / 100;
+
+        let imageUrl = null;
+        if (productInstance) {
+          const images = await this.productImgService.getProductImgByProductInstanceId(productInstance.id);
+          if (images && images.length > 0) {
+            imageUrl = images[0].link;
+          }
+        }
 
         return {
           productId: product?.id,
@@ -162,9 +175,11 @@ export class OrderService implements IOrderService {
           instanceName: productInstance?.name,
           quantity: item.quantity,
           price,
-          subTotal: price * item.quantity
+          discountPercent,
+          subTotal: discountedPrice * item.quantity,
+          imageUrl
         };
-      });
+      }));
 
       const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
 
@@ -198,7 +213,6 @@ export class OrderService implements IOrderService {
 
     return results;
   }
-
   async getOrderDetail(orderId: string): Promise<OrderDetailDto> {
     const order = await this.orderRepository.findOneBy({ id: orderId });
     if (!order) throw new NotFoundException('Order not found');
@@ -217,10 +231,20 @@ export class OrderService implements IOrderService {
       products.push(product);
     }
 
-    const items = orderItems.map((item) => {
+    const items = await Promise.all(orderItems.map(async (item) => {
       const productInstance = productInstances.find(p => p.id === item.productId);
       const product = products.find(p => p.id === productInstance?.productId);
-      const price = product?.price || 0;
+      const price = productInstance?.price || 0;
+      const discountPercent = productInstance?.discountPercent || 0;
+      const discountedPrice = price * (100 - discountPercent) / 100;
+    
+      let imageUrl = null;
+      if (productInstance) {
+        const images = await this.productImgService.getProductImgByProductInstanceId(productInstance.id);
+        if (images && images.length > 0) {
+          imageUrl = images[0].link;
+        }
+      }
 
       return {
           productId: product?.id,
@@ -229,9 +253,11 @@ export class OrderService implements IOrderService {
           instanceName: productInstance?.name,
           quantity: item.quantity,
           price,
-          subTotal: price * item.quantity
+          discountPercent,
+          subTotal: discountedPrice * item.quantity,
+          imageUrl
         };
-    });
+    }));
 
     const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
 

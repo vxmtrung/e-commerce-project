@@ -26,23 +26,22 @@ export default function ProductManager() {
   const [productValues, setProductValues] = useState([]);
   const [editing, setEditing] = useState([]);
   const [selectedInstance, setSelectedInstance] = useState(0);
-  const [discounts, setDiscounts] = useState([0, 0]);
   const [isAddingNewInstance, setIsAddingNewInstance] = useState(false);
 
   const fetchProducts = async () => {
-    const res = await fetch("http://localhost:3000/products?page=0&size=100");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=0&size=100`);
     const jsonData = await res.json();
     setProducts(jsonData["items"]);
   };
 
   const fetchCategories = async () => {
-    const res = await fetch("http://localhost:3000/categories?page=0&size=100");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories?page=0&size=100`);
     const data = await res.json();
     setCategories(data);
   };
 
   const fetchBrands = async () => {
-    const res = await fetch("http://localhost:3000/brands?page=1&size=100");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/brands?page=1&size=100`);
     const data = await res.json();
     setBrands(data);
   };
@@ -55,7 +54,7 @@ export default function ProductManager() {
 
   const handleAddProduct = async (values) => {
     try {
-      const res = await fetch("http://localhost:3000/products", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,17 +71,18 @@ export default function ProductManager() {
       const newProduct = await res.json();
 
       if (res.ok) {
-        const instanceRes = await fetch("http://localhost:3000/product-instances", {
+        const instanceRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: `Phiên bản ${new Date().getFullYear()}`,
+            name: values.name_instance,
+            description: null, 
             price: values.price,
             quantity: values.quantity,
             productId: newProduct.id,
-            status: true
+            discountPercent: values.discount
           }),
         });
 
@@ -105,7 +105,7 @@ export default function ProductManager() {
 
   const handleDelete = async (id) => {
     try {
-      const response1 = await fetch(`http://localhost:3000/products/${id}`, {
+      const response1 = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -124,40 +124,55 @@ export default function ProductManager() {
 
   const handleEdit = async (id, name, description) => {
     setSelectedInstance(0);
-    setDiscounts(prev => prev.map(() => 0));
     setIsAddingNewInstance(false);
-    const temp = await fetch(`http://localhost:3000/product-instances?product-id=${id}`);
+    const temp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances?product-id=${id}`);
     const editing_temp = await temp.json();
     setEditing(editing_temp);
     editForm.setFieldsValue({
       name: name,
       description: description,
+      name_instance: editing_temp[0]['name'],
       price: editing_temp[0]['price'],
       quantity: editing_temp[0]['quantity'],
-      discount: 0,
+      discount: editing_temp[0]['discountPercent'],
       id: id,
       instance_id: editing_temp[0]['id']
     });
     setShowEditModal(true);
   };
 
-  const handleChooseInstance = (i) => {
-    setSelectedInstance(i);
-    editForm.setFieldsValue({
-      price: editing[0]['price'] + i * 5000,
-      quantity: editing[0]['quantity'] + i,
-      discount: discounts[i]
-    });
-  };
-
   const [showEditModal, setShowEditModal] = useState(false);
   const handleUpdateProduct = async (values) => {
     setShowEditModal(false);
     if (isAddingNewInstance) {
-      
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: values.name_instance,
+            description: null,
+            price: values.price,
+            quantity: values.quantity,
+            productId: values.id,
+            discountPercent: values.discount === null ? 0 : values.discount
+          }),
+        });
+
+        if (res.ok) {
+          notification.success({ message: "Thêm mẫu mới thành công!" });
+          fetchProducts();
+        } else {
+          notification.error({ message: "Thêm mẫu mới không thành công!" });
+        }
+      } catch (error) {
+        notification.error({ message: "Thêm mẫu mới không thành công!" });
+      }
     } else {
       try {
-        const res = await fetch(`http://localhost:3000/products/${values.id}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${values.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -168,14 +183,16 @@ export default function ProductManager() {
           }),
         });
 
-        const res1 = await fetch(`http://localhost:3000/product-instances/${values.instance_id}`, {
+        const res1 = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances/${values.instance_id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            name: values.name_instance,
             price: values.price,
-            quantity: values.quantity
+            quantity: values.quantity,
+            discountPercent: values.discount === null ? 0 : values.discount
           }),
         });
 
@@ -190,6 +207,34 @@ export default function ProductManager() {
       }
     }
   };
+
+  const handleDeleteInstance = async () => {
+    const instanceId = editForm.getFieldValue("instance_id");
+    if (!instanceId) {
+      notification.error({ message: "Không thể xoá!" });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances/${instanceId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        notification.success({ message: "Xoá mẫu thành công!" });
+        setShowEditModal(false);
+        fetchProducts();
+      } else {
+        notification.error({ message: "Xoá mẫu không thành công!" });
+      }
+    } catch (err) {
+      notification.error({ message: "Xoá mẫu không thành công!" });
+    }
+  };
+
 
   const productColumns = [
     {
@@ -338,6 +383,14 @@ export default function ProductManager() {
               {currentStep === 2 && (
                 <>
                   <Form.Item
+                    label="Tên mẫu"
+                    name="name_instance"
+                    rules={[{ required: true, message: 'Hãy nhập tên mẫu!' }]}
+                  >
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item
                     label="Số lượng"
                     name="quantity"
                     rules={[{ required: true, message: 'Hãy nhập số lượng!' }]}
@@ -349,6 +402,13 @@ export default function ProductManager() {
                     label="Giá"
                     name="price"
                     rules={[{ required: true, message: 'Hãy nhập giá!' }]}
+                  >
+                    <Input type="number" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Giảm giá"
+                    name="discount"
                   >
                     <Input type="number" />
                   </Form.Item>
@@ -388,6 +448,7 @@ export default function ProductManager() {
           setShowEditModal(false);
           form.resetFields();
         }}
+        width={800}
         footer={null}
       >
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
@@ -399,35 +460,37 @@ export default function ProductManager() {
             />
             <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
               <div style={{ display: "flex", gap: "10px" }}>
-                <Button
-                  type={selectedInstance === 0 ? "primary" : "default"}
-                  onClick={() => {
-                    setIsAddingNewInstance(false);
-                    handleChooseInstance(0);
-                  }}
-                >
-                  Mẫu 1
-                </Button>
-                <Button
-                  type={selectedInstance === 1 ? "primary" : "default"}
-                  onClick={() => {
-                    setIsAddingNewInstance(false);
-                    handleChooseInstance(1);
-                  }}
-                >
-                  Mẫu 2
-                </Button>
+                {editing.map((instance, i) => (
+                  <Button
+                    key={instance.id}
+                    type={selectedInstance === i ? "primary" : "default"}
+                    onClick={() => {
+                      setIsAddingNewInstance(false);
+                      setSelectedInstance(i);
+                      editForm.setFieldsValue({
+                        price: instance.price,
+                        quantity: instance.quantity,
+                        discount: instance.discountPercent,
+                        name_instance: instance.name,
+                        instance_id: instance.id
+                      });
+                    }}
+                    style={{ maxWidth: '125px' }}
+                  >
+                    {instance.name}
+                  </Button>
+                ))}
               </div>
 
               <Button
                 icon={<PlusOutlined />}
                 onClick={() => {
                   setIsAddingNewInstance(true);
-                  handleChooseInstance(2);
                   editForm.setFieldsValue({
                     quantity: null,
                     price: null,
                     discount: null,
+                    name_instance: null,
                   });
                 }}
               />
@@ -445,7 +508,7 @@ export default function ProductManager() {
                 name="name"
                 rules={[{ required: true, message: "Hãy nhập tên sản phẩm!" }]}
               >
-                <Input />
+                <Input disabled={isAddingNewInstance} />
               </Form.Item>
 
               <Form.Item
@@ -453,7 +516,15 @@ export default function ProductManager() {
                 name="description"
                 rules={[{ required: true, message: "Hãy nhập mô tả!" }]}
               >
-                <Input.TextArea />
+                <Input.TextArea disabled={isAddingNewInstance} />
+              </Form.Item>
+
+              <Form.Item
+                label="Tên mẫu"
+                name="name_instance"
+                rules={[{ required: true, message: "Hãy nhập tên mẫu!" }]}
+              >
+                <Input />
               </Form.Item>
 
               <Form.Item
@@ -472,19 +543,8 @@ export default function ProductManager() {
                 <Input type="number" />
               </Form.Item>
 
-              <Form.Item label="Giảm giá" name="discount">
-                <Input
-                  type="number"
-                  value={discounts[selectedInstance]}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-                    setDiscounts(prev => {
-                      const updated = [...prev];
-                      updated[selectedInstance] = value;
-                      return updated;
-                    });
-                  }}
-                />
+              <Form.Item label="Giảm giá (%)" name="discount">
+                <Input type="number" />
               </Form.Item>
 
               <Form.Item name="id" hidden>
@@ -496,17 +556,32 @@ export default function ProductManager() {
               </Form.Item>
 
               <Form.Item>
-                <div style={{ textAlign: "center" }}>
+                <div style={{ display: "flex", justifyContent: "center", gap: "16px" }}>
                   <Button
                     type="primary"
                     htmlType="submit"
-                    style={{
-                      padding: "10px 20px",
-                    }}
+                    style={{ padding: "10px 20px" }}
                     className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
                   >
                     {isAddingNewInstance ? "Thêm mẫu mới" : "Cập nhật"}
                   </Button>
+
+                  {!isAddingNewInstance && (
+                    <Popconfirm
+                      title="Bạn có chắc muốn xoá mẫu này không?"
+                      onConfirm={handleDeleteInstance}
+                      okText="Đồng ý"
+                      cancelText="Huỷ"
+                    >
+                      <Button
+                        danger
+                        style={{ padding: "10px 20px" }}
+                        className="hover:brightness-110 rounded-lg shadow-md transition duration-200"
+                      >
+                        Xoá mẫu
+                      </Button>
+                    </Popconfirm>
+                  )}
                 </div>
               </Form.Item>
             </Form>
