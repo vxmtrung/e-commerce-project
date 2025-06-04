@@ -15,53 +15,57 @@ const OrderModal = forwardRef((props, ref) => {
 
     }, []);
 
-    const { orderId, username, email, phoneNumber, paymentMethod, paymentStatus, createdAt, status, shippingAddress = {}, products } = state.item;
-    const { receiverName, receiverPhone, city, district, town, additionalInformation } = shippingAddress;
+    const fetch = async (id) => {
+        try {
+            const item = await T.client.get(`/orders/${id}`);
+            setState({ ...state, item, open: true });
+        } catch (error) {
+            T.message.error(error);
+        }
+    };
+
+    const { orderId, paymentMethod, paymentStatus, createdAt, status, shippingAddress, items, buyer = {} } = state.item;
+    const { name, email, phoneNumber } = buyer;
 
     useImperativeHandle(ref, () => ({
-        show: (item) => item && setState({ ...state, item, open: true })
+        show: (item) => item && fetch(item.orderId)
     }));
 
     const labelMap = {
-        inProgress: 'Đang xử lý',
-        sent: 'Đã gửi',
-        received: 'Đã nhận',
-        cancelled: 'Đã huỷ',
+        'IN_PROGRESS': 'Đang xử lý',
+        'SENT': 'Đã gửi',
+        'RECEIVED': 'Đã nhận',
+        'CANCELLED': 'Đã huỷ',
     };
 
     const userInfo = [
-        { label: "Tên người dùng", children: username, span: 24 },
+        { label: "Tên người dùng", children: name, span: 24 },
         { label: "Email", children: email, span: 12 },
         { label: "SĐT", children: phoneNumber, span: 12 },
-        { label: "Phương thức thanh toán", children: paymentMethod, span: 12 },
-        { label: "Trạng thái thanh toán", children: paymentStatus ? "Đã thanh toán" : "Chưa thanh toán", span: 12 },
-        { label: "Ngày tạo đơn", children: createdAt && T.dateToText(new Date(parseInt(createdAt))), span: 12 },
+        { label: "Phương thức thanh toán", children: paymentMethod == 'CREDIT_CARD' ? 'Online' : 'COD', span: 12 },
+        { label: "Trạng thái thanh toán", children: paymentStatus == 'COMPLETED' ? "Đã thanh toán" : "Chưa thanh toán", span: 12 },
+        { label: "Ngày tạo đơn", children: createdAt && T.dateToText(new Date(createdAt)), span: 12 },
         { label: "Trạng thái đơn hàng", children: labelMap[status], span: 12 },
     ];
 
     const shippingInfo = [
-        { label: "Người nhận", children: receiverName, span: 24 },
-        { label: "SĐT người nhận", children: receiverPhone, span: 24 },
-        { label: "Thành phố", children: city, span: 8 },
-        { label: "Quận", children: district, span: 8 },
-        { label: "Phường", children: town, span: 8 },
-        { label: "Thông tin thêm", children: additionalInformation, span: 24 },
+        { label: "Giao hàng tại", children: shippingAddress, span: 24 }
     ];
 
     const productColumns = [
-        { title: "Tên sản phẩm", dataIndex: "name", key: "name" },
-        { title: "Mô tả", dataIndex: "description", key: "description" },
-        { title: "Đơn giá", dataIndex: "price", key: "price", render: (price) => `${price.toLocaleString()} đ` },
+        { title: "Tên sản phẩm", dataIndex: "productName", key: "productName" },
+        { title: "Loại", dataIndex: "instanceName", key: "instanceName" },
+        { title: "Đơn giá", dataIndex: "price", key: "price", render: (price, record) => `${(price * (1 - record.discountPercent / 100)).toLocaleString()} đ` },
         { title: "Số lượng", dataIndex: "quantity", key: "quantity" },
         {
             title: "Tổng",
             key: "total",
-            render: (_, record) => `${(record.price * record.quantity).toLocaleString()} đ`,
+            render: (_, record) => `${((record.price * (1 - record.discountPercent / 100)) * record.quantity).toLocaleString()} đ`,
         },
     ];
 
     let totalCost = 0;
-    if (products) totalCost = T.lodash.sum(products.map(item => item.price * item.quantity));
+    if (items) totalCost = T.lodash.sum(items.map(record => (record.price * (1 - record.discountPercent / 100)) * record.quantity));
 
     return (
         <Modal
@@ -73,8 +77,8 @@ const OrderModal = forwardRef((props, ref) => {
         >
             <Table
                 columns={productColumns}
-                dataSource={products}
-                rowKey="productId"
+                dataSource={items}
+                rowKey="instanceId"
                 pagination={false}
                 style={{ marginTop: 20 }}
             />

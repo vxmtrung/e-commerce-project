@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Select, Space, Table, Tag, Tooltip } from 'antd';
 import { T } from '@/app/common';
 import AdminPage from '../../components/admin_page';
@@ -137,7 +137,7 @@ const mockData = [
     {
         "orderId": "o5",
         "status": "inProgress",
-        "paymentMethod": "MOMO",
+        "paymentMethod": "CREDIT_CARD",
         "paymentStatus": false,
         "createdAt": 1713300000000,
         "userId": "u5",
@@ -176,58 +176,71 @@ export default function OrderPage() {
     const [state, setState] = useState({
         data: mockData
     });
+
+    useEffect(() => {
+        const fetch = async () => {
+            try {
+                const data = await T.client.get('/orders');
+                setState({ ...state, data });
+            } catch (error) {
+                T.message.error(error);
+            }
+        };
+        fetch();
+    }, []);
+
     const modalRef = useRef();
 
     const optionsPaymentStatus = [
-        { value: true, label: <Tag color="green">Đã thanh toán</Tag> },
-        { value: false, label: <Tag color="red">Chưa thanh toán</Tag> }
+        { value: 'COMPLETED', label: <Tag color="green">Đã thanh toán</Tag> },
+        { value: 'PENDING', label: <Tag color="red">Chưa thanh toán</Tag> }
     ];
     const colorMap = {
-        inProgress: 'blue',
-        sent: 'gold',
-        received: 'green',
-        cancelled: 'red',
+        'IN_PROGRESS': 'blue',
+        'SENT': 'gold',
+        'RECEIVED': 'green',
+        'CANCELLED': 'red',
     };
     const labelMap = {
-        inProgress: 'Đang xử lý',
-        sent: 'Đã gửi',
-        received: 'Đã nhận',
-        cancelled: 'Đã huỷ',
+        'IN_PROGRESS': 'Đang xử lý',
+        'SENT': 'Đã gửi',
+        'RECEIVED': 'Đã nhận',
+        'CANCELLED': 'Đã huỷ',
     };
     const optionsOrderStatus = [
-        { value: 'inProgress', label: <Tag color={colorMap.inProgress}>{labelMap.inProgress}</Tag> },
-        { value: 'sent', label: <Tag color={colorMap.sent}>{labelMap.sent}</Tag> },
-        { value: 'received', label: <Tag color={colorMap.received}>{labelMap.received}</Tag> },
-        { value: 'cancelled', label: <Tag color={colorMap.cancelled}>{labelMap.cancelled}</Tag> },
+        { value: 'IN_PROGRESS', label: <Tag color={colorMap.IN_PROGRESS}>{labelMap.IN_PROGRESS}</Tag> },
+        { value: 'SENT', label: <Tag color={colorMap.SENT}>{labelMap.SENT}</Tag> },
+        { value: 'RECEIVED', label: <Tag color={colorMap.RECEIVED}>{labelMap.RECEIVED}</Tag> },
+        { value: 'CANCELLED', label: <Tag color={colorMap.CANCELLED}>{labelMap.CANCELLED}</Tag> },
     ];
     const columns = [
         {
-            title: 'Tài khoản',
-            dataIndex: 'username',
-            key: 'username',
+            title: 'Người mua',
+            dataIndex: ['buyer', 'name'],
+            key: 'name',
         },
         {
             title: 'Email',
-            dataIndex: 'email',
+            dataIndex: ['buyer', 'email'],
             key: 'email',
         },
         {
             title: 'Số điện thoại',
-            dataIndex: 'phoneNumber',
+            dataIndex: ['buyer', 'phoneNumber'],
             key: 'phoneNumber',
         },
         {
             title: 'Ngày đặt đơn',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            render: (value) => T.dateToText(new Date(parseInt(value)))
+            render: (value) => T.dateToText(new Date(value))
         },
         {
             title: 'Phương thức thanh toán',
             dataIndex: 'paymentMethod',
             key: 'paymentMethod',
             render: (method) => (
-                <Tag color={method === 'MOMO' ? 'purple' : 'volcano'}>{method}</Tag>
+                <Tag color={method === 'CREDIT_CARD' ? 'purple' : 'volcano'}>{method == 'CREDIT_CARD' ? 'Online' : 'COD'}</Tag>
             ),
         },
         {

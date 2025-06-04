@@ -5,6 +5,7 @@ import { Form, Input, Select, Button, Typography, Divider, Space, Row, Col, App,
 import { useRouter } from 'next/navigation';
 import { client } from '@/core/fetch/fetch_api';
 import { useAppSelector } from '@/hooks/redux_hooks';
+import { useAppRouter } from '@/hooks/router_hook';
 
 const { Option } = Select;
 const { Title, Paragraph } = Typography;
@@ -13,7 +14,7 @@ export default function PaymentPage() {
   const [form] = Form.useForm();
   const [checkoutData, setCheckoutData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const router = useAppRouter();
   const user = useAppSelector('systemState', 'userReducer').user;
   const paymentMethod = Form.useWatch('paymentMethod', form);
 
@@ -64,7 +65,7 @@ export default function PaymentPage() {
       if (values.paymentMethod === 'tra_truoc') {
         // Store order ID for the payment page
         localStorage.setItem('pendingOrderId', response.id);
-        router.push('/payment-online');
+        router.push('payment/online-method', { id: response.id });
       } else {
         router.push('/order');
       }
