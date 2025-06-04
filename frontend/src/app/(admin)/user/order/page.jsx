@@ -174,7 +174,7 @@ const mockData = [
 
 export default function OrderPage() {
     const [state, setState] = useState({
-        data: mockData
+        data: []
     });
 
     useEffect(() => {
