@@ -71,21 +71,27 @@ export class OrderService implements IOrderService {
       const productInstances = [];
       const products = [];
       for (const item of orderItems) {
-        if (item?.productId) {
-          const productInstance = await this.productInstanceRepository.findProductInstanceById(item?.productId);
-          productInstances.push(productInstance);
+        const productInstance = await this.productInstanceRepository.findProductInstanceById(item?.productId);
+        const product = await this.productRepository.findProductById(productInstance?.productId);
 
-          if (productInstance?.productId) {
-            const product = await this.productRepository.findProductById(productInstance?.productId);
-            products.push(product);
-          }
-        }
+        productInstances.push(productInstance);
+        products.push(product);
       }
 
-      const items = orderItems.map((item) => {
+      const items = await Promise.all(orderItems.map(async (item) => {
         const productInstance = productInstances.find(p => p.id === item.productId);
         const product = products.find(p => p.id === productInstance?.productId);
         const price = productInstance?.price || 0;
+        const discountPercent = productInstance?.discountPercent || 0;
+        const discountedPrice = price * (100 - discountPercent) / 100;
+
+        let imageUrl = null;
+        if (productInstance) {
+          const images = await this.productImgService.getProductImgByProductInstanceId(productInstance.id);
+          if (images && images.length > 0) {
+            imageUrl = images[0].link;
+          }
+        }
 
         return {
           productId: product?.id,
@@ -94,9 +100,11 @@ export class OrderService implements IOrderService {
           instanceName: productInstance?.name,
           quantity: item.quantity,
           price,
-          subTotal: price * item.quantity
+          discountPercent,
+          subTotal: discountedPrice * item.quantity,
+          imageUrl
         };
-      });
+      }));
 
       const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
 
