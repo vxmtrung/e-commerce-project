@@ -18,10 +18,11 @@ export class OrderController {
     private readonly orderService: IOrderService
   ) {}
 
-  // @Get()
-  // findAll() {
-  //   return this.orderService.findAll();
-  // }
+  @PublicRoute()
+  @Get()
+  findAll() {
+    return this.orderService.findAll();
+  }
   
   @Post()
   @ApiBody({

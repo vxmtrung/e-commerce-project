@@ -20,7 +20,7 @@ import { PaymentStatus } from 'src/constants/payment-status.constant';
 import { UserEntity } from 'src/modules/users/domains/entities/user.entity';
 
 export interface IOrderService {
-  findAll(): Promise<OrderEntity[]>;
+  findAll(): Promise<OrderDetailDto[]>;
   createOrder(createOrderDto: CreateOrderDto): Promise<OrderEntity>;
   deleteOrder(id: string): Promise<DeleteResult>;
   updateStatus(id: string, status: UpdateOrderStatusDto['status']): Promise<UpdateResult>;
@@ -55,8 +55,77 @@ export class OrderService implements IOrderService {
     private userRepository: Repository<UserEntity>
   ) {}
 
-  async findAll() {
-    return this.orderRepository.find();
+  async findAll() : Promise<OrderDetailDto[]> {
+    const orders = await this.orderRepository.find();
+
+    const results: OrderDetailDto[] = [];
+
+    for (const order of orders) {
+      const orderItems = await this.orderItemsRepository.find({ where: { orderId: order.id } });
+      const payments = await this.paymentRepository.find({ where: { orderId: order.id } });
+      const user = await this.userRepository.findOneBy({ id: order.userId });
+
+      const productInstances = [];
+      const products = [];
+      for (const item of orderItems) {
+        if (item?.productId) {
+          const productInstance = await this.productInstanceRepository.findProductInstanceById(item?.productId);
+          productInstances.push(productInstance);
+
+          if (productInstance?.productId) {
+            const product = await this.productRepository.findProductById(productInstance?.productId);
+            products.push(product);
+          }
+        }
+      }
+
+      const items = orderItems.map((item) => {
+        const productInstance = productInstances.find(p => p.id === item.productId);
+        const product = products.find(p => p.id === productInstance?.productId);
+        const price = productInstance?.price || 0;
+
+        return {
+          productId: product?.id,
+          instanceId: productInstance?.id,
+          productName: product?.name || 'Unknown',
+          instanceName: productInstance?.name,
+          quantity: item.quantity,
+          price,
+          subTotal: price * item.quantity
+        };
+      });
+
+      const totalPrice = items.reduce((sum, item) => sum + item.subTotal, 0);
+
+      if (payments) {
+        for (const payment of payments) {
+          results.push({
+            orderId: order.id,
+            status: order.status,
+            shippingAddress: order.shippingAddress,
+            createdAt: order.createdAt,
+            totalPrice,
+            paymentMethod: payment.paymentMethod,
+            paymentStatus: payment.paymentStatus,
+            buyer: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              phoneNumber: user.phoneNumber,
+              username: user.username,
+              role: user.role,
+              status: user.status,
+              createdAt: user.createdAt,
+              updatedAt: user.updatedAt,
+              deletedAt: user.deletedAt
+            },
+            items
+          });
+        }
+      }
+    }
+
+    return results;
   }
 
   async createOrder(createOrderDto: CreateOrderDto): Promise<OrderEntity> {
