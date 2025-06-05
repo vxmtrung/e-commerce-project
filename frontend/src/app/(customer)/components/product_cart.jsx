@@ -61,7 +61,7 @@ const ProductCard = ({ options, product, productInstances, brand }) => {
   const fetchImg = async (instanceId) => {
     try {
       const imgResponse = await fetch(
-        `http://localhost:3000/product-imgs?product-instance-id=${instanceId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/product-imgs?product-instance-id=${instanceId}`
       );
       const imgJson = await imgResponse.json();
       console.log('img: ', imgJson);
@@ -148,17 +148,17 @@ const ProductCard = ({ options, product, productInstances, brand }) => {
           {/* Product Info */}
           <Col span={14}>
             <Space direction="vertical">
-              <Title level={4} className="text-orange-600">
+              <Title level={4}>
                 {/* Nước Hoa Hồng Klairs Không Mùi Cho Da Nhạy Cảm 180ml */}
                 {product.name}
               </Title>
-              <Title level={3} className="text-red-600 !mb-0">
-                {formatPrice(instance.finalPrice)} đ
+              <Title level={3} style={{ color: '#ff85c1' }}>
+                {formatPrice(instance.finalPrice)} ₫
               </Title>
               <Text>
                 Giá trị trường: {formatPrice(instance.marketPrice)} ₫ - Tiết
-                kiệm:
-                {formatPrice(instance.savings)} ₫ ({instance.discountPercent} %)
+                kiệm: {formatPrice(instance.savings)} ₫ (
+                {instance.discountPercent} %)
               </Text>
               <Space>
                 <Text strong>Phiên bản:</Text>

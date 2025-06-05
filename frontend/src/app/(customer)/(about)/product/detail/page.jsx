@@ -22,7 +22,7 @@ export default function DetailPage() {
   const fetchProduct = async () => {
     try {
       const productResponse = await fetch(
-        `http://localhost:3000/products/${id}/detail`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${id}/detail`
       );
       const productJson = await productResponse.json();
       setProduct(productJson);
@@ -38,7 +38,7 @@ export default function DetailPage() {
   const fetchProductInstances = async () => {
     try {
       const productInstancesResponse = await fetch(
-        `http://localhost:3000/product-instances?product-id=${id}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances?product-id=${id}`
       );
       const productInstancesJson = await productInstancesResponse.json();
       setProductInstances(productInstancesJson);
@@ -51,7 +51,7 @@ export default function DetailPage() {
 
   const fetchBrand = async (brandId) => {
     try {
-      const brandsResponse = await fetch('http://localhost:3000/brands');
+      const brandsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/brands`);
       const brandsJson = await brandsResponse.json();
       const brandName = brandsJson.find((item) => item.id == brandId)?.name;
       setBrand(brandName || '');
@@ -64,7 +64,7 @@ export default function DetailPage() {
 
   const options = productInstances.map((item) => ({
     id: item.id,
-    name: item.name.substring(10),
+    name: item.name,
   }));
   console.log('options: ', options);
 

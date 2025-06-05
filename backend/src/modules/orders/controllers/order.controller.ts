@@ -7,7 +7,6 @@ import { UpdateOrderItemQuantityDto } from '../dtos/update-order-item-quantity';
 import { IOrderService } from '../services/order.service';
 import { OrderStatsFilterDto } from '../dtos/order-stats-filter.dto';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { OrderDetailDto } from '../dtos/order-detail.dto';
 import { OrderStatus } from 'src/constants/order-status.constant';
 
 @Controller('orders')
@@ -17,10 +16,10 @@ export class OrderController {
     private readonly orderService: IOrderService
   ) {}
 
-  // @Get()
-  // findAll() {
-  //   return this.orderService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.orderService.findAll();
+  }
   
   @Post()
   @ApiBody({

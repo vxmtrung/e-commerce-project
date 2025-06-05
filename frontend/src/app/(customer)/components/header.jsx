@@ -26,8 +26,8 @@ export default function Header({ isLoggedIn }) {
       { key: '4', label: <Link href="/login" onClick={() => T.localStorage.storage('token', '')}>Đăng xuất</Link> },
     ]
     : [
-      { key: '1', label: <Link href="/signin">Đăng nhập</Link> },
-      { key: '2', label: <Link href="/signup">Đăng ký</Link> },
+      { key: '1', label: <Link href="/login">Đăng nhập</Link> },
+      { key: '2', label: <Link href="/login">Đăng ký</Link> },
     ];
 
   return (

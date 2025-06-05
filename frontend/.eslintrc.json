@@ -7,9 +7,7 @@
   ],
   "rules": {
     "import/no-anonymous-default-export": "off",
-    "quotes": [
-      "error",
-      "single"
-    ]
+    "react/display-name": "off",
+    "quotes": "off"
   }
 }

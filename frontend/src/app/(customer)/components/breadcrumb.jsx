@@ -11,6 +11,7 @@ const breadcrumbMap = {
   '/product': 'Sản phẩm',
   '/product/detail': 'Chi tiết sản phẩm',
   '/order': 'Đơn hàng',
+  '/online-method': 'Thanh toán trực tuyến'
 };
 
 export default function BreadcrumbNav() {

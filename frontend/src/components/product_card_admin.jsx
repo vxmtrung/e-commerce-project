@@ -10,7 +10,7 @@ const Product_Card_Admin = ({ id, img, name, brand_name, price, description, ref
   const [editing, setEditing] = useState(null);
 
   const fetchProductInstance = async () => {
-    const response = await fetch(`http://localhost:3000/product-instances?product-id=${id}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances?product-id=${id}`);
     const instanceData = await response.json();
     setEditing(instanceData);
   };
@@ -34,7 +34,7 @@ const Product_Card_Admin = ({ id, img, name, brand_name, price, description, ref
       },
     });
   };
-  
+
   const handleEdit = async () => {
     form.setFieldsValue({
       name,
@@ -44,12 +44,12 @@ const Product_Card_Admin = ({ id, img, name, brand_name, price, description, ref
     });
     setShowEditModal(true);
   };
-  
+
 
   const handleUpdateProduct = async (values) => {
     setShowEditModal(false);
     try {
-      const res = await fetch(`http://localhost:3000/products/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@ const Product_Card_Admin = ({ id, img, name, brand_name, price, description, ref
         }),
       });
 
-      const res1 = await fetch(`http://localhost:3000/product-instances/${editing[0]['id']}`, {
+      const res1 = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances/${editing[0]['id']}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,7 @@ const Product_Card_Admin = ({ id, img, name, brand_name, price, description, ref
           quantity: values.quantity
         }),
       });
-      
+
       if (res.ok && res1.ok) {
         notification.success({ message: "Cập nhật sản phẩm thành công!" });
         refreshProducts();
@@ -85,18 +85,18 @@ const Product_Card_Admin = ({ id, img, name, brand_name, price, description, ref
 
   const handleDelete = async () => {
     try {
-      const response1 = await fetch(`http://localhost:3000/products/${id}`, {
+      const response1 = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
       });
       console.log(response1);
-      
+
       if (response1.ok) {
-          notification.success({ message: "Xóa sản phẩm thành công!" });
-          refreshProducts();
-          fetchProductInstance();
+        notification.success({ message: "Xóa sản phẩm thành công!" });
+        refreshProducts();
+        fetchProductInstance();
       } else {
         notification.error({ message: "Xóa sản phẩm không thành công!" });
       }
@@ -178,51 +178,51 @@ const Product_Card_Admin = ({ id, img, name, brand_name, price, description, ref
           onFinish={handleUpdateProduct}
           style={{ marginTop: 20 }}
         >
-            <Form.Item
-              label="Tên sản phẩm"
-              name="name"
-              rules={[{ required: true, message: "Hãy nhập tên sản phẩm!" }]}
-            >
-              <Input />
-            </Form.Item>
+          <Form.Item
+            label="Tên sản phẩm"
+            name="name"
+            rules={[{ required: true, message: "Hãy nhập tên sản phẩm!" }]}
+          >
+            <Input />
+          </Form.Item>
 
-            <Form.Item
-              label="Mô tả"
-              name="description"
-              rules={[{ required: true, message: "Hãy nhập mô tả!" }]}
-            >
-              <Input.TextArea />
-            </Form.Item>
+          <Form.Item
+            label="Mô tả"
+            name="description"
+            rules={[{ required: true, message: "Hãy nhập mô tả!" }]}
+          >
+            <Input.TextArea />
+          </Form.Item>
 
-            <Form.Item
-              label="Số lượng"
-              name="quantity"
-              rules={[{ required: true, message: "Hãy nhập số lượng!" }]}
-            >
-              <Input type="number" />
-            </Form.Item>
+          <Form.Item
+            label="Số lượng"
+            name="quantity"
+            rules={[{ required: true, message: "Hãy nhập số lượng!" }]}
+          >
+            <Input type="number" />
+          </Form.Item>
 
-            <Form.Item
-              label="Giá"
-              name="price"
-              rules={[{ required: true, message: "Hãy nhập giá!" }]}
-            >
-              <Input type="number" />
-            </Form.Item>
+          <Form.Item
+            label="Giá"
+            name="price"
+            rules={[{ required: true, message: "Hãy nhập giá!" }]}
+          >
+            <Input type="number" />
+          </Form.Item>
 
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{
-                  backgroundColor: tokenCustomer?.colorPrimary || "#1677ff",
-                  padding: "10px 20px",
-                }}
-                className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
-              >
-                Cập nhật
-              </Button>
-            </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                backgroundColor: tokenCustomer?.colorPrimary || "#1677ff",
+                padding: "10px 20px",
+              }}
+              className="hover:brightness-110 text-white rounded-lg shadow-md transition duration-200"
+            >
+              Cập nhật
+            </Button>
+          </Form.Item>
         </Form>
       </Modal>
     </>
