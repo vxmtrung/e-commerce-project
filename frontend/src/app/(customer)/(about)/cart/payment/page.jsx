@@ -11,7 +11,7 @@ const { Option } = Select;
 const { Title, Paragraph } = Typography;
 
 export default function PaymentPage() {
-  const client = T.client();
+  const client = T.client;
   const [form] = Form.useForm();
   const [checkoutData, setCheckoutData] = useState(null);
   const [loading, setLoading] = useState(false);
