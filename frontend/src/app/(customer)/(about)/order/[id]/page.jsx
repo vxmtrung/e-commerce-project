@@ -5,15 +5,15 @@ import { Card, Tag, Button, List, Space, Typography, Steps, Descriptions, App } 
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import dateformat from 'dateformat';
 import { useEffect, useState } from 'react';
-import { client } from '@/core/fetch/fetch_api';
 import { useAppSelector } from '@/hooks/redux_hooks';
+import { T } from '@/app/common';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
 
-const OrderDetailPage = () => {
+const OrderDetailPage = ({ params }) => {
+  const client = T.client;
   const router = useRouter();
-  const params = useParams();
   const orderId = params.id;
   const [currentOrder, setCurentOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -59,9 +59,9 @@ const OrderDetailPage = () => {
           paymentMethod: order?.paymentMethod === 'CREDIT_CARD' ? 'Thanh toán online' : 'Thanh toán khi nhận hàng',
           tracking: {
             currentStep: order?.status === 'CANCELLED' ? -1 : Math.max(['IN_PROGRESS', 'SENT', 'RECEIVED'].indexOf(order?.status), 0),
-            steps: order?.status === 'CANCELLED' ? 
+            steps: order?.status === 'CANCELLED' ?
               [{ title: 'Đã đặt hàng', description: dateformat(order?.createdAt, 'dd/mm/yyyy HH:MM') },
-               { title: 'Đã hủy', description: dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') }] : steps
+              { title: 'Đã hủy', description: dateformat(order?.updatedAt, 'dd/mm/yyyy HH:MM') }] : steps
           },
           items: order?.items?.map(item => ({
             name: item?.productName + (item?.instanceName ? ` (${item?.instanceName})` : ''),
@@ -122,8 +122,8 @@ const OrderDetailPage = () => {
   return (
     <App>
       <div style={{ padding: '24px' }}>
-        <Button 
-          icon={<ArrowLeftOutlined />} 
+        <Button
+          icon={<ArrowLeftOutlined />}
           onClick={() => router.back()}
           style={{ marginBottom: 16 }}
         >
@@ -159,10 +159,10 @@ const OrderDetailPage = () => {
                 <List.Item>
                   <Space style={{ width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <Space>
-                      <img 
-                        src={item.image || "https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg"} 
-                        alt={item.name} 
-                        style={{ width: 100, height: 100, objectFit: 'cover' }} 
+                      <img
+                        src={item.image || "https://media.hasaki.vn/wysiwyg/HaNguyen/nuoc-hoa-hong-klairs-khong-mui-cho-da-nhay-cam-180ml-1.jpg"}
+                        alt={item.name}
+                        style={{ width: 100, height: 100, objectFit: 'cover' }}
                       />
                       <div>
                         <Text strong>{item.name}</Text>
