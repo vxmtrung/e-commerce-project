@@ -45,7 +45,7 @@ export default function PaymentPage() {
           description: item.description || '',
           image: item.image || '',
           initialPrice: item.initialPrice?.toString() || '0',
-          key: item.id || '',
+          key: item.key || '',
           price: item.price?.toString() || '0',
           productName: item.name || '',
           quantity: item.quantity?.toString() || '0'
