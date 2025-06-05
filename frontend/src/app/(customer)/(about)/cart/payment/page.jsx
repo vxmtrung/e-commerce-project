@@ -3,14 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Select, Button, Typography, Divider, Space, Row, Col, App, message } from 'antd';
 import { useRouter } from 'next/navigation';
-import { client } from '@/core/fetch/fetch_api';
 import { useAppSelector } from '@/hooks/redux_hooks';
 import { useAppRouter } from '@/hooks/router_hook';
+import { T } from '@/app/common';
 
 const { Option } = Select;
 const { Title, Paragraph } = Typography;
 
 export default function PaymentPage() {
+  const client = T.client();
   const [form] = Form.useForm();
   const [checkoutData, setCheckoutData] = useState(null);
   const [loading, setLoading] = useState(false);
