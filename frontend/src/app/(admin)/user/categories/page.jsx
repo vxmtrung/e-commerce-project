@@ -145,9 +145,21 @@ const ProductManagement = () => {
 
       if (!res.ok) throw new Error();
 
-      await refreshBrandData();
+      if (values.id) {
+        setBrandData(prev =>
+          prev.map(brand =>
+            brand.id === values.id
+              ? { ...brand, ...values }
+              : brand
+          )
+        );
+        message.success('Cập nhật brand thành công');
+      } else {
+        const newBrand = await res.json();
+        setBrandData(prev => [...prev, { ...newBrand, numbersProduct: 0 }]);
+        message.success('Thêm brand thành công');
+      }
 
-      message.success(values.id ? 'Cập nhật brand thành công' : 'Thêm brand thành công');
       brandRef.current.close();
     } catch (err) {
       message.error('Thao tác brand thất bại');
@@ -184,9 +196,21 @@ const ProductManagement = () => {
 
       if (!res.ok) throw new Error();
 
-      await refreshCategoryData(); 
+      if (values.id) {
+        setCategoryData(prev =>
+          prev.map(category =>
+            category.id === values.id
+              ? { ...category, ...values }
+              : category
+          )
+        );
+        message.success('Cập nhật category thành công');
+      } else {
+        const newCategory = await res.json();
+        setCategoryData(prev => [...prev, { ...newCategory, numbersProduct: 0 }]);
+        message.success('Thêm category thành công');
+      }
 
-      message.success(values.id ? 'Cập nhật category thành công' : 'Thêm category thành công');
       categoryRef.current.close();
     } catch (err) {
       message.error('Thao tác category thất bại');
