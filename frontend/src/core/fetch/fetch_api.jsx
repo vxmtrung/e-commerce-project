@@ -40,8 +40,8 @@ async function apiFetch({
         });
         responseData = await response.json();
 
-        if (responseData.error) {
-            throw responseData.error;
+        if (responseData.error || !response.ok) {
+            throw responseData.error || new Error("Internal server error!");
         }
     } catch (error) {
         console.error('Fetch Error:', error);
