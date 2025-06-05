@@ -1,7 +1,7 @@
 'use client';
 
-import CartTable from '../../components/cart_table';
-import CartInfo from '../../components/cart_info';
+import CartTable from '@/app/(customer)/components/cart_table';
+import CartInfo from '@/app/(customer)//components/cart_info';
 import { Space } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '@/hooks/redux_hooks';
