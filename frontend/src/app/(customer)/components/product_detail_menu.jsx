@@ -70,7 +70,7 @@ const ProductDetailMenu = ({ product, instance, brand }) => {
     {
       key: '5',
       label: 'Phiên bản',
-      children: instance.name?.substring(10),
+      children: instance.name,
       span: 2,
     },
   ];
