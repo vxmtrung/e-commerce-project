@@ -7,13 +7,14 @@ import dateformat from 'dateformat';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '@/hooks/redux_hooks';
 import { T } from '@/app/common';
+import { useAppRouter } from '@/hooks/router_hook';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
 
 const OrderDetailPage = ({ params }) => {
   const client = T.client;
-  const router = useRouter();
+  const router = useAppRouter();
   const orderId = params.id;
   const [currentOrder, setCurentOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +58,7 @@ const OrderDetailPage = ({ params }) => {
             address: order?.shippingAddress
           },
           paymentMethod: order?.paymentMethod === 'CREDIT_CARD' ? 'Thanh toán online' : 'Thanh toán khi nhận hàng',
+          paymentStatus: order?.paymentStatus === 'COMPLETED' ? 'Đã thanh toán' : 'Đợi thanh toán',
           tracking: {
             currentStep: order?.status === 'CANCELLED' ? -1 : Math.max(['IN_PROGRESS', 'SENT', 'RECEIVED'].indexOf(order?.status), 0),
             steps: order?.status === 'CANCELLED' ?
@@ -208,6 +210,13 @@ const OrderDetailPage = ({ params }) => {
               </Descriptions.Item>
               <Descriptions.Item label="Phương thức thanh toán">
                 {currentOrder.paymentMethod}
+              </Descriptions.Item>
+              <Descriptions.Item label="Tình trạng thanh toán">
+                {currentOrder.paymentStatus}
+                {
+                  currentOrder.paymentMethod == 'Thanh toán online' && currentOrder.paymentStatus == 'Đợi thanh toán' &&
+                  <>{' - '}<Typography.Link onClick={() => router.push('/cart/payment/online-method', { id: params.id })}>Thanh toán ngay</Typography.Link></>
+                }
               </Descriptions.Item>
               <Descriptions.Item label="Tổng tiền">
                 <Text strong>{formatPrice(currentOrder.total)} ₫</Text>
