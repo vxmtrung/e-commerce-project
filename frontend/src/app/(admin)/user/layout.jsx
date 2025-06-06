@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
 
     return (
         <>
-            <Metadata seoTitle={'User'} seoDescription={'User Description'} />
+            <Metadata seoTitle={'Lunera - Admin site'} seoDescription={'Admin site'} />
             <AntdConfigProvider>
                 <AdminLayout menus={menus}>
                     {children}

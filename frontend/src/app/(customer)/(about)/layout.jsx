@@ -10,7 +10,7 @@ export default function CustomerRootLayout({ children }) {
 
     return (
         <>
-            <Metadata seoTitle="Customer" seoDescription="Customer Panel" />
+            <Metadata seoTitle="Lunera" seoDescription="Customer Panel" />
             <AntdConfigProviderCustomer>
                 <CustomerLayout isLoggedIn={isLoggedIn}>{children}</CustomerLayout>
             </AntdConfigProviderCustomer>
