@@ -1,17 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, Row, Col, Spin, Empty, Pagination, Select } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 
 export default function ProductsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [sortOrder, setSortOrder] = useState('default');
+  const [categoryId, setCategoryId] = useState(null);
   const pageSize = 10;
 
   const formatPrice = (price) => {
@@ -25,15 +27,35 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
+    // Lấy categoryId từ query param nếu có
+    const catId = searchParams.get('filter')?.split(':')[2] || null;
+    setCategoryId(catId);
+  }, [searchParams]);
+
+  // Add: get search param from query
+  const searchText = searchParams.get('search') || '';
+
+  useEffect(() => {
     fetchProducts();
-  }, [currentPage, sortOrder]);
+  }, [currentPage, sortOrder, categoryId, searchText]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const sortParam = sortOrder !== 'default' ? `&sort=${sortOrder}` : '';
+      let filterParam = '';
+      if (categoryId) {
+        filterParam = `&filter=categoryId:eq:${categoryId}`;
+      } else if (searchParams.get('filter')) {
+        filterParam = `&filter=${searchParams.get('filter')}`;
+      }
+      // Add: search filter
+      let searchFilter = '';
+      if (searchText) {
+        searchFilter = `&filter=name:like:${encodeURIComponent(searchText)}`;
+      }
       const productsResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/search?page=${currentPage}&size=${pageSize}${sortParam}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/search?page=${currentPage}&size=${pageSize}${sortParam}${filterParam}${searchFilter}`
       );
       const productsData = await productsResponse.json();
       setTotalItems(productsData.totalItems || 0);
