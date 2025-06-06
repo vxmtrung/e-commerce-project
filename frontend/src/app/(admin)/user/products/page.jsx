@@ -27,6 +27,7 @@ export default function ProductManager() {
   const [editing, setEditing] = useState([]);
   const [selectedInstance, setSelectedInstance] = useState(0);
   const [isAddingNewInstance, setIsAddingNewInstance] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const fetchProducts = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=0&size=100`);
@@ -52,8 +53,36 @@ export default function ProductManager() {
     fetchProducts();
   }, []);
 
+  const uploadToServer = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("https://ecommerce-wa5i.onrender.com/cloudinary/files", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) {
+      throw new Error("Upload ảnh thất bại");
+    }
+
+    const data = await res.json();
+    return data.url;
+  };
+
   const handleAddProduct = async (values) => {
     try {
+      const imageFile = values.image?.[0]?.originFileObj;
+      let imageUrl = null;
+      if (imageFile) {
+        try {
+          imageUrl = await uploadToServer(imageFile);
+        } catch (err) {
+          notification.error({ message: "Tải ảnh lên thất bại!" });
+          return;
+        }
+      }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products`, {
         method: "POST",
         headers: {
@@ -86,7 +115,21 @@ export default function ProductManager() {
           }),
         });
 
+        const instanceData = await instanceRes.json();
+
         if (instanceRes.ok) {
+          if (imageUrl) {
+            await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-imgs`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                productInstanceId: instanceData.id,
+                link: imageUrl
+              }),
+            });
+          }
           notification.success({ message: "Thêm sản phẩm thành công!" });
           fetchProducts();
           setShowModal(false);
@@ -128,6 +171,24 @@ export default function ProductManager() {
     const temp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-instances?product-id=${id}`);
     const editing_temp = await temp.json();
     setEditing(editing_temp);
+    const instanceId = editing_temp[0]?.id;
+    if (instanceId) {
+      try {
+        const imgRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/product-imgs?product-instance-id=${instanceId}`);
+        const imgData = await imgRes.json();
+
+        if (Array.isArray(imgData) && imgData.length > 1) {
+          setImageUrl(imgData[1].link);
+        } else if (Array.isArray(imgData) && imgData.length > 0) {
+          setImageUrl(imgData[0].link);
+        } else {
+          setImageUrl(null);
+        }
+      } catch (err) {
+        console.error("Không lấy được ảnh", err);
+        setImageUrl(null);
+      }
+    }
     editForm.setFieldsValue({
       name: name,
       description: description,
@@ -290,32 +351,31 @@ export default function ProductManager() {
         }}
         footer={null}
       >
-        <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
-          <div style={{ flex: 1 }}>
-            <Form.Item
-              label="Ảnh sản phẩm"
-              name="image"
-              valuePropName="fileList"
-              getValueFromEvent={(e) => e}
-            >
-              <Upload
-                listType="picture-card"
-                beforeUpload={() => false}
-                maxCount={1}
+        <Form
+          form={form}
+          onFinish={handleAddProduct}
+          style={{ marginTop: 20 }}
+        >
+          <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
+            <div style={{ flex: 1 }}>
+              <Form.Item
+                name="image"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => Array.isArray(e) ? e : e?.fileList}
               >
-                <div>
-                  <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
-                </div>
-              </Upload>
-            </Form.Item>
-          </div>
+                <Upload
+                  listType="picture-card"
+                  beforeUpload={() => false}
+                  maxCount={1}
+                >
+                  <div>
+                    <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
+                  </div>
+                </Upload>
+              </Form.Item>
+            </div>
 
-          <div style={{ flex: 2 }}>
-            <Form
-              form={form}
-              onFinish={handleAddProduct}
-              style={{ marginTop: 20 }}
-            >
+            <div style={{ flex: 2 }}>
               {currentStep === 1 && (
                 <>
                   <Form.Item
@@ -367,7 +427,7 @@ export default function ProductManager() {
                       type="primary"
                       onClick={async () => {
                         try {
-                          await form.validateFields(['name', 'description', 'category_id', 'brand_id']);
+                          await form.validateFields(['name', 'description', 'category_id', 'brand_id', 'image']);
                           setProductValues(form.getFieldsValue());
                           setCurrentStep(2);
                         } catch (err) { }
@@ -406,10 +466,7 @@ export default function ProductManager() {
                     <Input type="number" />
                   </Form.Item>
 
-                  <Form.Item
-                    label="Giảm giá"
-                    name="discount"
-                  >
+                  <Form.Item label="Giảm giá" name="discount">
                     <Input type="number" />
                   </Form.Item>
 
@@ -435,9 +492,9 @@ export default function ProductManager() {
                   </Form.Item>
                 </>
               )}
-            </Form>
+            </div>
           </div>
-        </div>
+        </Form>
       </Modal>
 
 
@@ -454,7 +511,7 @@ export default function ProductManager() {
         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
           <div style={{ flex: 1 }}>
             <img
-              src="/productImage.png"
+              src={imageUrl || "/productImage.png"}
               alt="Product"
               style={{ width: "100%", borderRadius: "8px", objectFit: "cover" }}
             />
