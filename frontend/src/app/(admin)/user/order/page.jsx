@@ -176,17 +176,16 @@ export default function OrderPage() {
     const [state, setState] = useState({
         data: []
     });
-
+    const getPage = async () => {
+        try {
+            const data = await T.client.get('/orders').then(list => T.lodash.orderBy(list, item => new Date(item.createdAt).getTime(), 'desc'));
+            setState({ ...state, data });
+        } catch (error) {
+            T.message.error(error);
+        }
+    };
     useEffect(() => {
-        const fetch = async () => {
-            try {
-                const data = await T.client.get('/orders');
-                setState({ ...state, data });
-            } catch (error) {
-                T.message.error(error);
-            }
-        };
-        fetch();
+        getPage();
     }, []);
 
     const modalRef = useRef();
@@ -213,6 +212,33 @@ export default function OrderPage() {
         { value: 'RECEIVED', label: <Tag color={colorMap.RECEIVED}>{labelMap.RECEIVED}</Tag> },
         { value: 'CANCELLED', label: <Tag color={colorMap.CANCELLED}>{labelMap.CANCELLED}</Tag> },
     ];
+
+    const onChangeOrderStatus = async (orderId, status) => {
+        try {
+            const url = `/orders/${orderId}/status`;
+            await T.client.put(url, { status });
+            T.message.success('Cập nhật trạng thái đơn hàng thành công');
+            return true;
+        } catch (error) {
+            console.error(error);
+            T.message.error(error);
+            return false;
+        }
+    };
+
+    const onChangeOrderPaymentStatus = async (orderId, newStatus) => {
+        try {
+            const url = '/payments/update';
+            await T.client.post(url, { orderId, newStatus });
+            T.message.success('Cập nhật trạng thái thanh toán thành công');
+            return true;
+        } catch (error) {
+            console.error(error);
+            T.message.error(error);
+            return false;
+        }
+    };
+
     const columns = [
         {
             title: 'Người mua',
@@ -247,13 +273,13 @@ export default function OrderPage() {
             title: 'Tình trạng thanh toán',
             dataIndex: 'paymentStatus',
             key: 'paymentStatus',
-            render: (status, record) => <Select options={optionsPaymentStatus} value={status} />,
+            render: (status, record) => <Select options={optionsPaymentStatus} value={status} onChange={async newStatus => await onChangeOrderPaymentStatus(record.orderId, newStatus) && getPage()} />,
         },
         {
             title: 'Tình trạng đơn hàng',
             dataIndex: 'status',
             key: 'status',
-            render: (status) => <Select options={optionsOrderStatus} value={status} />,
+            render: (status, record) => <Select options={optionsOrderStatus} value={status} onChange={async (status) => await onChangeOrderStatus(record.orderId, status) && getPage()} />,
         },
         {
             title: 'Thao tác',

@@ -4,6 +4,7 @@ import './index.css';
 import ReduxProvider from '@/redux/provider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import Metadata from '@/components/meta_data';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 // import { Layout } from 'antd';
 // import Header from '@/components/customer/layout/header';
 // import CustomFooter from '@/components/customer/layout/footer';
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
                 <ReduxProvider>
                     <AntdRegistry>
                         {children}
+                        <SpeedInsights />
                     </AntdRegistry>
                 </ReduxProvider>
             </body>

@@ -7,5 +7,5 @@ export default function MyApp() {
     useEffect(() => {
         router.push('/product');
     }, []);
-    return (<>Hello</>);
+    return (<></>);
 }
