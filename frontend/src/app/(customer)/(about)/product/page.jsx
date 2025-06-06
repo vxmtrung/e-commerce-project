@@ -32,9 +32,12 @@ export default function ProductsPage() {
     setCategoryId(catId);
   }, [searchParams]);
 
+  // Add: get search param from query
+  const searchText = searchParams.get('search') || '';
+
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, sortOrder, categoryId]);
+  }, [currentPage, sortOrder, categoryId, searchText]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -46,8 +49,13 @@ export default function ProductsPage() {
       } else if (searchParams.get('filter')) {
         filterParam = `&filter=${searchParams.get('filter')}`;
       }
+      // Add: search filter
+      let searchFilter = '';
+      if (searchText) {
+        searchFilter = `&filter=name:like:${encodeURIComponent(searchText)}`;
+      }
       const productsResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/search?page=${currentPage}&size=${pageSize}${sortParam}${filterParam}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/search?page=${currentPage}&size=${pageSize}${sortParam}${filterParam}${searchFilter}`
       );
       const productsData = await productsResponse.json();
       setTotalItems(productsData.totalItems || 0);

@@ -6,16 +6,26 @@ import { ShoppingCartOutlined, UserOutlined, SearchOutlined } from '@ant-design/
 import { tokenCustomer } from '@/context/config_provider';
 import { useAppSelector } from '@/hooks/redux_hooks';
 import { T } from '@/app/common';
+import { useRouter, usePathname } from 'next/navigation';
 
 const { Header: AntHeader } = Layout;
 
 export default function Header({ isLoggedIn }) {
   const [searchQuery, setSearchQuery] = useState('');
   const user = useAppSelector('systemState', 'userReducer').user;
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleSearch = () => {
-    if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+    if (!searchQuery.trim()) return;
+    const searchParam = `search=${encodeURIComponent(searchQuery)}`;
+    if (pathname.includes('/product')) {
+      // Đang ở trang product, chỉ update query param để trigger API fetch
+      const url = `/product?page=0&size=10&${searchParam}`;
+      router.push(url);
+    } else {
+      // Không ở trang product, chuyển hướng sang product với search
+      router.push(`/product?page=0&size=10&${searchParam}`);
     }
   };
   const menuItems = user
