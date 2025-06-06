@@ -3,11 +3,17 @@ import { tokenCustomer } from '@/context/config_provider';
 import { Menu, InputNumber, Button } from 'antd';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export default function CategorySidebar() {
   const [categories, setCategories] = useState([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(1000);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -33,6 +39,12 @@ export default function CategorySidebar() {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    // Lấy categoryId từ query param nếu có
+    const catId = searchParams.get('filter')?.split(':')[2] || null;
+    setActiveCategory(catId);
+  }, [searchParams]);
+
   const handleMinPriceChange = (value) => {
     setMinPrice(value);
   };
@@ -43,6 +55,18 @@ export default function CategorySidebar() {
 
   const handleApplyPriceFilter = () => {
     // để xử lý
+  };
+
+  const handleCategoryClick = (categoryId) => {
+    const filterParam = `filter=categoryId:eq:${categoryId}`;
+    if (pathname.includes('/product')) {
+      // Nếu đang ở trang products, chỉ update query param
+      const url = `/product?page=0&size=10&${filterParam}`;
+      router.push(url);
+    } else {
+      // Nếu không phải trang products, redirect sang trang products với filter
+      router.push(`/product?page=0&size=10&${filterParam}`);
+    }
   };
 
   return (
@@ -57,17 +81,18 @@ export default function CategorySidebar() {
           overflowY: 'auto',
           padding: '0 16px',
         }}
+        selectedKeys={activeCategory ? [activeCategory] : []}
+        onClick={({ key }) => handleCategoryClick(key)}
         items={categories.map((category) => ({
           key: category.key,
           label: (
-            <a
-              href={category.path}
-              style={{ color: 'black' }}
+            <span
+              style={{ color: 'black', cursor: 'pointer', width: '100%', display: 'inline-block' }}
               onMouseEnter={e => (e.target.style.color = tokenCustomer.colorLinkHover)}
               onMouseLeave={e => (e.target.style.color = 'black')}
             >
               {category.label}
-            </a>
+            </span>
           ),
         }))}
       />
