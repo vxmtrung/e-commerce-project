@@ -42,7 +42,7 @@ export default function CategorySidebar() {
   useEffect(() => {
     // Lấy categoryId từ query param nếu có
     const catId = searchParams.get('filter')?.split(':')[2] || null;
-    setActiveCategory(catId);
+    setActiveCategory(catId || 'all');
   }, [searchParams]);
 
   const handleMinPriceChange = (value) => {
@@ -58,6 +58,15 @@ export default function CategorySidebar() {
   };
 
   const handleCategoryClick = (categoryId) => {
+    if (categoryId === 'all') {
+      // Remove filter param
+      if (pathname.includes('/product')) {
+        router.push('/product?page=0&size=10');
+      } else {
+        router.push('/product?page=0&size=10');
+      }
+      return;
+    }
     const filterParam = `filter=categoryId:eq:${categoryId}`;
     if (pathname.includes('/product')) {
       // Nếu đang ở trang products, chỉ update query param
@@ -81,20 +90,34 @@ export default function CategorySidebar() {
           overflowY: 'auto',
           padding: '0 16px',
         }}
-        selectedKeys={activeCategory ? [activeCategory] : []}
+        selectedKeys={[activeCategory || 'all']}
         onClick={({ key }) => handleCategoryClick(key)}
-        items={categories.map((category) => ({
-          key: category.key,
-          label: (
-            <span
-              style={{ color: 'black', cursor: 'pointer', width: '100%', display: 'inline-block' }}
-              onMouseEnter={e => (e.target.style.color = tokenCustomer.colorLinkHover)}
-              onMouseLeave={e => (e.target.style.color = 'black')}
-            >
-              {category.label}
-            </span>
-          ),
-        }))}
+        items={[
+          {
+            key: 'all',
+            label: (
+              <span
+                style={{ color: 'black', cursor: 'pointer', width: '100%', display: 'inline-block' }}
+                onMouseEnter={e => (e.target.style.color = tokenCustomer.colorLinkHover)}
+                onMouseLeave={e => (e.target.style.color = 'black')}
+              >
+                Tất cả
+              </span>
+            ),
+          },
+          ...categories.map((category) => ({
+            key: category.key,
+            label: (
+              <span
+                style={{ color: 'black', cursor: 'pointer', width: '100%', display: 'inline-block' }}
+                onMouseEnter={e => (e.target.style.color = tokenCustomer.colorLinkHover)}
+                onMouseLeave={e => (e.target.style.color = 'black')}
+              >
+                {category.label}
+              </span>
+            ),
+          })),
+        ]}
       />
       <h3 style={{ padding: '16px 24px', marginTop: '8px', fontWeight: 'bold', color: tokenCustomer.colorLinkActive }}>Khoảng giá (VNĐ)</h3>
       <div style={{ padding: '16px 24px' }}>
