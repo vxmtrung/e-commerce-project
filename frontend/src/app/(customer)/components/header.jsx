@@ -17,7 +17,15 @@ export default function Header({ isLoggedIn }) {
   const pathname = usePathname();
 
   const handleSearch = () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      // Nếu không có searchTerm, chuyển về trang tất cả sản phẩm
+      if (pathname.includes('/product')) {
+        router.push('/product?page=0&size=10');
+      } else {
+        router.push('/product?page=0&size=10');
+      }
+      return;
+    }
     const searchParam = `search=${encodeURIComponent(searchQuery)}`;
     if (pathname.includes('/product')) {
       // Đang ở trang product, chỉ update query param để trigger API fetch
